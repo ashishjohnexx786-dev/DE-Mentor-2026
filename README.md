@@ -22,3 +22,7 @@ This production rebuild uses a new local-storage key. Progress from the earlier 
 
 ### Full practice packages
 All 20 production module ZIPs and all 7 protected Gate ZIPs are bundled under `course_packages/`. The Mentor shows a **Full module package** button in lessons and a **Full Gate package** button in Gate mode, so datasets, starter code, guided labs, independent practice and assessment assets are available rather than only the PDFs.
+
+
+## RC5 correction
+The rejected 25-minute Pomodoro UI has been removed. Mentor now uses the agreed manual **START STUDY / END STUDY** session tracker; use the phone Clock/Timer separately for alarms. RC4 Android lesson-layout fixes remain in place.

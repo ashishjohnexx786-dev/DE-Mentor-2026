@@ -20,8 +20,7 @@
     <div class="topActions">
       <button class="btn ghost" id="setupCheckBtn">✅ First-use check</button>
       <button class="btn ghost" id="installBtn" hidden>⬇ Install</button>
-      <button class="btn ghost" id="notifyBtn">🔔 Timer alert</button>
-      <button class="btn ghost" id="settingsBtn">⚙ Settings</button>
+            <button class="btn ghost" id="settingsBtn">⚙ Settings</button>
     </div>
   </header>
 
@@ -51,7 +50,7 @@
           <div class="stat"><b id="coursePct">0%</b><span>Course mastery</span></div>
           <div class="stat"><b id="lessonStat">0/264</b><span>Lessons mastered</span></div>
           <div class="stat"><b id="stageStat">0/20</b><span>Stages cleared</span></div>
-          <div class="stat"><b id="gateStat">0/6</b><span>Gates passed</span></div>
+          <div class="stat"><b id="gateStat">0/7</b><span>Gates passed</span></div>
         </div>
         <div class="progress"><i id="courseBar"></i></div>
       </section>
@@ -80,15 +79,10 @@
 
         <aside>
           <section class="card timerCard">
-            <div class="sectionHead"><div><div class="eyebrow">FOCUS TIMER</div><h2>Real-clock timer</h2></div><span class="pill" id="focusToday">0m today</span></div>
-            <div class="timerModes">
-              <button class="chip active" data-timer-mode="focus">Focus</button>
-              <button class="chip" data-timer-mode="short">Break</button>
-              <button class="chip" data-timer-mode="long">Long</button>
-            </div>
-            <div class="clock" id="timerClock">25:00</div>
-            <div class="actionRow center"><button class="btn primary" id="timerStart">START</button><button class="btn ghost" id="timerReset">Reset</button></div>
-            <p class="muted tiny" id="timerHint">Uses a saved end-time, so the countdown stays correct after phone/browser sleep. Exact notification timing still depends on Android/browser permissions.</p>
+            <div class="sectionHead"><div><div class="eyebrow">STUDY SESSION</div><h2>Manual study tracker</h2></div><span class="pill" id="studyToday">0m today</span></div>
+            <div class="clock" id="studyClock">00:00:00</div>
+            <div class="actionRow center"><button class="btn primary" id="studyStartEnd">START STUDY</button><button class="btn ghost" id="studyCancel" disabled>Cancel</button></div>
+            <p class="muted tiny" id="studyHint">START STUDY saves the exact start time. Locking the phone, closing the tab or reading a lesson does not end the session. Tap END STUDY yourself when you finish; Mentor then records the real elapsed time in Reports and your streak. Use your phone Clock/Timer separately if you want an alarm.</p>
           </section>
 
           <section class="card">
@@ -199,13 +193,13 @@
           <section class="card"><div class="eyebrow">STAGE PROGRESS</div><h2>Where your mastery is</h2><div id="stageBars"></div></section>
         </div>
         <aside>
-          <section class="card"><div class="eyebrow">BACKUP</div><h2>Never lose progress</h2><div class="stack"><button class="btn primary" id="exportJsonBtn">Download full JSON backup</button><button class="btn" id="exportLessonsBtn">Lesson CSV</button><button class="btn" id="exportFocusBtn">Focus CSV</button><button class="btn" id="exportEvidenceBtn">Evidence CSV</button><button class="btn" id="exportJobsBtn">Applications CSV</button><button class="btn ghost" id="restoreBtn">Restore JSON backup</button><input id="restoreFile" type="file" accept="application/json,.json" hidden></div></section>
+          <section class="card"><div class="eyebrow">BACKUP</div><h2>Never lose progress</h2><div class="stack"><button class="btn primary" id="exportJsonBtn">Download full JSON backup</button><button class="btn" id="exportLessonsBtn">Lesson CSV</button><button class="btn" id="exportStudyBtn">Study sessions CSV</button><button class="btn" id="exportEvidenceBtn">Evidence CSV</button><button class="btn" id="exportJobsBtn">Applications CSV</button><button class="btn ghost" id="restoreBtn">Restore JSON backup</button><input id="restoreFile" type="file" accept="application/json,.json" hidden></div></section>
         </aside>
       </section>
     </section>
   </main>
 
-  <footer>DE Mentor v1.0 • unified Stage 00–19 route • beginner-first • attempt-locked review • targeted repair • offline-first</footer>
+  <footer>DE Mentor v2.1 RC5 • unified Stage 00–19 route • manual study sessions • attempt-locked review • targeted repair • offline-first</footer>
 </div>
 
 <!-- FIRST-USE CHECK -->
@@ -217,9 +211,8 @@
     <div class="actionRow">
       <button class="btn primary" id="runSetupCheckBtn">Run checks</button>
       <button class="btn" id="setupOpenStage0Btn">📄 Open Stage 00</button>
-      <button class="btn" id="setupNotifyBtn">🔔 Allow timer alerts</button>
     </div>
-    <div class="call warn topGap"><b>One manual test:</b> start a 1-minute timer, lock the phone for about a minute, then reopen Mentor. The clock should show the real elapsed time. Android may still block the notification if battery/notification settings stop the browser/PWA.</div>
+    <div class="call warn topGap"><b>One manual test:</b> tap START STUDY, lock the phone for about a minute, then reopen Mentor. The elapsed clock should include the locked time. Tap END STUDY yourself. Mentor does not depend on a browser background countdown or notification alarm.</div>
     <div class="actionRow"><button class="btn primary" id="setupDoneBtn">Everything is clear — start studying</button></div>
   </div>
 </div>
@@ -229,10 +222,11 @@
   <div class="modalCard card">
     <div class="sectionHead"><h2>⚙ Settings</h2><button class="btn ghost closeModal" data-close="settingsModal">×</button></div>
     <label>Name<input id="nameInput" placeholder="Your name"></label>
-    <label>Theme<select id="themeInput"><option value="midnight">Midnight</option><option value="amoled">AMOLED Black</option><option value="light">Light</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="ember">Ember</option></select></label>
+    <label>Theme<select id="themeInput"><option value="midnight">Midnight</option><option value="amoled">AMOLED Black</option><option value="light">Light</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="ember">Ember</option><option value="graphite">Graphite</option></select></label>
     <label class="check"><input id="beginnerModeInput" type="checkbox"> Beginner Mode — show extra instructions</label>
-    <h3>Focus timer</h3>
-    <div class="formGrid"><label>Focus minutes<input id="focusMin" type="number" min="10" max="120"></label><label>Short break<input id="shortMin" type="number" min="1" max="30"></label><label>Long break<input id="longMin" type="number" min="5" max="60"></label><label>Daily target hours<input id="dailyTarget" type="number" min="0.5" max="12" step="0.5"></label></div>
+    <h3>Study tracking</h3>
+    <div class="formGrid"><label>Daily target hours<input id="dailyTarget" type="number" min="0.5" max="12" step="0.5"></label></div>
+    <p class="muted tiny">No fixed 25-minute Pomodoro is used. Start and end each real study session manually; use the phone Clock/Timer separately when you want an alarm.</p>
     <div class="actionRow"><button class="btn primary" id="saveSettingsBtn">Save settings</button><button class="btn danger" id="resetBtn">Reset all local progress</button></div>
   </div>
 </div>

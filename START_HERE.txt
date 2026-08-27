@@ -1,4 +1,4 @@
-DE MENTOR — PRODUCTION RC3
+DE MENTOR — PRODUCTION RC4 MOBILE HOTFIX
 
 1. Open index.html through your hosted HTTPS site (GitHub Pages is fine).
 2. The First-use check opens for a fresh learner.

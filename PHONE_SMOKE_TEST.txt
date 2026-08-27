@@ -1,14 +1,14 @@
-DE MENTOR PRODUCTION RC3 — PHONE SMOKE TEST
+DE MENTOR PRODUCTION RC5 — REAL ANDROID SMOKE TEST
 
-1. OPEN — app renders; First-use check appears; no blank screen.
-2. START — DE00-01 opens and M00 Learner Book opens locally.
-3. COURSE MAP — Stage counts show production structure; M18 shows 50 project phases, not 50 formal lessons.
-4. BROWSE AHEAD — opening a later unit does not fake-complete earlier work.
-5. REVIEW LOCK — Review is blocked before a genuine attempt and opens after attempt.
-6. GATE LOCK — protected Gate stays locked until prerequisite units are mastered; Gate A opens first.
-7. TIMER — start, lock phone briefly, reopen; remaining time must reflect real elapsed clock time. Notification behavior depends on Android/browser battery policy.
-8. BACKUP — download full JSON backup; file downloads.
-9. M18 — open one project phase; Project Brief button opens correct P1/P2/P3/Capstone brief.
-10. GATE B — after a saved failed/remediation attempt, reopening Gate routes to the fresh B brief/review.
+1. Hard-refresh/reopen the deployed Mentor after RC5 is pushed.
+2. First-use checks: Progress saving, Stage 00 book, Offline/PWA, Study-session tracking, Screen size, Connection should render without overlap.
+3. Open Stage 00 / lesson L01. Confirm lesson steps 1–8 are single-column and do not overlap at normal browser zoom.
+4. Tap START STUDY. Lock the phone for about 60 seconds. Reopen Mentor. Elapsed time should include the locked time.
+5. Tap END STUDY. Reports should record the real elapsed session. There should be no 25:00 Focus/Break timer and no Mentor notification-permission request.
+6. Start another session, close/reopen the browser/PWA, confirm the session is still active; then END STUDY.
+7. Test Cancel: start a session, Cancel, confirm it is not added to Reports.
+8. Change theme to Graphite and AMOLED; verify each is visibly distinct.
+9. Export Study sessions CSV and full JSON backup. Confirm downloads are created.
+10. Navigate Today → Learn → Course → Repair → Evidence → Jobs → Reports and verify no mobile overlap/clipping.
 
-Send a screenshot plus the failed step number if any check fails.
+If all ten pass, record Android smoke PASS for RC5.

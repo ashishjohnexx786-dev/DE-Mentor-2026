@@ -1,14 +1,16 @@
 DE MENTOR — ZERO TO JOB-READY DATA ENGINEER 2026
-PRODUCTION RC3 — 264/7 PARITY REBUILD
+PRODUCTION RC5 — MANUAL STUDY TRACKER + ANDROID LAYOUT HOTFIX
 
-STATUS: AUTOMATED/STATIC PARITY TARGET; REAL-DEVICE / REMAINING LIVE-RUNTIME QA PENDING.
+STATUS: STATIC/LOCAL QA PASS; REAL ANDROID RETEST / REMAINING LIVE-RUNTIME QA PENDING.
 
 - 20 stages
 - 264 formal lessons
 - 50 M18 project phases
 - 314 controlled units
 - 7 protected Gates
-- production module/gate materials bundled
-- previous 230/6 candidate superseded and not migrated as mastery
+- fixed 25-minute Pomodoro removed
+- manual Start Study / End Study session tracker restored
+- RC4 mobile lesson-layout fix retained
+- 7 themes including AMOLED + Graphite
 
 DO NOT label permanent FINAL / DEPLOYED until real learner-PC runtime checks and Android smoke pass.

@@ -1,6 +1,6 @@
 {
   "package": "DE Mentor \u2014 Zero to Job-Ready Data Engineer 2026",
-  "version": "v2.0 Production RC3",
+  "version": "v2.1 Production RC5 Manual Session + Android Hotfix",
   "generated_date": "2026-08-27",
   "stage_count": 20,
   "formal_lesson_count": 264,
@@ -11,13 +11,23 @@
   "bundled_module_packages": 20,
   "bundled_gate_packages": 7,
   "automated_static_parity_qa": "pass",
-  "real_device_android_smoke": "pending",
+  "real_device_android_smoke": "RC3 observed layout failure; RC4 fixed layout; RC5 also restores agreed manual session tracker; real Android retest pending",
   "remaining_course_runtime_qa": "pending",
   "files": [
     {
+      "path": "ANDROID_LAYOUT_HOTFIX_RC4.txt",
+      "size": 989,
+      "sha256": "b95e9e25922f968da3b374e48d0993508fb26e81c583d39abdb7b8b3a586b280"
+    },
+    {
+      "path": "GITHUB_PAGES_DEPLOY_README.txt",
+      "size": 691,
+      "sha256": "2e45b148e74ff4358ecbaff66bc62bdc6ad4d0fced60d196e0c55da1f9e3b05b"
+    },
+    {
       "path": "PHONE_SMOKE_TEST.txt",
-      "size": 1049,
-      "sha256": "dec89eb59817813db585e34788d1ee0698e591e90c9aa4c0680de54bda3b3aea"
+      "size": 1173,
+      "sha256": "987f78e535245b534a129ae0a7f48fde4896334a974488450d318babca5f29f2"
     },
     {
       "path": "QA_VALIDATION_RC3.txt",
@@ -25,24 +35,29 @@
       "sha256": "718ead77eab4409cea0508501a6b7a3180111a62819e8d3e2767475f8cb8ff0f"
     },
     {
+      "path": "RC5_TIMER_AND_ANDROID_FIX.txt",
+      "size": 1072,
+      "sha256": "432379a41e3ac911338b22acb5f90b08c6163cb12a6638beb03edd534c68bcb0"
+    },
+    {
       "path": "README.md",
-      "size": 1653,
-      "sha256": "9322a6c4498412b3963b942b8fbaeb1ec1228b736800fa92f4335ebb188e8bee"
+      "size": 1903,
+      "sha256": "a32dc4d4b509ab3d512859b82df6127e6e0dd4fe7ba78421e76488d9a0c32642"
     },
     {
       "path": "RELEASE_CANDIDATE_STATUS.txt",
-      "size": 493,
-      "sha256": "16f68492f96f6e02fa204504b44c1e6409f03a965fac89295ae17616c47085a5"
+      "size": 578,
+      "sha256": "0313533811a73642b71d088123173ca05fab97153d0418b511332ea177afda9c"
     },
     {
       "path": "START_HERE.txt",
-      "size": 931,
-      "sha256": "6183993c2cfc450b519e92d45170d891b41ff9bba99d8195aba13057a85c0ebd"
+      "size": 945,
+      "sha256": "6f82b9217d1b1402f4fe3f86163078af9a3c5e5fba22f319a0db1ab067b94cd7"
     },
     {
       "path": "app.js",
-      "size": 52144,
-      "sha256": "ca44e3bf29f5e1909109cf878d7478aa67ff28a1ed446dffb8921806a9a34391"
+      "size": 50293,
+      "sha256": "90122f8e9f9df535f508d0503ca6141df63d4a9438827dd635ed43f50a4921bc"
     },
     {
       "path": "control/MASTER_INDEX_RC4.pdf",
@@ -206,8 +221,8 @@
     },
     {
       "path": "index.html",
-      "size": 20900,
-      "sha256": "f12cc0d51db82bd175979345a89443589f1721f3e02ab26eaaedc29f715878e7"
+      "size": 20649,
+      "sha256": "0798b2e82cd0669cb806518d79908baee6815dd0ee55764fb12e24784323f0e9"
     },
     {
       "path": "manifest.webmanifest",
@@ -591,13 +606,14 @@
     },
     {
       "path": "styles.css",
-      "size": 13520,
-      "sha256": "4a8252b1f154cb771372d787e5428bd6ddd07c4ef2d5665a0a549a90940efe6a"
+      "size": 14919,
+      "sha256": "add3752262450fcf4071ea6ff99c7c2e159b11ab0fa0c4bc5a35296d6ee05c7f"
     },
     {
       "path": "sw.js",
-      "size": 3167,
-      "sha256": "4fbc849208b4989b29170704ad5b1ff91f355e87af6a04dfdc9b5d4a281beefe"
+      "size": 3182,
+      "sha256": "cb214922debd24b6178bc5e62e4e51c33c72ade956efcc9eb606bf4c5a095d4f"
     }
-  ]
+  ],
+  "timer_model": "manual START STUDY / END STUDY; phone Clock/Timer for alarms; no fixed Pomodoro"
 }

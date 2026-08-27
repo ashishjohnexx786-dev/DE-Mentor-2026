@@ -9,6 +9,7 @@ body[data-theme="light"]{--bg:#f5f7fb;--panel:#fff;--panel2:#eef2f7;--panel3:#f8
 body[data-theme="ocean"]{--bg:#071622;--panel:#0d2230;--panel2:#123246;--panel3:#091c29;--accent:#2ab7ca;--accent2:#68d8e8;--bd:#24506a}
 body[data-theme="forest"]{--bg:#0c1512;--panel:#12211b;--panel2:#1a3027;--panel3:#0d1914;--accent:#53d18f;--accent2:#8be8bb;--bd:#294a3c}
 body[data-theme="ember"]{--bg:#1b100d;--panel:#291713;--panel2:#38201a;--panel3:#21110e;--accent:#f28c5d;--accent2:#ffc07a;--bd:#5a3328}
+body[data-theme="graphite"]{--bg:#101214;--panel:#181b1f;--panel2:#22262b;--panel3:#131619;--txt:#f2f4f6;--mut:#a7b0ba;--accent:#7e8da4;--accent2:#aab6c5;--bd:#353c45}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;color:var(--txt);background:radial-gradient(circle at 25% -10%,color-mix(in srgb,var(--accent) 19%,transparent),transparent 34%),linear-gradient(180deg,var(--panel2),var(--bg) 24%);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -56,3 +57,26 @@ footer{text-align:center;color:var(--mut);font-size:.73rem;padding:19px 0 8px}
 
 /* First-use device check */
 .setupResults{margin:12px 0;display:grid;gap:8px}.setupRow{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--bd);border-radius:12px;background:rgba(255,255,255,.018)}.setupDot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:0 0 10px;background:var(--mut)}.setupRow.ok .setupDot{background:var(--ok)}.setupRow.warn .setupDot{background:var(--warn)}.setupRow.bad .setupDot{background:var(--danger)}.setupFix{margin-top:5px;color:var(--txt)}
+
+/* RC4 Android readability hotfix — observed on real 452px Android Chrome. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.teacherStep>div{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
+.teacherStep h2,.teacherStep p{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:600px){
+  .teacherCard{padding:4px 12px;overflow:hidden}
+  .teacherStep{display:block;padding:16px 0;min-width:0;overflow:hidden}
+  .teacherStep.important{display:block;margin:0 -12px;padding:16px 12px;overflow:hidden}
+  .teacherStep>span{width:34px;height:34px;margin:0 0 10px 0}
+  .teacherStep>div{display:block;width:100%;min-width:0}
+  .teacherStep h2{font-size:1.08rem;line-height:1.3;margin:0 0 7px}
+  .teacherStep p{font-size:.98rem;line-height:1.55;margin:0 0 10px}
+  .teacherStep .actionRow{display:grid;grid-template-columns:1fr;gap:8px;width:100%}
+  .teacherStep .btn,.teacherStep a.btn{display:block;width:100%;max-width:100%;white-space:normal;text-align:center}
+}
+
+/* RC5 manual-session + mobile controls */
+@media(max-width:600px){
+  .timerCard .actionRow{display:grid;grid-template-columns:1fr;gap:8px}
+  .timerCard .btn{width:100%}
+  .clock{font-size:2.25rem;overflow-wrap:normal;white-space:nowrap}
+}

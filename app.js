@@ -3,15 +3,15 @@
 const DATA=window.DE_MENTOR_DATA;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const KEY='deMentorProduction2026.v2';
-const VERSION=2;
+const VERSION=3;
 const LESSONS=DATA.stages.flatMap(s=>s.lessons.map(l=>({...l,stageId:s.id,stageName:s.name})));
 const FORMAL_LESSONS=LESSONS.filter(l=>l.formal!==false);
 const LESSON_BY=Object.fromEntries(LESSONS.map(l=>[l.id,l]));
 const STAGE_BY=Object.fromEntries(DATA.stages.map(s=>[s.id,s]));
 const GATE_BY=Object.fromEntries(DATA.gates.map(g=>[g.id,g]));
 const GATE_END=Object.fromEntries(DATA.gates.map(g=>[g.endStage,g]));
-const THEMES=['midnight','amoled','light','ocean','forest','ember'];
-let deferredInstall=null, timerInterval=null, currentJobId=null, activeLessonId=null;
+const THEMES=['midnight','amoled','light','ocean','forest','ember','graphite'];
+let deferredInstall=null, sessionInterval=null, currentJobId=null, activeLessonId=null;
 
 function nowISO(){return new Date().toISOString()}
 function todayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -35,16 +35,21 @@ function freshLesson(){return {started:false,guidedDone:false,attemptSaved:false
 function fresh(){
   const lesson={};LESSONS.forEach(l=>lesson[l.id]=freshLesson());
   const gates={};DATA.gates.forEach(g=>gates[g.id]={status:'Locked',attempts:[]});
-  return {app:'DE Mentor — Zero to Job-Ready 2026',version:VERSION,name:'',theme:'midnight',beginnerMode:true,setupSeen:false,currentLessonId:LESSONS[0].id,lesson,gates,errors:[],revisions:[],evidence:[],applications:[],notes:{},focusLog:[],streak:{lastDate:'',count:0},timerSettings:{focusMin:25,shortMin:5,longMin:15,dailyTarget:3},timer:{mode:'focus',running:false,endAt:null,remainingSec:null,startedAt:null}};
+  return {app:'DE Mentor — Zero to Job-Ready 2026',version:VERSION,name:'',theme:'midnight',beginnerMode:true,setupSeen:false,currentLessonId:LESSONS[0].id,lesson,gates,errors:[],revisions:[],evidence:[],applications:[],notes:{},studyLog:[],streak:{lastDate:'',count:0},studySettings:{dailyTarget:3},studySession:{running:false,startedAt:null,lessonId:null,stageId:null}};
 }
 function hydrate(raw){
   const f=fresh(),s=raw&&typeof raw==='object'?raw:{};
   const out={...f,...s};
   out.lesson={};LESSONS.forEach(l=>out.lesson[l.id]={...freshLesson(),...((s.lesson||{})[l.id]||{})});
   out.gates={};DATA.gates.forEach(g=>out.gates[g.id]={status:'Locked',attempts:[],...((s.gates||{})[g.id]||{})});
-  ['errors','revisions','evidence','applications','focusLog'].forEach(k=>out[k]=Array.isArray(s[k])?s[k]:[]);
+  ['errors','revisions','evidence','applications'].forEach(k=>out[k]=Array.isArray(s[k])?s[k]:[]);
+  const legacyFocus=Array.isArray(s.focusLog)?s.focusLog:[];
+  out.studyLog=Array.isArray(s.studyLog)?s.studyLog:legacyFocus.map(x=>({...x,mode:'study',source:'legacy-focus'}));
   out.notes=s.notes&&typeof s.notes==='object'?s.notes:{};
-  out.streak={...f.streak,...(s.streak||{})};out.timerSettings={...f.timerSettings,...(s.timerSettings||{})};out.timer={...f.timer,...(s.timer||{})};
+  out.streak={...f.streak,...(s.streak||{})};
+  out.studySettings={...f.studySettings,...(s.studySettings||{}),dailyTarget:+(s.studySettings?.dailyTarget??s.timerSettings?.dailyTarget??f.studySettings.dailyTarget)};
+  out.studySession={...f.studySession,...(s.studySession||{})};
+  delete out.focusLog;delete out.timerSettings;delete out.timer;
   if(!LESSON_BY[out.currentLessonId])out.currentLessonId=LESSONS[0].id;
   if(!THEMES.includes(out.theme))out.theme='midnight';
   return out;
@@ -113,7 +118,7 @@ function updateStreak(){const t=todayKey();if(state.streak.lastDate===t)return;c
 function setView(name){$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${name}`));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===name));window.scrollTo({top:0,behavior:'smooth'});if(name==='map')renderMap();if(name==='repair')renderRepair();if(name==='evidence')renderEvidence();if(name==='jobs')renderJobs();if(name==='reports')renderReports();if(name==='learn')renderLesson()}
 function openLesson(id,setCurrent=false){if(!LESSON_BY[id])return;activeLessonId=id;if(setCurrent){state.currentLessonId=id;save(false)}renderLesson();setView('learn')}
 
-function renderAll(){document.body.dataset.theme=state.theme;renderHome();if($('#view-learn').classList.contains('active'))renderLesson();if($('#view-map').classList.contains('active'))renderMap();if($('#view-repair').classList.contains('active'))renderRepair();if($('#view-evidence').classList.contains('active'))renderEvidence();if($('#view-jobs').classList.contains('active'))renderJobs();if($('#view-reports').classList.contains('active'))renderReports();renderTimerStatic()}
+function renderAll(){document.body.dataset.theme=state.theme;renderHome();if($('#view-learn').classList.contains('active'))renderLesson();if($('#view-map').classList.contains('active'))renderMap();if($('#view-repair').classList.contains('active'))renderRepair();if($('#view-evidence').classList.contains('active'))renderEvidence();if($('#view-jobs').classList.contains('active'))renderJobs();if($('#view-reports').classList.contains('active'))renderReports();renderStudySession()}
 function renderHome(){
   const m=masteredCount(),sc=stagesCleared(),gp=gatesPassed(),p=progressionStage(),cur=currentLesson();
   $('#greeting').textContent=(state.name?`${state.name}, `:'')+'you only need to do the next small step.';
@@ -204,27 +209,31 @@ function diagnoseFunnel(){const a=state.applications.filter(x=>x.status!=='Saved
 function openApplication(id=null){currentJobId=id;const a=id?state.applications.find(x=>x.id===id):null;$('#jobCompany').value=a?.company||'';$('#jobRole').value=a?.role||'';$('#jobSource').value=a?.source||'';$('#jobDate').value=a?.date||todayKey();$('#jobFit').value=a?.fit||'High';$('#jobStatus').value=a?.status||'Saved';$('#jobMode').value=a?.mode||'';$('#jobFollow').value=a?.follow||'';$('#jobDegree').value=a?.degree||'';$('#jobNotes').value=a?.notes||'';openModal('applicationModal')}
 
 function renderReports(){
-  const t=todayKey(),weekKeys=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);weekKeys.push(todayKey(d))}const minsBy=Object.fromEntries(weekKeys.map(k=>[k,state.focusLog.filter(x=>x.date===k).reduce((a,b)=>a+(+b.minutes||0),0)]));const today=minsBy[t]||0,week=Object.values(minsBy).reduce((a,b)=>a+b,0);$('#rToday').textContent=fmtM(today);$('#rWeek').textContent=fmtM(week);$('#rStreak').textContent=state.streak.count||0;$('#rDue').textContent=dueRevisions().length;const max=Math.max(1,...Object.values(minsBy));$('#studyBars').innerHTML=weekKeys.map(k=>`<div class="barRow"><span>${k.slice(5)}</span><div class="barTrack"><i style="width:${Math.round(minsBy[k]/max*100)}%"></i></div><em>${fmtM(minsBy[k])}</em></div>`).join('');$('#stageBars').innerHTML=DATA.stages.map(s=>{const m=stageMasteredCount(s);return `<div class="barRow"><span>Stage ${s.id}</span><div class="barTrack"><i style="width:${pct(m,s.lessons.length)}%"></i></div><em>${m}/${s.lessons.length}</em></div>`}).join('')
+  const t=todayKey(),weekKeys=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);weekKeys.push(todayKey(d))}const minsBy=Object.fromEntries(weekKeys.map(k=>[k,state.studyLog.filter(x=>x.date===k).reduce((a,b)=>a+(+b.minutes||0),0)]));const today=minsBy[t]||0,week=Object.values(minsBy).reduce((a,b)=>a+b,0);$('#rToday').textContent=fmtM(today);$('#rWeek').textContent=fmtM(week);$('#rStreak').textContent=state.streak.count||0;$('#rDue').textContent=dueRevisions().length;const max=Math.max(1,...Object.values(minsBy));$('#studyBars').innerHTML=weekKeys.map(k=>`<div class="barRow"><span>${k.slice(5)}</span><div class="barTrack"><i style="width:${Math.round(minsBy[k]/max*100)}%"></i></div><em>${fmtM(minsBy[k])}</em></div>`).join('');$('#stageBars').innerHTML=DATA.stages.map(s=>{const m=stageMasteredCount(s);return `<div class="barRow"><span>Stage ${s.id}</span><div class="barTrack"><i style="width:${pct(m,s.lessons.length)}%"></i></div><em>${m}/${s.lessons.length}</em></div>`}).join('')
 }
 
 function openGate(id){const g=GATE_BY[id];if(!g)return;const gs=state.gates[id],variant=gs.attempts.length?'B':'A';$('#gateTitle').textContent=g.Gate;$('#gateRule').innerHTML=`<b>Must prove:</b> ${esc(g['Must prove'])}<br><b>Pass standard:</b> ${esc(g['Pass standard'])}<br><b>Critical fail:</b> ${esc(g['Critical fail'])}`;$('#gateScores').innerHTML=g.dimensions.map((d,i)=>`<label>${esc(d)} (0–4)<input type="number" min="0" max="4" step="1" value="0" data-gate-score="${i}"></label>`).join('');$('#gateCritical').checked=false;$('#gateNote').value='';const pack=$('#gatePackageBtn'),brief=$('#gateBriefBtn'),review=$('#gateReviewBtn');pack.href=g.gatePackage;brief.href=variant==='A'?g.gateA:g.gateB;brief.textContent=`Open Gate ${variant} brief`;review.href=variant==='A'?g.reviewA:g.reviewB;review.textContent=gs.attempts.length?`Open Review ${variant==='A'?'A':'B'}`:'Review locked until attempt';review.classList.toggle('disabled',!gs.attempts.length);review.onclick=e=>{if(!gs.attempts.length){e.preventDefault();toast('Save a Gate attempt first. Review stays locked.')}};$('#gateResult').textContent=gatePassed(g)?`Already passed. Attempts: ${gs.attempts.length}. A new attempt will be saved as history.`:gateReady(g)?`Gate ${variant} is ready. Keep reviews/tutorial help closed during the attempt.`:'Gate is locked because prerequisite units or an earlier Gate are incomplete.';$('#saveGateBtn').disabled=!gateReady(g);state._gateId=id;openModal('gateModal')}
 function saveGate(){const g=GATE_BY[state._gateId];if(!g)return;const scores=$$('[data-gate-score]').map(i=>Math.max(0,Math.min(4,+i.value||0)));const critical=$('#gateCritical').checked,avg=scores.reduce((a,b)=>a+b,0)/scores.length,score=Math.round(avg/4*100);const all3=scores.every(x=>x>=3);const pass=!critical&&all3&&(!g.scoreRequired||score>=g.scoreRequired);const attempt={id:uid('gate'),date:nowISO(),variant:state.gates[g.id].attempts.length?'B':'A',scores,score,critical,note:$('#gateNote').value.trim(),result:pass?'Pass':'Remediation'};state.gates[g.id].attempts.push(attempt);state.gates[g.id].status=pass?'Pass':'Remediation';if(!pass){state.errors.push({id:uid('err'),lessonId:null,issue:`${g.Gate} failed: repair the weakest Gate dimension and take a fresh attempt.`,severity:critical?'critical':'normal',createdAt:nowISO(),resolvedAt:null,gateId:g.id})}save();closeModal('gateModal');toast(pass?`${g.Gate} PASSED`:'Gate saved: targeted remediation required')}
 
-function renderTimerStatic(){const mins=state.focusLog.filter(x=>x.date===todayKey()).reduce((a,b)=>a+(+b.minutes||0),0);$('#focusToday').textContent=`${fmtM(mins)} today`;$$('[data-timer-mode]').forEach(b=>b.classList.toggle('active',b.dataset.timerMode===state.timer.mode));updateTimerDisplay()}
-function timerDefaultSec(mode=state.timer.mode){return 60*(mode==='focus'?state.timerSettings.focusMin:mode==='short'?state.timerSettings.shortMin:state.timerSettings.longMin)}
-function remainingSec(){if(state.timer.running&&state.timer.endAt)return Math.max(0,Math.ceil((new Date(state.timer.endAt).getTime()-Date.now())/1000));return state.timer.remainingSec??timerDefaultSec()}
-function updateTimerDisplay(){const r=remainingSec();const m=Math.floor(r/60),s=r%60;$('#timerClock').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;$('#timerStart').textContent=state.timer.running?'PAUSE':(r<timerDefaultSec()?'RESUME':'START');if(state.timer.running&&r<=0)completeTimer()}
-function startPauseTimer(){if(state.timer.running){state.timer.remainingSec=remainingSec();state.timer.running=false;state.timer.endAt=null;persist();updateTimerDisplay();return}let r=remainingSec();if(r<=0)r=timerDefaultSec();state.timer.remainingSec=r;state.timer.running=true;state.timer.startedAt=state.timer.startedAt||nowISO();state.timer.endAt=new Date(Date.now()+r*1000).toISOString();persist();ensureTimerInterval();updateTimerDisplay()}
-function resetTimer(){state.timer.running=false;state.timer.endAt=null;state.timer.remainingSec=timerDefaultSec();state.timer.startedAt=null;persist();updateTimerDisplay()}
-function setTimerMode(mode){if(state.timer.running){toast('Pause the timer before switching mode.');return}state.timer.mode=mode;state.timer.remainingSec=timerDefaultSec(mode);state.timer.startedAt=null;persist();renderTimerStatic()}
-function ensureTimerInterval(){clearInterval(timerInterval);timerInterval=setInterval(updateTimerDisplay,500)}
-function completeTimer(){if(!state.timer.running&&remainingSec()>0)return;const mode=state.timer.mode;if(mode==='focus'){const min=state.timerSettings.focusMin;state.focusLog.push({id:uid('focus'),date:todayKey(),minutes:min,mode,lessonId:state.currentLessonId,stageId:LESSON_BY[state.currentLessonId]?.stageId,at:nowISO()});updateStreak()}state.timer.running=false;state.timer.endAt=null;state.timer.remainingSec=timerDefaultSec();state.timer.startedAt=null;persist();notifyTimerDone(mode);renderAll()}
-function notifyTimerDone(mode){const msg=mode==='focus'?'Focus session finished. Take your break.':'Break finished. Your next study step is ready.';try{if(Notification.permission==='granted')new Notification('DE Mentor',{body:msg,icon:'icon.svg'})}catch(e){}try{navigator.vibrate?.([250,120,250])}catch(e){}try{const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=720;g.gain.setValueAtTime(.18,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.5);o.start();o.stop(c.currentTime+.5)}}catch(e){}alert(msg)}
-async function requestNotifications(){if(!('Notification'in window)){toast('Browser notification API is not available here.');return}const p=await Notification.requestPermission();toast(p==='granted'?'Timer notifications allowed.':'Notifications not allowed; timer still uses real clock.')}
+function studyMinutesToday(){return state.studyLog.filter(x=>x.date===todayKey()).reduce((a,b)=>a+(+b.minutes||0),0)}
+function sessionElapsedSec(){if(!state.studySession.running||!state.studySession.startedAt)return 0;return Math.max(0,Math.floor((Date.now()-new Date(state.studySession.startedAt).getTime())/1000))}
+function fmtClock(sec){sec=Math.max(0,Math.floor(+sec||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function renderStudySession(){const active=!!state.studySession.running;$('#studyToday').textContent=`${fmtM(studyMinutesToday())} today`;$('#studyClock').textContent=fmtClock(sessionElapsedSec());$('#studyStartEnd').textContent=active?'END STUDY':'START STUDY';$('#studyCancel').disabled=!active}
+function startEndStudy(){
+  if(!state.studySession.running){
+    const l=currentLesson();state.studySession={running:true,startedAt:nowISO(),lessonId:l?.id||state.currentLessonId,stageId:l?.stageId||LESSON_BY[state.currentLessonId]?.stageId||null};persist();ensureSessionInterval();renderStudySession();toast('Study session started. End it yourself when you finish.');return;
+  }
+  const endedAt=nowISO(),startedAt=state.studySession.startedAt,durationSec=Math.max(0,Math.floor((new Date(endedAt)-new Date(startedAt))/1000));
+  const lId=state.studySession.lessonId||state.currentLessonId,stageId=state.studySession.stageId||LESSON_BY[lId]?.stageId||null;
+  if(durationSec>0)state.studyLog.push({id:uid('study'),date:todayKey(new Date(startedAt)),minutes:durationSec/60,durationSec,mode:'study',lessonId:lId,stageId,startedAt,endedAt,at:endedAt});
+  state.studySession={running:false,startedAt:null,lessonId:null,stageId:null};if(durationSec>0)updateStreak();persist();renderAll();toast(durationSec>0?`Study session saved: ${fmtM(durationSec/60)}.`:'Session ended.');
+}
+function cancelStudy(){if(!state.studySession.running)return;if(!confirm('Cancel this active study session? It will not be added to Reports.'))return;state.studySession={running:false,startedAt:null,lessonId:null,stageId:null};persist();renderStudySession();toast('Study session cancelled.')}
+function ensureSessionInterval(){clearInterval(sessionInterval);sessionInterval=setInterval(()=>{if(state.studySession.running)renderStudySession()},1000)}
 
 function exportBackup(){download(`DE_Mentor_Backup_${todayKey()}.json`,JSON.stringify(state,null,2),'application/json')}
 function exportLessons(){const rows=LESSONS.map(l=>[l.id,l.stageId,l.title,lessonStatus(l.id),ls(l.id).attemptAt||'',ls(l.id).masteredAt||'',ls(l.id).skipped?'Yes':'No']);download('DE_Mentor_Lessons.csv',toCSV(['Lesson ID','Stage','Title','Status','Attempt saved','Mastered','Skipped'],rows),'text/csv')}
-function exportFocus(){download('DE_Mentor_Focus.csv',toCSV(['Date','Minutes','Mode','Stage','Lesson'],state.focusLog.map(x=>[x.date,x.minutes,x.mode,x.stageId,x.lessonId])),'text/csv')}
+function exportStudy(){download('DE_Mentor_Study_Sessions.csv',toCSV(['Date','Minutes','Seconds','Stage','Lesson','Started','Ended'],state.studyLog.map(x=>[x.date,x.minutes,x.durationSec??'',x.stageId,x.lessonId,x.startedAt??'',x.endedAt??x.at??''])),'text/csv')}
 function exportEvidence(){download('DE_Mentor_Evidence.csv',toCSV(['Date','Skill','Type','Strength','Action / validation'],state.evidence.map(x=>[x.createdAt?.slice(0,10),x.skill,x.type,x.strength,x.action])),'text/csv')}
 function exportJobs(){download('DE_Mentor_Applications.csv',toCSV(['Date','Company','Role','Source','Fit','Status','Mode','Degree wording','Follow-up','Notes'],state.applications.map(x=>[x.date,x.company,x.role,x.source,x.fit,x.status,x.mode,x.degree,x.follow,x.notes])),'text/csv')}
 
@@ -245,11 +254,8 @@ async function runSetupChecks(){
   if(secure&&'serviceWorker' in navigator)rows.push(setupRow('Offline/PWA support','good','This browser/origin supports the Mentor service worker.'));
   else if(location.protocol==='file:')rows.push(setupRow('Offline/PWA support','warn','Direct file mode works for basic study, but Install/offline caching needs the hosted HTTPS version.','Use the GitHub Pages/HTTPS version when you want app-style install and offline caching.'));
   else rows.push(setupRow('Offline/PWA support','warn','This browser/origin cannot provide full PWA offline behavior.','Use a modern browser on the HTTPS version of Mentor.'));
-  // Notifications
-  if(!('Notification' in window))rows.push(setupRow('Timer notification','warn','This browser does not expose web notifications.','The timer still keeps correct elapsed time; use the phone clock/alarm if you need a guaranteed OS alarm.'));
-  else if(Notification.permission==='granted')rows.push(setupRow('Timer notification','good','Timer notification permission is allowed.'));
-  else if(Notification.permission==='denied')rows.push(setupRow('Timer notification','warn','Notifications are blocked for this site.','Open browser/site notification settings and allow notifications if you want Mentor alerts.'));
-  else rows.push(setupRow('Timer notification','warn','Permission has not been asked yet.','Tap “Allow timer alerts” below.'));
+  // Manual study-session tracking
+  rows.push(setupRow('Study-session tracking','good','START STUDY saves an exact start timestamp; elapsed time is recalculated from the real clock when you return. No notification permission is required.'));
   // Screen
   const w=Math.round(window.innerWidth||0);rows.push(w>=320?setupRow('Screen size','good',`Mentor sees a ${w}px-wide screen and will use the mobile layout when needed.`):setupRow('Screen size','warn',`Very narrow screen detected (${w}px).`,'Rotate the phone or use normal browser zoom.'));
   // Online status
@@ -261,7 +267,7 @@ function finishSetup(){state.setupSeen=true;persist();closeModal('setupModal');o
 
 function bind(){
   $$('.tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));$('#doNowBtn').onclick=()=>performRecommended(recommendedAction());$('#openCurrentBtn').onclick=()=>openLesson(state.currentLessonId);$('#rebuildPlanBtn').onclick=()=>renderTodayPlan();
-  $('#setupCheckBtn').onclick=openSetup;$('#runSetupCheckBtn').onclick=runSetupChecks;$('#setupOpenStage0Btn').onclick=()=>openPack(DATA.stages[0],'learner');$('#setupNotifyBtn').onclick=requestNotifications;$('#setupDoneBtn').onclick=finishSetup;
+  $('#setupCheckBtn').onclick=openSetup;$('#runSetupCheckBtn').onclick=runSetupChecks;$('#setupOpenStage0Btn').onclick=()=>openPack(DATA.stages[0],'learner');$('#setupDoneBtn').onclick=finishSetup;
   $('#dailyNote').addEventListener('input',e=>{state.notes[todayKey()]=e.target.value;persist();$('#noteSaved').textContent='saved'});
   $('#stuckBtn').onclick=()=>openRescue();$('#lessonStuckBtn').onclick=()=>openRescue(displayLesson().id);
   $('#guidedDoneBtn').onclick=()=>{const s=ls(displayLesson().id);if(!s.started){toast('Start the lesson first.');return}s.guidedDone=true;s.skipped=false;save()};
@@ -280,21 +286,21 @@ function bind(){
   $('#addApplicationBtn').onclick=()=>openApplication();$('#saveApplicationBtn').onclick=saveApplication;
   $('#settingsBtn').onclick=openSettings;$('#saveSettingsBtn').onclick=saveSettings;$('#resetBtn').onclick=resetAll;
   $$('.closeModal').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
-  $('#timerStart').onclick=startPauseTimer;$('#timerReset').onclick=resetTimer;$$('[data-timer-mode]').forEach(b=>b.onclick=()=>setTimerMode(b.dataset.timerMode));$('#notifyBtn').onclick=requestNotifications;
-  $('#exportJsonBtn').onclick=exportBackup;$('#exportLessonsBtn').onclick=exportLessons;$('#exportFocusBtn').onclick=exportFocus;$('#exportEvidenceBtn').onclick=exportEvidence;$('#exportJobsBtn').onclick=exportJobs;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=restoreBackup;
+  $('#studyStartEnd').onclick=startEndStudy;$('#studyCancel').onclick=cancelStudy;
+  $('#exportJsonBtn').onclick=exportBackup;$('#exportLessonsBtn').onclick=exportLessons;$('#exportStudyBtn').onclick=exportStudy;$('#exportEvidenceBtn').onclick=exportEvidence;$('#exportJobsBtn').onclick=exportJobs;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=restoreBackup;
   $('#saveGateBtn').onclick=saveGate;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').hidden=false});$('#installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').hidden=true};
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateTimerDisplay();if(state.timer.running&&remainingSec()<=0)completeTimer()}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderStudySession()});
 }
 function fillWeakLessonSelect(){const cur=state.currentLessonId;$('#weakLesson').innerHTML=LESSONS.map(l=>`<option value="${l.id}" ${l.id===cur?'selected':''}>${l.id} — ${esc(l.title)}</option>`).join('')}
 function copyHelpPrompt(){const id=state._rescueLessonId||state.currentLessonId,l=LESSON_BY[id],issue=$('#rescueIssue').value.trim()||'[describe exactly what confused me]';const text=`I am a complete beginner learning ${id}: ${l.title}. I tried the guided step, but I am stuck here: ${issue}. Please explain only the next small step in very simple language. Give one tiny example, then ask me to try. Do NOT give the full solution to my independent task unless I explicitly ask after attempting it.`;navigator.clipboard?.writeText(text).then(()=>toast('Safe help prompt copied.')).catch(()=>prompt('Copy this help prompt:',text))}
 function saveApplication(){const obj={id:currentJobId||uid('job'),company:$('#jobCompany').value.trim(),role:$('#jobRole').value.trim(),source:$('#jobSource').value.trim(),date:$('#jobDate').value||todayKey(),fit:$('#jobFit').value,status:$('#jobStatus').value,mode:$('#jobMode').value.trim(),follow:$('#jobFollow').value,degree:$('#jobDegree').value.trim(),notes:$('#jobNotes').value.trim(),updatedAt:nowISO()};if(!obj.company||!obj.role){toast('Company and role are required.');return}const i=state.applications.findIndex(x=>x.id===obj.id);if(i>=0)state.applications[i]={...state.applications[i],...obj};else state.applications.push(obj);currentJobId=null;save();closeModal('applicationModal')}
-function openSettings(){$('#nameInput').value=state.name||'';$('#themeInput').value=state.theme;$('#beginnerModeInput').checked=!!state.beginnerMode;$('#focusMin').value=state.timerSettings.focusMin;$('#shortMin').value=state.timerSettings.shortMin;$('#longMin').value=state.timerSettings.longMin;$('#dailyTarget').value=state.timerSettings.dailyTarget;openModal('settingsModal')}
-function saveSettings(){state.name=$('#nameInput').value.trim();state.theme=$('#themeInput').value;state.beginnerMode=$('#beginnerModeInput').checked;state.timerSettings.focusMin=Math.max(10,+$('#focusMin').value||25);state.timerSettings.shortMin=Math.max(1,+$('#shortMin').value||5);state.timerSettings.longMin=Math.max(5,+$('#longMin').value||15);state.timerSettings.dailyTarget=Math.max(.5,+$('#dailyTarget').value||3);if(!state.timer.running)state.timer.remainingSec=timerDefaultSec();save();closeModal('settingsModal')}
-function resetAll(){if(!confirm('Reset ALL Mentor progress, notes, evidence, timer history and applications on this device? Export a backup first if needed.'))return;localStorage.removeItem(KEY);state=fresh();save();closeModal('settingsModal')}
+function openSettings(){$('#nameInput').value=state.name||'';$('#themeInput').value=state.theme;$('#beginnerModeInput').checked=!!state.beginnerMode;$('#dailyTarget').value=state.studySettings.dailyTarget;openModal('settingsModal')}
+function saveSettings(){state.name=$('#nameInput').value.trim();state.theme=$('#themeInput').value;state.beginnerMode=$('#beginnerModeInput').checked;state.studySettings.dailyTarget=Math.max(.5,+$('#dailyTarget').value||3);save();closeModal('settingsModal')}
+function resetAll(){if(!confirm('Reset ALL Mentor progress, notes, evidence, study-session history and applications on this device? Export a backup first if needed.'))return;localStorage.removeItem(KEY);state=fresh();save();closeModal('settingsModal')}
 function restoreBackup(e){const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{const raw=JSON.parse(reader.result);state=hydrate(raw);save();toast('Backup restored.')}catch(err){alert('Could not restore this JSON backup.')}};reader.readAsText(f);e.target.value=''}
 
-function init(){activeLessonId=state.currentLessonId;bind();const s=ls(state.currentLessonId);if(!s.started&&state.currentLessonId===LESSONS[0].id){}renderAll();ensureTimerInterval();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});if(state.timer.running&&remainingSec()<=0)completeTimer();if(!state.setupSeen)setTimeout(openSetup,250)}
+function init(){activeLessonId=state.currentLessonId;bind();const s=ls(state.currentLessonId);if(!s.started&&state.currentLessonId===LESSONS[0].id){}renderAll();ensureSessionInterval();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});if(!state.setupSeen)setTimeout(openSetup,250)}
 window.DE_MENTOR_TEST_API={DATA,LESSONS,FORMAL_LESSONS,STAGE_BY,GATE_BY,fresh,hydrate,lessonStatus,lessonStepCount,masteredCount,stageMasteredCount,gatePassed,gateReady,stageCleared,stagesCleared,gatesPassed,progressionStage,nextLessonInStage,dueRevisions,recommendedAction,scheduleRevisions,scheduleSkipRepair,currentLesson,displayLesson,getActiveLessonId:()=>activeLessonId,setActiveLessonId:(id)=>{if(LESSON_BY[id])activeLessonId=id},getState:()=>state,setState:(x)=>{state=hydrate(x);activeLessonId=state.currentLessonId}};
 if(typeof document!=='undefined')init();
 })();
