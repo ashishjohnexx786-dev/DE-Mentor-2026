@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="Beginner-first Mentor for the Zero to Job-Ready Data Engineer 2026 course: 20 stages, 264 formal lessons + 50 project phases, revision, repair, gates, evidence and job launch.">
+  <title>DE Mentor — Zero to Job-Ready 2026</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="midnight">
+<div class="appShell">
+  <header class="topbar">
+    <div class="brandWrap">
+      <div class="logo">DE</div>
+      <div class="brandText"><strong>DE Mentor</strong><span>Zero → Job-Ready Data Engineer 2026</span></div>
+    </div>
+    <div class="topActions">
+      <button class="btn ghost" id="setupCheckBtn">✅ First-use check</button>
+      <button class="btn ghost" id="installBtn" hidden>⬇ Install</button>
+      <button class="btn ghost" id="notifyBtn">🔔 Timer alert</button>
+      <button class="btn ghost" id="settingsBtn">⚙ Settings</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Mentor sections">
+    <button class="tab active" data-view="home">🏠 Today</button>
+    <button class="tab" data-view="learn">📘 Learn</button>
+    <button class="tab" data-view="map">🗺 Course</button>
+    <button class="tab" data-view="repair">🧩 Repair</button>
+    <button class="tab" data-view="evidence">📁 Evidence</button>
+    <button class="tab" data-view="jobs">🚀 Jobs</button>
+    <button class="tab" data-view="reports">📊 Reports</button>
+  </nav>
+
+  <main>
+    <!-- HOME -->
+    <section class="view active" id="view-home">
+      <section class="card hero">
+        <div class="heroTop">
+          <div>
+            <div class="eyebrow">YOUR TEACHER FOR TODAY</div>
+            <h1 id="greeting">You only need to do the next small step.</h1>
+            <p class="muted" id="heroSub"></p>
+          </div>
+          <button class="bigAction" id="doNowBtn">What do I do now?</button>
+        </div>
+        <div class="stats4">
+          <div class="stat"><b id="coursePct">0%</b><span>Course mastery</span></div>
+          <div class="stat"><b id="lessonStat">0/264</b><span>Lessons mastered</span></div>
+          <div class="stat"><b id="stageStat">0/20</b><span>Stages cleared</span></div>
+          <div class="stat"><b id="gateStat">0/6</b><span>Gates passed</span></div>
+        </div>
+        <div class="progress"><i id="courseBar"></i></div>
+      </section>
+
+      <section class="gridMain">
+        <div>
+          <section class="card nextCard">
+            <div class="sectionHead">
+              <div><div class="eyebrow">ONE THING FIRST</div><h2>Do this now</h2></div>
+              <span class="pill" id="nextPill">Ready</span>
+            </div>
+            <div class="nextInstruction" id="nextInstruction"></div>
+            <div class="actionRow" id="nextActions"></div>
+          </section>
+
+          <section class="card">
+            <div class="sectionHead"><div><div class="eyebrow">TODAY'S PLAN</div><h2>No guessing</h2></div><button class="btn ghost" id="rebuildPlanBtn">↻ Rebuild</button></div>
+            <div id="todayPlan"></div>
+          </section>
+
+          <section class="card">
+            <div class="sectionHead"><div><div class="eyebrow">CURRENT LESSON</div><h2 id="homeLessonTitle"></h2></div><button class="btn" id="openCurrentBtn">Open lesson</button></div>
+            <div id="homeLessonSteps"></div>
+          </section>
+        </div>
+
+        <aside>
+          <section class="card timerCard">
+            <div class="sectionHead"><div><div class="eyebrow">FOCUS TIMER</div><h2>Real-clock timer</h2></div><span class="pill" id="focusToday">0m today</span></div>
+            <div class="timerModes">
+              <button class="chip active" data-timer-mode="focus">Focus</button>
+              <button class="chip" data-timer-mode="short">Break</button>
+              <button class="chip" data-timer-mode="long">Long</button>
+            </div>
+            <div class="clock" id="timerClock">25:00</div>
+            <div class="actionRow center"><button class="btn primary" id="timerStart">START</button><button class="btn ghost" id="timerReset">Reset</button></div>
+            <p class="muted tiny" id="timerHint">Uses a saved end-time, so the countdown stays correct after phone/browser sleep. Exact notification timing still depends on Android/browser permissions.</p>
+          </section>
+
+          <section class="card">
+            <div class="sectionHead"><div><div class="eyebrow">IF YOU FEEL LOST</div><h2>Use Rescue Mode</h2></div></div>
+            <p class="muted">Do not search randomly. Mentor will reduce the task until you can move again.</p>
+            <button class="btn rescueBtn" id="stuckBtn">🧩 I’m stuck — help me</button>
+          </section>
+
+          <section class="card">
+            <div class="sectionHead"><div><div class="eyebrow">DAILY NOTE</div><h2>Leave tomorrow a clue</h2></div><span class="muted tiny" id="noteSaved"></span></div>
+            <textarea id="dailyNote" placeholder="What I learned, what failed, and the first thing I should do tomorrow..."></textarea>
+          </section>
+        </aside>
+      </section>
+    </section>
+
+    <!-- LEARN -->
+    <section class="view" id="view-learn">
+      <section class="card">
+        <div class="sectionHead">
+          <div><div class="eyebrow">BEGINNER CLASSROOM</div><h1 id="lessonHeading">Lesson</h1><p class="muted" id="lessonMeta"></p></div>
+          <div class="actionRow"><button class="btn ghost" id="prevLessonBtn">← Prev</button><button class="btn ghost" id="nextLessonBtn">Next →</button></div>
+        </div>
+        <div class="call info" id="orderWarning" hidden></div>
+        <div class="lessonProgress" id="lessonProgress"></div>
+      </section>
+
+      <section class="learnLayout">
+        <div>
+          <section class="card teacherCard">
+            <div class="teacherStep"><span>1</span><div><h2>Understand the point</h2><p id="whyText"></p></div></div>
+            <div class="teacherStep"><span>2</span><div><h2>Learn / watch / read</h2><p id="learnText"></p><div class="actionRow"><a class="btn" id="sourceBtn" target="_blank" rel="noopener">Open assigned source</a><button class="btn ghost" id="learnerPackBtn">📄 Learner Pack</button></div></div>
+            <div class="teacherStep"><span>3</span><div><h2>Follow once</h2><p>Type/click along with the guided example. You are allowed to copy the guided example once. Your independent task comes after this.</p><button class="btn" id="guidedDoneBtn">I followed the guided example</button></div></div>
+            <div class="teacherStep important"><span>4</span><div><h2>Do it alone</h2><p id="proofText"></p><p class="muted tiny">Save your real attempt before opening the review. Wrong attempts are useful evidence.</p><button class="btn primary" id="saveAttemptBtn">Save genuine attempt</button></div></div>
+            <div class="teacherStep"><span>5</span><div><h2>Check only after attempt</h2><p>Compare your reasoning with the Review Pack. Fix the exact mistake—do not copy the answer and call it mastery.</p><button class="btn" id="reviewBtn">🔒 Review locked</button></div></div>
+            <div class="teacherStep"><span>6</span><div><h2>Fresh retry</h2><p>Close the review and solve a small fresh variation. If you can do it without copying, record the retry.</p><button class="btn" id="retestBtn">Fresh retry passed</button></div></div>
+            <div class="teacherStep"><span>7</span><div><h2>Explain it simply</h2><p id="englishText"></p><button class="btn" id="explainBtn">I explained it aloud</button></div></div>
+            <div class="teacherStep"><span>8</span><div><h2>Master or repair</h2><p>Mastered means you can reproduce the skill, not that you watched/read it.</p><div class="actionRow"><button class="btn primary" id="masterBtn">Mark Mastered</button><button class="btn ghost" id="skipBtn">Skip for now</button><button class="btn rescueBtn" id="lessonStuckBtn">I’m stuck</button></div></div>
+          </section>
+        </div>
+
+        <aside>
+          <section class="card">
+            <div class="eyebrow">LESSON STATUS</div>
+            <div class="statusBig" id="lessonStatusBig">Not Started</div>
+            <div class="progress"><i id="lessonBar"></i></div>
+            <p class="muted tiny" id="lessonStatusHelp"></p>
+            <button class="btn ghost full" id="setCurrentBtn">Set as my current lesson</button>
+          </section>
+          <section class="card">
+            <div class="eyebrow">REVISION</div><h2>Mentor remembers for you</h2>
+            <div id="revisionPreview"></div>
+          </section>
+          <section class="card">
+            <div class="eyebrow">SOURCE</div><h2 id="sourceName"></h2><p class="muted tiny" id="sourceRule"></p>
+          </section>
+        </aside>
+      </section>
+    </section>
+
+    <!-- MAP -->
+    <section class="view" id="view-map">
+      <section class="card">
+        <div class="sectionHead"><div><div class="eyebrow">FULL COURSE</div><h1>20 stages • 264 lessons + 50 project phases</h1><p class="muted">Browse anything. Mentor still keeps a recommended path and protects Gates.</p></div><input id="lessonSearch" class="search" placeholder="Search lesson or topic..."></div>
+        <div class="call info">Browsing ahead is allowed. It does <b>not</b> mark earlier work complete and it does not bypass competency Gates.</div>
+      </section>
+      <div id="stageMap"></div>
+    </section>
+
+    <!-- REPAIR -->
+    <section class="view" id="view-repair">
+      <section class="card">
+        <div class="sectionHead"><div><div class="eyebrow">ERROR LOG</div><h1>Weakness → repair → fresh retest</h1></div><button class="btn primary" id="addWeaknessBtn">+ Add weakness</button></div>
+        <p class="muted">A mistake never restarts the whole course. Mentor repairs the exact skill that failed.</p>
+        <div id="repairList"></div>
+      </section>
+      <section class="card">
+        <div class="eyebrow">REVISION QUEUE</div><h2>Due and upcoming</h2><div id="revisionList"></div>
+      </section>
+    </section>
+
+    <!-- EVIDENCE -->
+    <section class="view" id="view-evidence">
+      <section class="card">
+        <div class="sectionHead"><div><div class="eyebrow">EVIDENCE VAULT</div><h1>Proof you can show and defend</h1></div><button class="btn primary" id="addEvidenceBtn">+ Save evidence</button></div>
+        <div class="call warn">Never store passwords, tokens, private employer/client data, proprietary code or confidential screenshots.</div>
+        <div id="evidenceList"></div>
+      </section>
+    </section>
+
+    <!-- JOBS -->
+    <section class="view" id="view-jobs">
+      <section class="card">
+        <div class="sectionHead"><div><div class="eyebrow">JOB LAUNCH</div><h1>Evidence-led applications</h1><p class="muted">Available early for market watching; full application loop becomes part of the recommended plan from Stage 17 onward.</p></div><button class="btn primary" id="addApplicationBtn">+ Add application</button></div>
+        <div class="jobStats" id="jobStats"></div>
+        <div id="applicationList"></div>
+      </section>
+      <section class="card">
+        <div class="eyebrow">FUNNEL DIAGNOSIS</div><h2 id="funnelTitle">No pattern yet</h2><div id="funnelAdvice" class="call info"></div>
+      </section>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="view" id="view-reports">
+      <section class="gridMain">
+        <div>
+          <section class="card"><div class="eyebrow">STUDY REPORT</div><h1>Progress that means something</h1><div class="stats4"><div class="stat"><b id="rToday">0m</b><span>Today</span></div><div class="stat"><b id="rWeek">0m</b><span>7 days</span></div><div class="stat"><b id="rStreak">0</b><span>Streak</span></div><div class="stat"><b id="rDue">0</b><span>Revision due</span></div></div><h2>Last 7 days</h2><div id="studyBars"></div></section>
+          <section class="card"><div class="eyebrow">STAGE PROGRESS</div><h2>Where your mastery is</h2><div id="stageBars"></div></section>
+        </div>
+        <aside>
+          <section class="card"><div class="eyebrow">BACKUP</div><h2>Never lose progress</h2><div class="stack"><button class="btn primary" id="exportJsonBtn">Download full JSON backup</button><button class="btn" id="exportLessonsBtn">Lesson CSV</button><button class="btn" id="exportFocusBtn">Focus CSV</button><button class="btn" id="exportEvidenceBtn">Evidence CSV</button><button class="btn" id="exportJobsBtn">Applications CSV</button><button class="btn ghost" id="restoreBtn">Restore JSON backup</button><input id="restoreFile" type="file" accept="application/json,.json" hidden></div></section>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <footer>DE Mentor v1.0 • unified Stage 00–19 route • beginner-first • attempt-locked review • targeted repair • offline-first</footer>
+</div>
+
+<!-- FIRST-USE CHECK -->
+<div class="modal" id="setupModal" role="dialog" aria-modal="true">
+  <div class="modalCard card wide">
+    <div class="sectionHead"><div><div class="eyebrow">FIRST USE</div><h2>Make sure Mentor works on this device</h2></div><button class="btn ghost closeModal" data-close="setupModal">×</button></div>
+    <div class="call info">You do not need to understand the technical words below. <b>Green = good.</b> Amber = Mentor still works, but that feature may be limited. Red = follow the plain-language fix shown.</div>
+    <div id="setupResults" class="setupResults"></div>
+    <div class="actionRow">
+      <button class="btn primary" id="runSetupCheckBtn">Run checks</button>
+      <button class="btn" id="setupOpenStage0Btn">📄 Open Stage 00</button>
+      <button class="btn" id="setupNotifyBtn">🔔 Allow timer alerts</button>
+    </div>
+    <div class="call warn topGap"><b>One manual test:</b> start a 1-minute timer, lock the phone for about a minute, then reopen Mentor. The clock should show the real elapsed time. Android may still block the notification if battery/notification settings stop the browser/PWA.</div>
+    <div class="actionRow"><button class="btn primary" id="setupDoneBtn">Everything is clear — start studying</button></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="modal" id="settingsModal" role="dialog" aria-modal="true">
+  <div class="modalCard card">
+    <div class="sectionHead"><h2>⚙ Settings</h2><button class="btn ghost closeModal" data-close="settingsModal">×</button></div>
+    <label>Name<input id="nameInput" placeholder="Your name"></label>
+    <label>Theme<select id="themeInput"><option value="midnight">Midnight</option><option value="amoled">AMOLED Black</option><option value="light">Light</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="ember">Ember</option></select></label>
+    <label class="check"><input id="beginnerModeInput" type="checkbox"> Beginner Mode — show extra instructions</label>
+    <h3>Focus timer</h3>
+    <div class="formGrid"><label>Focus minutes<input id="focusMin" type="number" min="10" max="120"></label><label>Short break<input id="shortMin" type="number" min="1" max="30"></label><label>Long break<input id="longMin" type="number" min="5" max="60"></label><label>Daily target hours<input id="dailyTarget" type="number" min="0.5" max="12" step="0.5"></label></div>
+    <div class="actionRow"><button class="btn primary" id="saveSettingsBtn">Save settings</button><button class="btn danger" id="resetBtn">Reset all local progress</button></div>
+  </div>
+</div>
+
+<!-- RESCUE -->
+<div class="modal" id="rescueModal" role="dialog" aria-modal="true">
+  <div class="modalCard card wide">
+    <div class="sectionHead"><div><div class="eyebrow">RESCUE MODE</div><h2 id="rescueTitle">I’m stuck</h2></div><button class="btn ghost closeModal" data-close="rescueModal">×</button></div>
+    <div class="rescueSteps" id="rescueSteps"></div>
+    <label>What exactly confused you?<textarea id="rescueIssue" placeholder="Example: I typed the formula but got #VALUE! / I don't understand what one row means..."></textarea></label>
+    <div class="actionRow"><button class="btn primary" id="saveRescueBtn">Save weakness + schedule repair</button><button class="btn" id="copyHelpPromptBtn">Copy safe help prompt</button></div>
+  </div>
+</div>
+
+<!-- WEAKNESS -->
+<div class="modal" id="weaknessModal" role="dialog" aria-modal="true">
+  <div class="modalCard card">
+    <div class="sectionHead"><h2>Add weakness</h2><button class="btn ghost closeModal" data-close="weaknessModal">×</button></div>
+    <label>Lesson<select id="weakLesson"></select></label>
+    <label>What went wrong?<textarea id="weakIssue"></textarea></label>
+    <label>Severity<select id="weakSeverity"><option value="normal">Normal</option><option value="critical">Critical — blocks safe progress</option></select></label>
+    <button class="btn primary" id="saveWeaknessBtn">Save weakness</button>
+  </div>
+</div>
+
+<!-- EVIDENCE MODAL -->
+<div class="modal" id="evidenceModal" role="dialog" aria-modal="true">
+  <div class="modalCard card">
+    <div class="sectionHead"><h2>Save evidence</h2><button class="btn ghost closeModal" data-close="evidenceModal">×</button></div>
+    <label>Lesson / skill<input id="evSkill" placeholder="DE09-04 / idempotent batch pipeline"></label>
+    <label>What you did + how you verified it<textarea id="evAction"></textarea></label>
+    <label>Type<select id="evType"><option>Course evidence</option><option>Independent project</option><option>Failure / recovery</option><option>Cloud / Fabric lab</option><option>Interview evidence</option></select></label>
+    <label>Strength<select id="evStrength"><option value="1">1 — guided</option><option value="2">2 — independent basic</option><option value="3">3 — independent professional</option><option value="4">4 — can teach/defend</option></select></label>
+    <button class="btn primary" id="saveEvidenceBtn">Save sanitized evidence</button>
+  </div>
+</div>
+
+<!-- APPLICATION MODAL -->
+<div class="modal" id="applicationModal" role="dialog" aria-modal="true">
+  <div class="modalCard card wide">
+    <div class="sectionHead"><h2>Add / update application</h2><button class="btn ghost closeModal" data-close="applicationModal">×</button></div>
+    <div class="formGrid"><label>Company<input id="jobCompany"></label><label>Role<input id="jobRole"></label><label>Source<input id="jobSource" placeholder="LinkedIn / company site / referral"></label><label>Date<input id="jobDate" type="date"></label><label>Fit<select id="jobFit"><option>High</option><option>Medium</option><option>Low</option></select></label><label>Status<select id="jobStatus"><option>Saved</option><option>Applied</option><option>Recruiter screen</option><option>Assessment</option><option>Technical interview</option><option>Final interview</option><option>Offer</option><option>Rejected</option><option>Withdrawn</option></select></label><label>Work mode<input id="jobMode" placeholder="Remote / hybrid / onsite"></label><label>Follow-up date<input id="jobFollow" type="date"></label></div>
+    <label>Degree / eligibility wording<textarea id="jobDegree" placeholder="Paste the exact important requirement, e.g. 'Bachelor's degree preferred'..."></textarea></label>
+    <label>Notes / feedback<textarea id="jobNotes"></textarea></label>
+    <button class="btn primary" id="saveApplicationBtn">Save application</button>
+  </div>
+</div>
+
+<!-- GATE MODAL -->
+<div class="modal" id="gateModal" role="dialog" aria-modal="true">
+  <div class="modalCard card wide">
+    <div class="sectionHead"><div><div class="eyebrow">PROTECTED GATE</div><h2 id="gateTitle"></h2></div><button class="btn ghost closeModal" data-close="gateModal">×</button></div>
+    <div class="call warn" id="gateRule"></div>
+    <div id="gateScores" class="formGrid"></div>
+    <label class="check"><input id="gateCritical" type="checkbox"> I had an unresolved critical failure (unsafe/corrupt/fake-evidence type failure)</label>
+    <label>Evidence / attempt note<textarea id="gateNote"></textarea></label>
+    <div class="actionRow"><a class="btn" id="gatePackageBtn" target="_blank" rel="noopener">📦 Full Gate package</a><a class="btn" id="gateBriefBtn" target="_blank" rel="noopener">Open Gate brief</a><a class="btn ghost" id="gateReviewBtn" target="_blank" rel="noopener">Review locked</a></div>
+    <div id="gateResult" class="call info"></div>
+    <button class="btn primary" id="saveGateBtn">Save Gate attempt</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="curriculum.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

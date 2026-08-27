@@ -1,0 +1,13 @@
+DE MENTOR — PRODUCTION RC3
+
+1. Open index.html through your hosted HTTPS site (GitHub Pages is fine).
+2. The First-use check opens for a fresh learner.
+3. Start at DE00-01.
+4. Reading/revision may be done on phone. Hands-on work, assessments and project evidence are PC REQUIRED.
+5. Review material remains locked in the Mentor workflow until you save a genuine attempt.
+6. M18 contains 50 project phases; they are tracked as project units and are not incorrectly added to the 264 formal-lesson count.
+7. Gate A is the first protected attempt. If remediation is needed, Mentor routes to the different Gate B brief/review.
+
+This RC has structural/parity QA only. Real runtime and Android behavior must still be observed before permanent FINAL/deployed labeling.
+
+8. Use “Full module package” whenever a lesson needs starter code/data/workspaces. Use “Full Gate package” to get the protected assessment datasets and files.

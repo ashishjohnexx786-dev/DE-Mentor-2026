@@ -1,0 +1,300 @@
+(()=>{
+'use strict';
+const DATA=window.DE_MENTOR_DATA;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const KEY='deMentorProduction2026.v2';
+const VERSION=2;
+const LESSONS=DATA.stages.flatMap(s=>s.lessons.map(l=>({...l,stageId:s.id,stageName:s.name})));
+const FORMAL_LESSONS=LESSONS.filter(l=>l.formal!==false);
+const LESSON_BY=Object.fromEntries(LESSONS.map(l=>[l.id,l]));
+const STAGE_BY=Object.fromEntries(DATA.stages.map(s=>[s.id,s]));
+const GATE_BY=Object.fromEntries(DATA.gates.map(g=>[g.id,g]));
+const GATE_END=Object.fromEntries(DATA.gates.map(g=>[g.endStage,g]));
+const THEMES=['midnight','amoled','light','ocean','forest','ember'];
+let deferredInstall=null, timerInterval=null, currentJobId=null, activeLessonId=null;
+
+function nowISO(){return new Date().toISOString()}
+function todayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function addDaysISO(days){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+days);return todayKey(d)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function pct(n,d){return d?Math.round(n/d*100):0}
+function fmtM(m){m=Math.round(+m||0);return m>=60?`${Math.floor(m/60)}h ${m%60}m`:`${m}m`}
+function uid(prefix='id'){return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`}
+function download(name,text,type='text/plain'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},600)}
+function csvCell(v){const s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s}
+function toCSV(headers,rows){return [headers,...rows].map(r=>r.map(csvCell).join(',')).join('\n')}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2300)}
+function openModal(id){$('#'+id).classList.add('show')}
+function closeModal(id){$('#'+id).classList.remove('show')}
+function stageIndex(id){return DATA.stages.findIndex(s=>s.id===id)}
+function lessonIndex(id){return LESSONS.findIndex(l=>l.id===id)}
+function gateIndex(id){return DATA.gates.findIndex(g=>g.id===id)}
+function stageForLesson(id){return STAGE_BY[LESSON_BY[id]?.stageId]}
+
+function freshLesson(){return {started:false,guidedDone:false,attemptSaved:false,reviewViewed:false,retestPassed:false,explained:false,mastered:false,skipped:false,skipReason:'',startedAt:null,attemptAt:null,reviewAt:null,retestAt:null,masteredAt:null,confidence:0}}
+function fresh(){
+  const lesson={};LESSONS.forEach(l=>lesson[l.id]=freshLesson());
+  const gates={};DATA.gates.forEach(g=>gates[g.id]={status:'Locked',attempts:[]});
+  return {app:'DE Mentor — Zero to Job-Ready 2026',version:VERSION,name:'',theme:'midnight',beginnerMode:true,setupSeen:false,currentLessonId:LESSONS[0].id,lesson,gates,errors:[],revisions:[],evidence:[],applications:[],notes:{},focusLog:[],streak:{lastDate:'',count:0},timerSettings:{focusMin:25,shortMin:5,longMin:15,dailyTarget:3},timer:{mode:'focus',running:false,endAt:null,remainingSec:null,startedAt:null}};
+}
+function hydrate(raw){
+  const f=fresh(),s=raw&&typeof raw==='object'?raw:{};
+  const out={...f,...s};
+  out.lesson={};LESSONS.forEach(l=>out.lesson[l.id]={...freshLesson(),...((s.lesson||{})[l.id]||{})});
+  out.gates={};DATA.gates.forEach(g=>out.gates[g.id]={status:'Locked',attempts:[],...((s.gates||{})[g.id]||{})});
+  ['errors','revisions','evidence','applications','focusLog'].forEach(k=>out[k]=Array.isArray(s[k])?s[k]:[]);
+  out.notes=s.notes&&typeof s.notes==='object'?s.notes:{};
+  out.streak={...f.streak,...(s.streak||{})};out.timerSettings={...f.timerSettings,...(s.timerSettings||{})};out.timer={...f.timer,...(s.timer||{})};
+  if(!LESSON_BY[out.currentLessonId])out.currentLessonId=LESSONS[0].id;
+  if(!THEMES.includes(out.theme))out.theme='midnight';
+  return out;
+}
+function load(){try{return hydrate(JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return fresh()}}
+let state=load();
+function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
+function save(render=true){persist();if(render)renderAll()}
+function ls(id){return state.lesson[id]||(state.lesson[id]=freshLesson())}
+
+function lessonStatus(id){const s=ls(id);if(s.mastered)return 'Mastered';if(s.skipped)return 'Skipped for now';if(s.retestPassed)return 'Fresh retry passed';if(s.reviewViewed)return 'Review opened';if(s.attemptSaved)return 'Attempt saved';if(s.guidedDone)return 'Guided follow done';if(s.started)return 'Learning';return 'Not Started'}
+function statusClass(st){if(st==='Mastered')return 'status-master';if(st==='Skipped for now')return 'status-skip';if(st==='Fresh retry passed')return 'status-retest';if(st==='Review opened')return 'status-review';if(st==='Attempt saved')return 'status-attempt';if(st==='Learning'||st==='Guided follow done')return 'status-learning';return 'status-not'}
+function lessonStepCount(id){const s=ls(id);return [s.started,s.guidedDone,s.attemptSaved,s.reviewViewed,s.retestPassed,s.explained,s.mastered].filter(Boolean).length}
+function masteredCount(){return FORMAL_LESSONS.filter(l=>ls(l.id).mastered).length}
+function stageMasteredCount(stage){return stage.lessons.filter(l=>ls(l.id).mastered).length}
+function gatePassed(g){return state.gates[g.id]?.status==='Pass'}
+function gateReady(g){
+  const end=Number(g.endStage);
+  const lessonsReady=LESSONS.filter(l=>Number(l.stageId)<=end).every(l=>ls(l.id).mastered);
+  const prevReady=DATA.gates.filter(x=>Number(x.endStage)<end).every(gatePassed);
+  return lessonsReady&&prevReady;
+}
+function stageCleared(stage){const lessons=stage.lessons.every(l=>ls(l.id).mastered);const g=GATE_END[stage.id];return lessons&&(!g||gatePassed(g))}
+function stagesCleared(){return DATA.stages.filter(stageCleared).length}
+function gatesPassed(){return DATA.gates.filter(gatePassed).length}
+function progressionStage(){return DATA.stages.find(s=>!stageCleared(s))||DATA.stages.at(-1)}
+function nextLessonInStage(stage){return stage.lessons.find(l=>!ls(l.id).mastered&&!ls(l.id).skipped)||stage.lessons.find(l=>!ls(l.id).mastered)||null}
+function dueRevisions(){const t=todayKey();return state.revisions.filter(r=>!r.done&&r.due<=t).sort((a,b)=>a.due.localeCompare(b.due))}
+function unresolvedErrors(){return state.errors.filter(e=>!e.resolvedAt)}
+function criticalErrors(){return unresolvedErrors().filter(e=>e.severity==='critical')}
+
+function recommendedAction(){
+  const crit=criticalErrors()[0];
+  if(crit)return {kind:'repair',lessonId:crit.lessonId,title:'Repair this critical weakness first',detail:crit.issue,cta:'Start repair'};
+  const due=dueRevisions()[0];
+  if(due)return {kind:'revision',lessonId:due.lessonId,revisionId:due.id,title:`Revision due: ${due.type}`,detail:`${due.lessonId} — ${LESSON_BY[due.lessonId]?.title||''}`,cta:'Do revision'};
+  for(const stage of DATA.stages){
+    if(stageCleared(stage))continue;
+    const l=nextLessonInStage(stage);
+    if(l){const s=ls(l.id);let title,detail,cta,step;
+      if(!s.started){title=`Start ${l.id}`;detail=l.title;cta='Open lesson';step='learn'}
+      else if(!s.guidedDone){title='Follow the guided example';detail=`${l.id} — ${l.title}`;cta='Continue lesson';step='guided'}
+      else if(!s.attemptSaved){title='Now do it alone';detail=`Save a genuine attempt for ${l.id} before seeing the review.`;cta='Open independent step';step='attempt'}
+      else if(!s.reviewViewed){title='Your review is unlocked';detail=`Compare your attempt with Stage ${stage.id} Review Pack.`;cta='Open review';step='review'}
+      else if(!s.retestPassed){title='Do a fresh retry';detail='Close the answer and solve a small fresh variation without copying.';cta='Fresh retry';step='retest'}
+      else if(!s.explained){title='Explain it aloud';detail=l.english;cta='Explain';step='explain'}
+      else {title='Ready for mastery';detail=`You have attempted, checked, retried and explained ${l.id}.`;cta='Mark Mastered';step='master'}
+      return {kind:'lesson',lessonId:l.id,title,detail,cta,step};
+    }
+    const g=GATE_END[stage.id];
+    if(g&&!gatePassed(g))return {kind:'gate',gateId:g.id,title:`${g.Gate} is ready`,detail:g['Must prove'],cta:'Take Gate'};
+  }
+  return {kind:'complete',title:'Course learning path is complete',detail:'Keep the application loop active and use real interview feedback for targeted revision.',cta:'Open Jobs'};
+}
+function currentLesson(){return LESSON_BY[state.currentLessonId]||LESSONS[0]}
+function displayLesson(){return LESSON_BY[activeLessonId]||currentLesson()}
+function isOutOfOrder(id){const rec=recommendedAction();return rec.lessonId&&rec.lessonId!==id&&!ls(id).mastered}
+
+function scheduleRevisions(id){
+  const specs=[['D+1',1],['D+4',4],['D+10',10],['D+30',30]];
+  for(const [type,days] of specs){if(!state.revisions.some(r=>r.lessonId===id&&r.type===type))state.revisions.push({id:uid('rev'),lessonId:id,type,due:addDaysISO(days),done:false,doneAt:null})}
+}
+function scheduleSkipRepair(id){if(!state.revisions.some(r=>r.lessonId===id&&r.type==='Skip repair'&&!r.done))state.revisions.push({id:uid('rev'),lessonId:id,type:'Skip repair',due:addDaysISO(1),done:false,doneAt:null})}
+function updateStreak(){const t=todayKey();if(state.streak.lastDate===t)return;const y=new Date();y.setDate(y.getDate()-1);const yk=todayKey(y);state.streak.count=state.streak.lastDate===yk?state.streak.count+1:1;state.streak.lastDate=t}
+
+function setView(name){$$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${name}`));$$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===name));window.scrollTo({top:0,behavior:'smooth'});if(name==='map')renderMap();if(name==='repair')renderRepair();if(name==='evidence')renderEvidence();if(name==='jobs')renderJobs();if(name==='reports')renderReports();if(name==='learn')renderLesson()}
+function openLesson(id,setCurrent=false){if(!LESSON_BY[id])return;activeLessonId=id;if(setCurrent){state.currentLessonId=id;save(false)}renderLesson();setView('learn')}
+
+function renderAll(){document.body.dataset.theme=state.theme;renderHome();if($('#view-learn').classList.contains('active'))renderLesson();if($('#view-map').classList.contains('active'))renderMap();if($('#view-repair').classList.contains('active'))renderRepair();if($('#view-evidence').classList.contains('active'))renderEvidence();if($('#view-jobs').classList.contains('active'))renderJobs();if($('#view-reports').classList.contains('active'))renderReports();renderTimerStatic()}
+function renderHome(){
+  const m=masteredCount(),sc=stagesCleared(),gp=gatesPassed(),p=progressionStage(),cur=currentLesson();
+  $('#greeting').textContent=(state.name?`${state.name}, `:'')+'you only need to do the next small step.';
+  const unitWord=p.id==='18'?'project phases':'lessons';
+  $('#heroSub').textContent=`Stage ${p.id} • ${p.name} • ${stageMasteredCount(p)}/${p.lessons.length} ${unitWord} mastered`;
+  $('#coursePct').textContent=pct(m,DATA.lessonCount)+'%';$('#lessonStat').textContent=`${m}/${DATA.lessonCount}`;$('#stageStat').textContent=`${sc}/${DATA.stageCount}`;$('#gateStat').textContent=`${gp}/${DATA.gates.length}`;$('#courseBar').style.width=pct(m,DATA.lessonCount)+'%';
+  const a=recommendedAction();$('#nextPill').textContent=a.kind==='repair'?'Repair first':a.kind==='revision'?'Revision due':a.kind==='gate'?'Gate':a.kind==='complete'?'Launch':'Current path';$('#nextPill').className='pill '+(a.kind==='repair'?'danger':a.kind==='revision'||a.kind==='gate'?'warn':a.kind==='complete'?'ok':'');
+  $('#nextInstruction').innerHTML=`<b>${esc(a.title)}</b><div class="tiny muted">${esc(a.detail)}</div>`;
+  $('#nextActions').innerHTML=`<button class="btn primary" id="nextCTA">${esc(a.cta)}</button>${a.lessonId?'<button class="btn ghost" id="nextRescue">I’m stuck</button>':''}`;
+  $('#nextCTA').onclick=()=>performRecommended(a);$('#nextRescue')?.addEventListener('click',()=>openRescue(a.lessonId));
+  $('#homeLessonTitle').textContent=`${cur.id} — ${cur.title}`;$('#homeLessonSteps').innerHTML=lessonStepHTML(cur.id);
+  renderTodayPlan();renderNote();
+}
+function performRecommended(a){if(a.kind==='lesson'){state.currentLessonId=a.lessonId;save(false);openLesson(a.lessonId);if(a.step==='review')openReview(a.lessonId)}else if(a.kind==='revision'){state.currentLessonId=a.lessonId;save(false);openLesson(a.lessonId)}else if(a.kind==='repair'){state.currentLessonId=a.lessonId;ls(a.lessonId).skipped=false;save(false);openLesson(a.lessonId)}else if(a.kind==='gate')openGate(a.gateId);else if(a.kind==='complete')setView('jobs')}
+function renderTodayPlan(){
+  const a=recommendedAction(),p=progressionStage(),items=[];
+  items.push({icon:'1',title:a.title,sub:a.detail,action:'main'});
+  const dues=dueRevisions().filter(r=>r.id!==a.revisionId).slice(0,2);dues.forEach(r=>items.push({icon:'↻',title:`${r.type} — ${r.lessonId}`,sub:LESSON_BY[r.lessonId]?.title||'',rev:r.id,lesson:r.lessonId}));
+  if(Number(p.id)>=3)items.push({icon:'🎯',title:'10–20 min interview micro-drill',sub:'Use one SQL/Python/architecture question from skills you already studied.',view:'learn'});
+  items.push({icon:'🗣',title:'5–10 min technical English',sub:`Explain ${currentLesson().id} in your own simple words.`});
+  if(Number(p.id)<8)items.push({icon:'⌨',title:'15 min typing (optional once stable)',sub:'Accuracy first; practice the symbols you use in current lessons.'});
+  if(Number(p.id)>=17)items.push({icon:'🚀',title:'Job-launch block',sub:'Use the application tracker; quality and eligibility before volume.',view:'jobs'});
+  $('#todayPlan').innerHTML=items.slice(0,6).map((x,i)=>`<div class="planItem"><div class="planIcon">${esc(x.icon)}</div><div class="grow"><div class="rowTitle">${esc(x.title)}</div><div class="rowSub">${esc(x.sub)}</div></div>${x.rev?`<button class="btn ghost" data-rev-open="${x.rev}">Open</button>`:x.view?`<button class="btn ghost" data-plan-view="${x.view}">Open</button>`:''}</div>`).join('');
+  $$('[data-rev-open]').forEach(b=>b.onclick=()=>{const r=state.revisions.find(x=>x.id===b.dataset.revOpen);if(r)openLesson(r.lessonId,true)});$$('[data-plan-view]').forEach(b=>b.onclick=()=>setView(b.dataset.planView));
+}
+function lessonStepHTML(id){const s=ls(id);const steps=[['Learn',s.started],['Follow',s.guidedDone],['Attempt',s.attemptSaved],['Review',s.reviewViewed],['Retry',s.retestPassed],['Explain',s.explained],['Master',s.mastered]];return `<div class="lessonProgress">${steps.map(([n,d])=>`<span class="stepDot ${d?'done':''}">${d?'✓':'○'} ${n}</span>`).join('')}</div>`}
+function renderNote(){const t=todayKey();$('#dailyNote').value=state.notes[t]||'';$('#noteSaved').textContent=state.notes[t]?'saved':''}
+
+function renderLesson(forceId){
+  if(forceId&&LESSON_BY[forceId])activeLessonId=forceId;
+  const l=displayLesson(),s=ls(l.id),stage=STAGE_BY[l.stageId],idx=lessonIndex(l.id),status=lessonStatus(l.id),steps=lessonStepCount(l.id);
+  $('#lessonHeading').textContent=`${l.id} — ${l.title}`;$('#lessonMeta').textContent=`Stage ${stage.id}: ${stage.name} • ${l.type} • ${l.load} • ~${l.minH}–${l.maxH} focused h • ${l.device||'PC for hands-on; phone OK for reading'}`;
+  $('#orderWarning').hidden=!isOutOfOrder(l.id);if(!$('#orderWarning').hidden)$('#orderWarning').innerHTML='<b>Browse-ahead mode:</b> You can study this lesson, but your recommended path still returns to earlier unfinished work. Nothing is fake-completed.';
+  $('#lessonProgress').innerHTML=lessonStepHTML(l.id);
+  $('#whyText').textContent=state.beginnerMode?`This lesson is one small piece of Stage ${stage.id}. Stage goal: ${stage.purpose} You do not need to understand the whole stage before starting this lesson.`:stage.purpose;
+  $('#learnText').textContent=`${l.formal===false?'Open the project brief/handbook first.':'Open the Learner Book first.'} ${l.studyAction||'Learn → follow.'} ${stage.source?.url?'Use the assigned visual source only for the relevant segment named in the pack; do not binge the whole course.':'Use the bundled production material and guided work; do not add random resources.'}`;
+  $('#learnerPackBtn').textContent=l.formal===false?'📄 Project brief':'📄 Learner Book';
+  $('#proofText').textContent=l.proof||'Complete the fresh independent task with the review closed.';$('#englishText').textContent=l.english||`Explain ${l.title} in simple English.`;
+  $('#sourceName').textContent=stage.source?.name||l.sourceName||'Course-built teaching';$('#sourceRule').textContent=stage.source?.useRule||'';
+  const src=$('#sourceBtn');if(stage.modulePackage){src.href=stage.modulePackage;src.classList.remove('hidden');src.textContent='📦 Full module package'}else if(stage.source?.url){src.href=stage.source.url;src.classList.remove('hidden');src.textContent='Open assigned source'}else{src.removeAttribute('href');src.classList.add('hidden')}
+  $('#learnerPackBtn').onclick=()=>openPack(stage,'learner');
+  $('#guidedDoneBtn').disabled=!s.started||s.mastered;$('#guidedDoneBtn').textContent=s.guidedDone?'✓ Guided example followed':'I followed the guided example';
+  $('#saveAttemptBtn').disabled=!s.guidedDone||s.attemptSaved||s.mastered;$('#saveAttemptBtn').textContent=s.attemptSaved?'✓ Genuine attempt saved':'Save genuine attempt';
+  $('#reviewBtn').disabled=!s.attemptSaved;$('#reviewBtn').textContent=!s.attemptSaved?'🔒 Review locked':s.reviewViewed?'✓ Review opened':(l.formal===false?'Open project review':'Open Review / Check');
+  $('#retestBtn').disabled=!s.reviewViewed||s.retestPassed;$('#retestBtn').textContent=s.retestPassed?'✓ Fresh retry passed':'Fresh retry passed';
+  $('#explainBtn').disabled=!s.attemptSaved||s.explained;$('#explainBtn').textContent=s.explained?'✓ Explained aloud':'I explained it aloud';
+  $('#masterBtn').disabled=!(s.retestPassed&&s.explained)||s.mastered;$('#masterBtn').textContent=s.mastered?'✓ Mastered':'Mark Mastered';
+  $('#skipBtn').disabled=s.mastered;$('#skipBtn').textContent=s.skipped?'Skipped — study again':'Skip for now';
+  $('#setCurrentBtn').textContent=state.currentLessonId===l.id?'✓ This is my current lesson':'Set as my current lesson';
+  $('#lessonStatusBig').textContent=status;$('#lessonStatusBig').className='statusBig '+statusClass(status);$('#lessonBar').style.width=Math.round(steps/7*100)+'%';$('#lessonStatusHelp').textContent=statusHelp(status);
+  $('#prevLessonBtn').disabled=idx<=0;$('#nextLessonBtn').disabled=idx>=LESSONS.length-1;$('#prevLessonBtn').onclick=()=>openLesson(LESSONS[idx-1].id);$('#nextLessonBtn').onclick=()=>openLesson(LESSONS[idx+1].id);
+  renderRevisionPreview(l.id);
+}
+function statusHelp(st){return {'Not Started':'Open the Learner Pack and start only this lesson.','Learning':'Learn the concept, then follow the guided example.','Guided follow done':'Now close guidance and attempt the independent task.','Attempt saved':'Good. The Review Pack is unlocked because a real attempt exists.','Review opened':'Close the review and solve a fresh variation.','Fresh retry passed':'Explain it aloud; then mastery can be recorded.','Skipped for now':'You may continue, but Mentor will bring this back. A skipped lesson cannot count as mastery.','Mastered':'Independent attempt + review + fresh retry + explanation are recorded.'}[st]||''}
+function renderRevisionPreview(id){const rs=state.revisions.filter(r=>r.lessonId===id);$('#revisionPreview').innerHTML=rs.length?rs.map(r=>`<div class="revisionRow"><div class="grow"><b>${esc(r.type)}</b><div class="rowSub">${r.done?'Done '+esc(r.doneAt?.slice(0,10)||''):('Due '+esc(r.due))}</div></div><span class="pill ${r.done?'ok':r.due<=todayKey()?'warn':''}">${r.done?'DONE':r.due<=todayKey()?'DUE':'UPCOMING'}</span></div>`).join(''):'<p class="muted tiny">Revision dates appear automatically after mastery.</p>'}
+function openPack(stage,type){const l=displayLesson();const path=type==='learner'?(l.learnerPack||stage.learnerPack):(l.reviewPack||stage.reviewPack);if(type==='review'&&!ls(l.id).attemptSaved){toast('Save a genuine attempt first. Review stays locked.');return}window.open(path,'_blank','noopener')}
+function openReview(id){const l=LESSON_BY[id];if(!l)return;const s=ls(id);if(!s.attemptSaved){toast('Review is locked until a genuine attempt is saved.');return}s.reviewViewed=true;s.reviewAt=nowISO();state.currentLessonId=id;save();window.open(l.reviewPack||STAGE_BY[l.stageId].reviewPack,'_blank','noopener')}
+
+function renderMap(){
+  const q=($('#lessonSearch').value||'').trim().toLowerCase();
+  $('#stageMap').innerHTML=DATA.stages.map(stage=>{
+    const matches=stage.lessons.filter(l=>!q||`${l.id} ${l.title} ${stage.name}`.toLowerCase().includes(q));if(q&&!matches.length)return '';
+    const m=stageMasteredCount(stage),g=GATE_END[stage.id],open=q||stage.id===progressionStage().id,unitLabel=stage.id==='18'?'project phases':'lessons';
+    return `<section class="card stageCard ${open?'open':''}" data-stage-card="${stage.id}"><div class="stageTop" data-stage-toggle="${stage.id}"><div class="stageNum">${stage.id}</div><div><h2>${esc(stage.name)}</h2><div class="rowSub">${esc(stage.purpose)}</div><div class="stageMeta"><span class="pill">${stage.lessons.length} ${unitLabel}</span><span class="pill">${stage.minH}–${stage.maxH}h</span>${g?`<span class="pill ${gatePassed(g)?'ok':gateReady(g)?'warn':''}">${esc(g.Gate)}</span>`:''}</div></div><div class="stageProgressMini"><b>${m}/${stage.lessons.length}</b><div class="progress"><i style="width:${pct(m,stage.lessons.length)}%"></i></div></div></div><div class="stageBody"><div class="call info"><b>Exit proof:</b> ${esc(stage.exitEvidence)}</div>${matches.map(l=>{const st=lessonStatus(l.id);return `<div class="stageLessonRow"><div class="grow"><span class="lessonId">${l.id}</span> <b>${esc(l.title)}</b><div class="rowSub">${esc(st)} • ${esc(l.type)}</div></div><button class="btn ghost" data-open-lesson="${l.id}">Open</button></div>`}).join('')}${g?`<div class="gateBanner call ${gatePassed(g)?'ok':gateReady(g)?'warn':'info'}"><b>${esc(g.Gate)}</b><br>${esc(g['Must prove'])}<div class="actionRow" style="margin-top:8px"><button class="btn ${gateReady(g)&&!gatePassed(g)?'primary':'ghost'}" data-open-gate="${g.id}" ${gateReady(g)||gatePassed(g)?'':'disabled'}>${gatePassed(g)?'View Gate result':gateReady(g)?'Take protected Gate':'Gate locked'}</button></div></div>`:''}</div></section>`
+  }).join('');
+  $$('[data-stage-toggle]').forEach(x=>x.onclick=()=>x.closest('.stageCard').classList.toggle('open'));$$('[data-open-lesson]').forEach(b=>b.onclick=e=>{e.stopPropagation();openLesson(b.dataset.openLesson)});$$('[data-open-gate]').forEach(b=>b.onclick=()=>openGate(b.dataset.openGate));
+}
+
+function renderRepair(){
+  const errs=unresolvedErrors();$('#repairList').innerHTML=errs.length?errs.map(e=>`<div class="repairRow"><div class="planIcon">${e.severity==='critical'?'!':'🧩'}</div><div class="grow"><b>${esc(e.lessonId||'General')} — ${esc(e.issue)}</b><div class="rowSub">${e.severity==='critical'?'Critical: repair before normal progression.':'Targeted repair only; do not restart the stage.'}</div></div>${e.lessonId?`<button class="btn" data-repair-start="${e.id}">Repair</button>`:''}<button class="btn ghost" data-repair-resolve="${e.id}">Resolve</button></div>`).join(''):'<div class="call ok">No unresolved weaknesses. New mistakes will appear here instead of being hidden.</div>';
+  $$('[data-repair-start]').forEach(b=>b.onclick=()=>{const e=state.errors.find(x=>x.id===b.dataset.repairStart);if(e?.lessonId){ls(e.lessonId).skipped=false;state.currentLessonId=e.lessonId;save(false);openLesson(e.lessonId)}});$$('[data-repair-resolve]').forEach(b=>b.onclick=()=>{const e=state.errors.find(x=>x.id===b.dataset.repairResolve);if(e){e.resolvedAt=nowISO();save()}});
+  const rs=state.revisions.filter(r=>!r.done).sort((a,b)=>a.due.localeCompare(b.due));$('#revisionList').innerHTML=rs.length?rs.slice(0,30).map(r=>`<div class="revisionRow"><div class="grow"><b>${esc(r.type)} — ${esc(r.lessonId)}</b><div class="rowSub">${esc(LESSON_BY[r.lessonId]?.title||'')} • due ${esc(r.due)}</div></div><span class="pill ${r.due<=todayKey()?'warn':''}">${r.due<=todayKey()?'DUE':'UPCOMING'}</span><button class="btn ghost" data-rev-lesson="${r.lessonId}">Open</button><button class="btn" data-rev-done="${r.id}">Done</button></div>`).join(''):'<p class="muted">No revision items yet.</p>';
+  $$('[data-rev-lesson]').forEach(b=>b.onclick=()=>openLesson(b.dataset.revLesson,true));$$('[data-rev-done]').forEach(b=>b.onclick=()=>{const r=state.revisions.find(x=>x.id===b.dataset.revDone);if(r){r.done=true;r.doneAt=nowISO();save()}})
+}
+function openRescue(lessonId=state.currentLessonId){const l=LESSON_BY[lessonId]||currentLesson();state._rescueLessonId=l.id;$('#rescueTitle').textContent=`${l.id} — ${l.title}`;$('#rescueIssue').value='';$('#rescueSteps').innerHTML=[['1','Read only the current lesson section in the Learner Pack. Do not open five new resources.'],['2','Follow the guided example exactly once and check the expected result.'],['3','Change one small value/column/parameter yourself. If it fails, save the exact error or wrong output.'],['4','If still blocked, save the weakness below. Mentor schedules a targeted repair instead of making you restart the stage.']].map(([n,t])=>`<div class="rescueStep"><span>${n}</span><div>${esc(t)}</div></div>`).join('');openModal('rescueModal')}
+function saveWeakness(lessonId,issue,severity='normal'){if(!issue.trim()){toast('Write what went wrong first.');return}state.errors.push({id:uid('err'),lessonId,issue:issue.trim(),severity,createdAt:nowISO(),resolvedAt:null});scheduleSkipRepair(lessonId);save();toast('Weakness saved. Mentor will bring it back.')}
+
+function renderEvidence(){const es=[...state.evidence].reverse();$('#evidenceList').innerHTML=es.length?es.map(e=>`<div class="evidenceRow"><div class="planIcon">${e.strength}</div><div class="grow"><b>${esc(e.skill)}</b><div class="rowSub">${esc(e.type)} • strength ${e.strength}/4 • ${esc(e.createdAt.slice(0,10))}</div><div class="tiny" style="margin-top:5px">${esc(e.action)}</div></div><button class="btn ghost" data-ev-del="${e.id}">Delete</button></div>`).join(''):'<p class="muted">No evidence saved yet. Strong labs/projects can be added without storing secrets.</p>';$$('[data-ev-del]').forEach(b=>b.onclick=()=>{state.evidence=state.evidence.filter(e=>e.id!==b.dataset.evDel);save()})}
+
+function renderJobs(){
+  const apps=[...state.applications].sort((a,b)=>(b.date||'').localeCompare(a.date||''));const applied=apps.filter(a=>a.status!=='Saved').length,screens=apps.filter(a=>['Recruiter screen','Assessment','Technical interview','Final interview','Offer'].includes(a.status)).length,offers=apps.filter(a=>a.status==='Offer').length,high=apps.filter(a=>a.fit==='High'&&a.status!=='Saved').length;
+  $('#jobStats').innerHTML=[['Applied',applied],['High-fit',high],['Screens+',screens],['Offers',offers]].map(([l,v])=>`<div class="jobMini"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('#applicationList').innerHTML=apps.length?apps.map(a=>`<div class="jobRow"><div class="grow"><b>${esc(a.company)} — ${esc(a.role)}</b><div class="rowSub">${esc(a.date||'')} • ${esc(a.fit)} fit • ${esc(a.status)} • ${esc(a.source||'')}</div>${a.degree?`<div class="tiny muted" style="margin-top:4px">Eligibility: ${esc(a.degree)}</div>`:''}${a.notes?`<div class="tiny" style="margin-top:4px">${esc(a.notes)}</div>`:''}</div><button class="btn ghost" data-job-edit="${a.id}">Edit</button><button class="btn ghost" data-job-del="${a.id}">Delete</button></div>`).join(''):'<p class="muted">No jobs saved yet. You may market-watch before Stage 17; full launch becomes recommended later.</p>';
+  $$('[data-job-edit]').forEach(b=>b.onclick=()=>openApplication(b.dataset.jobEdit));$$('[data-job-del]').forEach(b=>b.onclick=()=>{state.applications=state.applications.filter(a=>a.id!==b.dataset.jobDel);save()});
+  const diag=diagnoseFunnel();$('#funnelTitle').textContent=diag.title;$('#funnelAdvice').textContent=diag.advice;
+}
+function diagnoseFunnel(){const a=state.applications.filter(x=>x.status!=='Saved'),high=a.filter(x=>x.fit==='High'),screens=a.filter(x=>['Recruiter screen','Assessment','Technical interview','Final interview','Offer'].includes(x.status)),assess=a.filter(x=>['Assessment','Technical interview','Final interview','Offer'].includes(x.status)),tech=a.filter(x=>['Technical interview','Final interview','Offer'].includes(x.status)),finals=a.filter(x=>['Final interview','Offer'].includes(x.status)),offers=a.filter(x=>x.status==='Offer');if(high.length>=10&&screens.length===0)return {title:'Likely resume / targeting bottleneck',advice:'Audit eligibility wording, resume positioning, project links and application sources. Test a revised batch instead of starting another full course.'};if(screens.length>=3&&assess.length===0)return {title:'Likely assessment bottleneck',advice:'Repair timed SQL/Python/coding with fresh unseen sets. Keep applications running at a manageable level.'};if(tech.length>=3&&finals.length===0)return {title:'Likely technical-interview bottleneck',advice:'Mock the exact failed round: DE concepts, troubleshooting, project defense and architecture explanations.'};if(finals.length>=2&&offers.length===0)return {title:'Final-round pattern',advice:'Review communication, fit, location, compensation and feedback. Do a full-round retrospective.'};return {title:'No strong pattern yet',advice:'Keep collecting targeted application evidence. Do not draw career conclusions from a tiny sample.'}}
+function openApplication(id=null){currentJobId=id;const a=id?state.applications.find(x=>x.id===id):null;$('#jobCompany').value=a?.company||'';$('#jobRole').value=a?.role||'';$('#jobSource').value=a?.source||'';$('#jobDate').value=a?.date||todayKey();$('#jobFit').value=a?.fit||'High';$('#jobStatus').value=a?.status||'Saved';$('#jobMode').value=a?.mode||'';$('#jobFollow').value=a?.follow||'';$('#jobDegree').value=a?.degree||'';$('#jobNotes').value=a?.notes||'';openModal('applicationModal')}
+
+function renderReports(){
+  const t=todayKey(),weekKeys=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);weekKeys.push(todayKey(d))}const minsBy=Object.fromEntries(weekKeys.map(k=>[k,state.focusLog.filter(x=>x.date===k).reduce((a,b)=>a+(+b.minutes||0),0)]));const today=minsBy[t]||0,week=Object.values(minsBy).reduce((a,b)=>a+b,0);$('#rToday').textContent=fmtM(today);$('#rWeek').textContent=fmtM(week);$('#rStreak').textContent=state.streak.count||0;$('#rDue').textContent=dueRevisions().length;const max=Math.max(1,...Object.values(minsBy));$('#studyBars').innerHTML=weekKeys.map(k=>`<div class="barRow"><span>${k.slice(5)}</span><div class="barTrack"><i style="width:${Math.round(minsBy[k]/max*100)}%"></i></div><em>${fmtM(minsBy[k])}</em></div>`).join('');$('#stageBars').innerHTML=DATA.stages.map(s=>{const m=stageMasteredCount(s);return `<div class="barRow"><span>Stage ${s.id}</span><div class="barTrack"><i style="width:${pct(m,s.lessons.length)}%"></i></div><em>${m}/${s.lessons.length}</em></div>`}).join('')
+}
+
+function openGate(id){const g=GATE_BY[id];if(!g)return;const gs=state.gates[id],variant=gs.attempts.length?'B':'A';$('#gateTitle').textContent=g.Gate;$('#gateRule').innerHTML=`<b>Must prove:</b> ${esc(g['Must prove'])}<br><b>Pass standard:</b> ${esc(g['Pass standard'])}<br><b>Critical fail:</b> ${esc(g['Critical fail'])}`;$('#gateScores').innerHTML=g.dimensions.map((d,i)=>`<label>${esc(d)} (0–4)<input type="number" min="0" max="4" step="1" value="0" data-gate-score="${i}"></label>`).join('');$('#gateCritical').checked=false;$('#gateNote').value='';const pack=$('#gatePackageBtn'),brief=$('#gateBriefBtn'),review=$('#gateReviewBtn');pack.href=g.gatePackage;brief.href=variant==='A'?g.gateA:g.gateB;brief.textContent=`Open Gate ${variant} brief`;review.href=variant==='A'?g.reviewA:g.reviewB;review.textContent=gs.attempts.length?`Open Review ${variant==='A'?'A':'B'}`:'Review locked until attempt';review.classList.toggle('disabled',!gs.attempts.length);review.onclick=e=>{if(!gs.attempts.length){e.preventDefault();toast('Save a Gate attempt first. Review stays locked.')}};$('#gateResult').textContent=gatePassed(g)?`Already passed. Attempts: ${gs.attempts.length}. A new attempt will be saved as history.`:gateReady(g)?`Gate ${variant} is ready. Keep reviews/tutorial help closed during the attempt.`:'Gate is locked because prerequisite units or an earlier Gate are incomplete.';$('#saveGateBtn').disabled=!gateReady(g);state._gateId=id;openModal('gateModal')}
+function saveGate(){const g=GATE_BY[state._gateId];if(!g)return;const scores=$$('[data-gate-score]').map(i=>Math.max(0,Math.min(4,+i.value||0)));const critical=$('#gateCritical').checked,avg=scores.reduce((a,b)=>a+b,0)/scores.length,score=Math.round(avg/4*100);const all3=scores.every(x=>x>=3);const pass=!critical&&all3&&(!g.scoreRequired||score>=g.scoreRequired);const attempt={id:uid('gate'),date:nowISO(),variant:state.gates[g.id].attempts.length?'B':'A',scores,score,critical,note:$('#gateNote').value.trim(),result:pass?'Pass':'Remediation'};state.gates[g.id].attempts.push(attempt);state.gates[g.id].status=pass?'Pass':'Remediation';if(!pass){state.errors.push({id:uid('err'),lessonId:null,issue:`${g.Gate} failed: repair the weakest Gate dimension and take a fresh attempt.`,severity:critical?'critical':'normal',createdAt:nowISO(),resolvedAt:null,gateId:g.id})}save();closeModal('gateModal');toast(pass?`${g.Gate} PASSED`:'Gate saved: targeted remediation required')}
+
+function renderTimerStatic(){const mins=state.focusLog.filter(x=>x.date===todayKey()).reduce((a,b)=>a+(+b.minutes||0),0);$('#focusToday').textContent=`${fmtM(mins)} today`;$$('[data-timer-mode]').forEach(b=>b.classList.toggle('active',b.dataset.timerMode===state.timer.mode));updateTimerDisplay()}
+function timerDefaultSec(mode=state.timer.mode){return 60*(mode==='focus'?state.timerSettings.focusMin:mode==='short'?state.timerSettings.shortMin:state.timerSettings.longMin)}
+function remainingSec(){if(state.timer.running&&state.timer.endAt)return Math.max(0,Math.ceil((new Date(state.timer.endAt).getTime()-Date.now())/1000));return state.timer.remainingSec??timerDefaultSec()}
+function updateTimerDisplay(){const r=remainingSec();const m=Math.floor(r/60),s=r%60;$('#timerClock').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;$('#timerStart').textContent=state.timer.running?'PAUSE':(r<timerDefaultSec()?'RESUME':'START');if(state.timer.running&&r<=0)completeTimer()}
+function startPauseTimer(){if(state.timer.running){state.timer.remainingSec=remainingSec();state.timer.running=false;state.timer.endAt=null;persist();updateTimerDisplay();return}let r=remainingSec();if(r<=0)r=timerDefaultSec();state.timer.remainingSec=r;state.timer.running=true;state.timer.startedAt=state.timer.startedAt||nowISO();state.timer.endAt=new Date(Date.now()+r*1000).toISOString();persist();ensureTimerInterval();updateTimerDisplay()}
+function resetTimer(){state.timer.running=false;state.timer.endAt=null;state.timer.remainingSec=timerDefaultSec();state.timer.startedAt=null;persist();updateTimerDisplay()}
+function setTimerMode(mode){if(state.timer.running){toast('Pause the timer before switching mode.');return}state.timer.mode=mode;state.timer.remainingSec=timerDefaultSec(mode);state.timer.startedAt=null;persist();renderTimerStatic()}
+function ensureTimerInterval(){clearInterval(timerInterval);timerInterval=setInterval(updateTimerDisplay,500)}
+function completeTimer(){if(!state.timer.running&&remainingSec()>0)return;const mode=state.timer.mode;if(mode==='focus'){const min=state.timerSettings.focusMin;state.focusLog.push({id:uid('focus'),date:todayKey(),minutes:min,mode,lessonId:state.currentLessonId,stageId:LESSON_BY[state.currentLessonId]?.stageId,at:nowISO()});updateStreak()}state.timer.running=false;state.timer.endAt=null;state.timer.remainingSec=timerDefaultSec();state.timer.startedAt=null;persist();notifyTimerDone(mode);renderAll()}
+function notifyTimerDone(mode){const msg=mode==='focus'?'Focus session finished. Take your break.':'Break finished. Your next study step is ready.';try{if(Notification.permission==='granted')new Notification('DE Mentor',{body:msg,icon:'icon.svg'})}catch(e){}try{navigator.vibrate?.([250,120,250])}catch(e){}try{const C=window.AudioContext||window.webkitAudioContext;if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=720;g.gain.setValueAtTime(.18,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.5);o.start();o.stop(c.currentTime+.5)}}catch(e){}alert(msg)}
+async function requestNotifications(){if(!('Notification'in window)){toast('Browser notification API is not available here.');return}const p=await Notification.requestPermission();toast(p==='granted'?'Timer notifications allowed.':'Notifications not allowed; timer still uses real clock.')}
+
+function exportBackup(){download(`DE_Mentor_Backup_${todayKey()}.json`,JSON.stringify(state,null,2),'application/json')}
+function exportLessons(){const rows=LESSONS.map(l=>[l.id,l.stageId,l.title,lessonStatus(l.id),ls(l.id).attemptAt||'',ls(l.id).masteredAt||'',ls(l.id).skipped?'Yes':'No']);download('DE_Mentor_Lessons.csv',toCSV(['Lesson ID','Stage','Title','Status','Attempt saved','Mastered','Skipped'],rows),'text/csv')}
+function exportFocus(){download('DE_Mentor_Focus.csv',toCSV(['Date','Minutes','Mode','Stage','Lesson'],state.focusLog.map(x=>[x.date,x.minutes,x.mode,x.stageId,x.lessonId])),'text/csv')}
+function exportEvidence(){download('DE_Mentor_Evidence.csv',toCSV(['Date','Skill','Type','Strength','Action / validation'],state.evidence.map(x=>[x.createdAt?.slice(0,10),x.skill,x.type,x.strength,x.action])),'text/csv')}
+function exportJobs(){download('DE_Mentor_Applications.csv',toCSV(['Date','Company','Role','Source','Fit','Status','Mode','Degree wording','Follow-up','Notes'],state.applications.map(x=>[x.date,x.company,x.role,x.source,x.fit,x.status,x.mode,x.degree,x.follow,x.notes])),'text/csv')}
+
+function setupRow(label,stateName,detail,fix=''){
+  const cls=stateName==='good'?'ok':stateName==='warn'?'warn':'bad';
+  const word=stateName==='good'?'GOOD':stateName==='warn'?'LIMITED':'FIX';
+  return `<div class="setupRow ${cls}"><div class="setupDot"></div><div class="grow"><b>${esc(label)}</b><div class="rowSub">${esc(detail)}</div>${fix?`<div class="tiny setupFix">What to do: ${esc(fix)}</div>`:''}</div><span class="pill ${cls==='ok'?'ok':cls==='warn'?'warn':'danger'}">${word}</span></div>`;
+}
+async function runSetupChecks(){
+  const box=$('#setupResults');box.innerHTML='<p class="muted">Checking this device…</p>';
+  const rows=[];
+  // Local progress storage
+  try{const k='__deMentorTest';localStorage.setItem(k,'1');localStorage.removeItem(k);rows.push(setupRow('Progress saving','good','This browser can save Mentor progress on this device.'))}catch(e){rows.push(setupRow('Progress saving','bad','This browser blocked local progress storage.','Allow site storage/cookies for this Mentor or use another browser.'))}
+  // Materials
+  try{const res=await fetch(DATA.stages[0].learnerPack,{cache:'no-store'});rows.push(res.ok?setupRow('Stage 00 book','good','The first Learner Pack opens from this Mentor package.'):setupRow('Stage 00 book','bad',`The first book returned ${res.status}.`,'Use the complete Mentor package/hosted site; do not move index.html away from the materials folder.'))}catch(e){rows.push(setupRow('Stage 00 book',location.protocol==='file:'?'warn':'bad',location.protocol==='file:'?'You opened Mentor directly as a file, so the browser may block automatic file checks. The book button can still be tried manually.':'Mentor could not fetch the first Learner Pack.','If hosted, refresh once. If local, keep the materials folder beside index.html.'))}
+  // PWA/offline environment
+  const secure=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  if(secure&&'serviceWorker' in navigator)rows.push(setupRow('Offline/PWA support','good','This browser/origin supports the Mentor service worker.'));
+  else if(location.protocol==='file:')rows.push(setupRow('Offline/PWA support','warn','Direct file mode works for basic study, but Install/offline caching needs the hosted HTTPS version.','Use the GitHub Pages/HTTPS version when you want app-style install and offline caching.'));
+  else rows.push(setupRow('Offline/PWA support','warn','This browser/origin cannot provide full PWA offline behavior.','Use a modern browser on the HTTPS version of Mentor.'));
+  // Notifications
+  if(!('Notification' in window))rows.push(setupRow('Timer notification','warn','This browser does not expose web notifications.','The timer still keeps correct elapsed time; use the phone clock/alarm if you need a guaranteed OS alarm.'));
+  else if(Notification.permission==='granted')rows.push(setupRow('Timer notification','good','Timer notification permission is allowed.'));
+  else if(Notification.permission==='denied')rows.push(setupRow('Timer notification','warn','Notifications are blocked for this site.','Open browser/site notification settings and allow notifications if you want Mentor alerts.'));
+  else rows.push(setupRow('Timer notification','warn','Permission has not been asked yet.','Tap “Allow timer alerts” below.'));
+  // Screen
+  const w=Math.round(window.innerWidth||0);rows.push(w>=320?setupRow('Screen size','good',`Mentor sees a ${w}px-wide screen and will use the mobile layout when needed.`):setupRow('Screen size','warn',`Very narrow screen detected (${w}px).`,'Rotate the phone or use normal browser zoom.'));
+  // Online status
+  rows.push(navigator.onLine!==false?setupRow('Connection now','good','You are online now. Bundled course PDFs are local to the Mentor package.'):setupRow('Connection now','warn','You appear offline. Local bundled PDFs can still work; external videos/resources need internet.'));
+  box.innerHTML=rows.join('');
+}
+function openSetup(){openModal('setupModal');runSetupChecks()}
+function finishSetup(){state.setupSeen=true;persist();closeModal('setupModal');openLesson(state.currentLessonId);toast('Ready. Mentor will tell you the next small step.')}
+
+function bind(){
+  $$('.tab').forEach(t=>t.onclick=()=>setView(t.dataset.view));$('#doNowBtn').onclick=()=>performRecommended(recommendedAction());$('#openCurrentBtn').onclick=()=>openLesson(state.currentLessonId);$('#rebuildPlanBtn').onclick=()=>renderTodayPlan();
+  $('#setupCheckBtn').onclick=openSetup;$('#runSetupCheckBtn').onclick=runSetupChecks;$('#setupOpenStage0Btn').onclick=()=>openPack(DATA.stages[0],'learner');$('#setupNotifyBtn').onclick=requestNotifications;$('#setupDoneBtn').onclick=finishSetup;
+  $('#dailyNote').addEventListener('input',e=>{state.notes[todayKey()]=e.target.value;persist();$('#noteSaved').textContent='saved'});
+  $('#stuckBtn').onclick=()=>openRescue();$('#lessonStuckBtn').onclick=()=>openRescue(displayLesson().id);
+  $('#guidedDoneBtn').onclick=()=>{const s=ls(displayLesson().id);if(!s.started){toast('Start the lesson first.');return}s.guidedDone=true;s.skipped=false;save()};
+  $('#saveAttemptBtn').onclick=()=>{const s=ls(displayLesson().id);if(!s.guidedDone){toast('Follow the guided example first.');return}s.attemptSaved=true;s.attemptAt=nowISO();s.skipped=false;save();toast('Attempt saved. Review is now unlocked.')};
+  $('#reviewBtn').onclick=()=>openReview(displayLesson().id);$('#retestBtn').onclick=()=>{const s=ls(displayLesson().id);if(!s.reviewViewed){toast('Open review only after your attempt, then close it before retry.');return}s.retestPassed=true;s.retestAt=nowISO();save()};
+  $('#explainBtn').onclick=()=>{const s=ls(displayLesson().id);if(!s.attemptSaved){toast('Save an attempt first.');return}s.explained=true;save()};
+  $('#masterBtn').onclick=()=>{const l=displayLesson(),s=ls(l.id);if(!(s.retestPassed&&s.explained)){toast('Fresh retry + explanation are required before mastery.');return}s.mastered=true;s.masteredAt=nowISO();s.skipped=false;s.confidence=Math.max(3,s.confidence||0);scheduleRevisions(l.id);updateStreak();const next=LESSONS[lessonIndex(l.id)+1];if(state.currentLessonId===l.id&&next){state.currentLessonId=next.id;activeLessonId=next.id}save();toast(`${l.id} mastered. Revision dates were scheduled.`)};
+  $('#skipBtn').onclick=()=>{const l=displayLesson(),s=ls(l.id);if(s.mastered)return;if(s.skipped){s.skipped=false;save();toast('Skip removed. Lesson is active again.');return}const reason=prompt('Why are you skipping for now? A short reason helps Mentor bring it back correctly.','Too difficult right now');if(reason===null)return;s.skipped=true;s.skipReason=reason;s.started=s.started||false;scheduleSkipRepair(l.id);const next=LESSONS.slice(lessonIndex(l.id)+1).find(x=>x.stageId===l.stageId&&!ls(x.id).mastered&&!ls(x.id).skipped)||LESSONS[lessonIndex(l.id)+1];if(state.currentLessonId===l.id&&next){state.currentLessonId=next.id;activeLessonId=next.id}save();toast('Skipped for now — not counted as complete.')};
+  $('#setCurrentBtn').onclick=()=>{state.currentLessonId=displayLesson().id;activeLessonId=state.currentLessonId;ls(state.currentLessonId).skipped=false;save();toast('Current lesson updated.')};
+  $('#learnerPackBtn').addEventListener('click',()=>{const s=ls(displayLesson().id);if(!s.started){s.started=true;s.startedAt=nowISO();s.skipped=false;save(false)}openPack(stageForLesson(displayLesson().id),'learner');renderAll()});
+  $('#sourceBtn').addEventListener('click',()=>{const s=ls(displayLesson().id);if(!s.started){s.started=true;s.startedAt=nowISO();s.skipped=false;save()}});
+  $('#lessonSearch').addEventListener('input',renderMap);
+  $('#addWeaknessBtn').onclick=()=>{fillWeakLessonSelect();openModal('weaknessModal')};$('#saveWeaknessBtn').onclick=()=>{saveWeakness($('#weakLesson').value,$('#weakIssue').value,$('#weakSeverity').value);$('#weakIssue').value='';closeModal('weaknessModal')};
+  $('#saveRescueBtn').onclick=()=>{const id=state._rescueLessonId||state.currentLessonId;saveWeakness(id,$('#rescueIssue').value||'Still blocked after Rescue Mode steps.','normal');closeModal('rescueModal')};$('#copyHelpPromptBtn').onclick=copyHelpPrompt;
+  $('#addEvidenceBtn').onclick=()=>openModal('evidenceModal');$('#saveEvidenceBtn').onclick=()=>{const skill=$('#evSkill').value.trim(),action=$('#evAction').value.trim();if(!skill||!action){toast('Add the skill and what you did/verified.');return}state.evidence.push({id:uid('ev'),skill,action,type:$('#evType').value,strength:+$('#evStrength').value,createdAt:nowISO()});$('#evSkill').value='';$('#evAction').value='';save();closeModal('evidenceModal')};
+  $('#addApplicationBtn').onclick=()=>openApplication();$('#saveApplicationBtn').onclick=saveApplication;
+  $('#settingsBtn').onclick=openSettings;$('#saveSettingsBtn').onclick=saveSettings;$('#resetBtn').onclick=resetAll;
+  $$('.closeModal').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+  $('#timerStart').onclick=startPauseTimer;$('#timerReset').onclick=resetTimer;$$('[data-timer-mode]').forEach(b=>b.onclick=()=>setTimerMode(b.dataset.timerMode));$('#notifyBtn').onclick=requestNotifications;
+  $('#exportJsonBtn').onclick=exportBackup;$('#exportLessonsBtn').onclick=exportLessons;$('#exportFocusBtn').onclick=exportFocus;$('#exportEvidenceBtn').onclick=exportEvidence;$('#exportJobsBtn').onclick=exportJobs;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=restoreBackup;
+  $('#saveGateBtn').onclick=saveGate;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').hidden=false});$('#installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').hidden=true};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){updateTimerDisplay();if(state.timer.running&&remainingSec()<=0)completeTimer()}});
+}
+function fillWeakLessonSelect(){const cur=state.currentLessonId;$('#weakLesson').innerHTML=LESSONS.map(l=>`<option value="${l.id}" ${l.id===cur?'selected':''}>${l.id} — ${esc(l.title)}</option>`).join('')}
+function copyHelpPrompt(){const id=state._rescueLessonId||state.currentLessonId,l=LESSON_BY[id],issue=$('#rescueIssue').value.trim()||'[describe exactly what confused me]';const text=`I am a complete beginner learning ${id}: ${l.title}. I tried the guided step, but I am stuck here: ${issue}. Please explain only the next small step in very simple language. Give one tiny example, then ask me to try. Do NOT give the full solution to my independent task unless I explicitly ask after attempting it.`;navigator.clipboard?.writeText(text).then(()=>toast('Safe help prompt copied.')).catch(()=>prompt('Copy this help prompt:',text))}
+function saveApplication(){const obj={id:currentJobId||uid('job'),company:$('#jobCompany').value.trim(),role:$('#jobRole').value.trim(),source:$('#jobSource').value.trim(),date:$('#jobDate').value||todayKey(),fit:$('#jobFit').value,status:$('#jobStatus').value,mode:$('#jobMode').value.trim(),follow:$('#jobFollow').value,degree:$('#jobDegree').value.trim(),notes:$('#jobNotes').value.trim(),updatedAt:nowISO()};if(!obj.company||!obj.role){toast('Company and role are required.');return}const i=state.applications.findIndex(x=>x.id===obj.id);if(i>=0)state.applications[i]={...state.applications[i],...obj};else state.applications.push(obj);currentJobId=null;save();closeModal('applicationModal')}
+function openSettings(){$('#nameInput').value=state.name||'';$('#themeInput').value=state.theme;$('#beginnerModeInput').checked=!!state.beginnerMode;$('#focusMin').value=state.timerSettings.focusMin;$('#shortMin').value=state.timerSettings.shortMin;$('#longMin').value=state.timerSettings.longMin;$('#dailyTarget').value=state.timerSettings.dailyTarget;openModal('settingsModal')}
+function saveSettings(){state.name=$('#nameInput').value.trim();state.theme=$('#themeInput').value;state.beginnerMode=$('#beginnerModeInput').checked;state.timerSettings.focusMin=Math.max(10,+$('#focusMin').value||25);state.timerSettings.shortMin=Math.max(1,+$('#shortMin').value||5);state.timerSettings.longMin=Math.max(5,+$('#longMin').value||15);state.timerSettings.dailyTarget=Math.max(.5,+$('#dailyTarget').value||3);if(!state.timer.running)state.timer.remainingSec=timerDefaultSec();save();closeModal('settingsModal')}
+function resetAll(){if(!confirm('Reset ALL Mentor progress, notes, evidence, timer history and applications on this device? Export a backup first if needed.'))return;localStorage.removeItem(KEY);state=fresh();save();closeModal('settingsModal')}
+function restoreBackup(e){const f=e.target.files?.[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{const raw=JSON.parse(reader.result);state=hydrate(raw);save();toast('Backup restored.')}catch(err){alert('Could not restore this JSON backup.')}};reader.readAsText(f);e.target.value=''}
+
+function init(){activeLessonId=state.currentLessonId;bind();const s=ls(state.currentLessonId);if(!s.started&&state.currentLessonId===LESSONS[0].id){}renderAll();ensureTimerInterval();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});if(state.timer.running&&remainingSec()<=0)completeTimer();if(!state.setupSeen)setTimeout(openSetup,250)}
+window.DE_MENTOR_TEST_API={DATA,LESSONS,FORMAL_LESSONS,STAGE_BY,GATE_BY,fresh,hydrate,lessonStatus,lessonStepCount,masteredCount,stageMasteredCount,gatePassed,gateReady,stageCleared,stagesCleared,gatesPassed,progressionStage,nextLessonInStage,dueRevisions,recommendedAction,scheduleRevisions,scheduleSkipRepair,currentLesson,displayLesson,getActiveLessonId:()=>activeLessonId,setActiveLessonId:(id)=>{if(LESSON_BY[id])activeLessonId=id},getState:()=>state,setState:(x)=>{state=hydrate(x);activeLessonId=state.currentLessonId}};
+if(typeof document!=='undefined')init();
+})();

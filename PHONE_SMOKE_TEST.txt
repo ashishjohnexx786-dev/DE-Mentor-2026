@@ -1,0 +1,14 @@
+DE MENTOR PRODUCTION RC3 — PHONE SMOKE TEST
+
+1. OPEN — app renders; First-use check appears; no blank screen.
+2. START — DE00-01 opens and M00 Learner Book opens locally.
+3. COURSE MAP — Stage counts show production structure; M18 shows 50 project phases, not 50 formal lessons.
+4. BROWSE AHEAD — opening a later unit does not fake-complete earlier work.
+5. REVIEW LOCK — Review is blocked before a genuine attempt and opens after attempt.
+6. GATE LOCK — protected Gate stays locked until prerequisite units are mastered; Gate A opens first.
+7. TIMER — start, lock phone briefly, reopen; remaining time must reflect real elapsed clock time. Notification behavior depends on Android/browser battery policy.
+8. BACKUP — download full JSON backup; file downloads.
+9. M18 — open one project phase; Project Brief button opens correct P1/P2/P3/Capstone brief.
+10. GATE B — after a saved failed/remediation attempt, reopening Gate routes to the fresh B brief/review.
+
+Send a screenshot plus the failed step number if any check fails.
