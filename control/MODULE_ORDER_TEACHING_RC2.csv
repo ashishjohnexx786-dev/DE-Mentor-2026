@@ -1,0 +1,21 @@
+order,module,title,purpose,device
+0,M00,Computer Setup,"PC setup, folders, software, terminal basics",PC
+1,M01,Data Foundations + Essential Excel,Data thinking and essential spreadsheet foundations,PC
+2,M02,SQL Foundations,Core SQL from beginner level,PC
+3,M03,Advanced SQL + PostgreSQL Database Thinking,Advanced query reasoning and PostgreSQL thinking,PC
+4,M04,Python Foundations,Python from zero for later engineering work,PC
+5,M05,Python for Data Engineering,"Files, APIs, databases, testing, ingestion code",PC
+6,M06,Git + GitHub + Linux/WSL Engineering Foundations,"Version control, Linux shell, safe collaboration/recovery",PC
+7,M07,PostgreSQL + Data Modeling,"Constraints, transactions, modeling, star schemas, SCD2",PC
+8,M08,"Files, APIs + Data Ingestion","File/API ingestion contracts, retries, metadata, validation",PC
+9,M09,ETL/ELT + Data Quality + Transformation Engineering,"Reliable transformation, tests, reconciliation, incremental behavior",PC
+10,M10,Docker + Airflow,"Containers, orchestration, DAGs, retries and recovery",PC
+11,M11,Storage + File Formats Foundations,CSV/JSON/Parquet and storage-layout reasoning,PC
+12,M12,Distributed Processing + Spark/PySpark,"Spark DataFrames, joins, shuffle, partitions, debugging",PC
+13,M13,Delta Lakehouse,"Delta tables, MERGE, schema evolution, lakehouse reliability",PC
+14,M14,Kafka + Streaming,"Events, partitions, offsets, delivery semantics, streaming design",PC
+15,M15,Azure + Microsoft Fabric for Data Engineering,"Cloud/Fabric concepts, pipelines, identity, cost-aware decisions",PC / cloud labs conditional
+16,M16,"DataOps, Security + Production Operations","CI/CD, observability, security, access, incidents, operations",PC
+17,M17,Data Engineering Architecture + System Design,"Architecture choices, trade-offs, scale, governance",PC
+18,M18,Portfolio Projects + Production Capstone,"P1, P2, P3 and protected production capstone",PC / project mode
+19,M19,"Interview, Technical English + Job Launch","Resume, interview defense, targeting and job-launch execution",Phone + PC

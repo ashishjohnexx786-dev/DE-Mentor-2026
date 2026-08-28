@@ -1,11 +1,11 @@
 {
-  "name": "DE Mentor \u2014 Zero to Job-Ready 2026",
+  "name": "DE Mentor — Zero to Job-Ready 2026",
   "short_name": "DE Mentor",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#07111f",
   "theme_color": "#07111f",
-  "description": "Beginner-first production Mentor for 20 stages, 264 formal lessons, 50 project phases and 7 protected Gates.",
+  "description": "DE Mentor v2.2 RC6 - beginner-first Teaching RC2, 20 stages, 264 formal lessons, 50 project phases and protected review/gates.",
   "icons": [
     {
       "src": "icon.svg",

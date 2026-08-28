@@ -1,0 +1,10 @@
+After extracting this RC6 ZIP into your cloned DE-Mentor-2026 repository and replacing old release files:
+
+git status
+git add -A
+git diff --cached --stat
+git commit -m "Sync DE Mentor with Teaching RC2 RC6"
+git push origin main
+
+Then wait for GitHub Pages and run PHONE_SMOKE_TEST.txt.
+Export a Mentor JSON backup before replacing a live deployment.

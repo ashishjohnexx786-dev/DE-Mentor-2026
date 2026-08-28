@@ -1,0 +1,47 @@
+{
+  "release": "DE Mentor v2.2 RC6 - Teaching RC2",
+  "status": "STATIC_PACKAGE_QA_PASS_LIVE_PHONE_SMOKE_REMAINS_AFTER_DEPLOY",
+  "curriculum_version": "2.2-teaching-rc2-mentor-rc6",
+  "stage_count": 20,
+  "formal_lessons": 264,
+  "project_phases": 50,
+  "controlled_units": 314,
+  "gates": 7,
+  "checks": {
+    "all_curriculum_file_references_exist": true,
+    "missing_references": [],
+    "teaching_module_zip_count": 20,
+    "module_zip_integrity_pass": true,
+    "bad_module_zips": [],
+    "all_module_zip_names_teaching_rc2": true,
+    "material_pdf_count": 77,
+    "material_pdf_readability_pass": true,
+    "bad_pdfs": [],
+    "m18_phase_counts": {
+      "P01": 12,
+      "P02": 13,
+      "P03": 13,
+      "CAP": 12
+    },
+    "m18_project_book_rubric_mapping_pass": true,
+    "m01_m02_selfcheck_mode": true,
+    "no_fixed_pomodoro_ui": true,
+    "teaching_book_ui_present": true,
+    "service_worker_cache_name_rc6": true,
+    "service_worker_assets_exist": true,
+    "service_worker_asset_count": 85,
+    "service_worker_missing": [],
+    "state_key_preserved": true,
+    "state_version_incremented": true,
+    "stale_release_artifacts_removed": true,
+    "no_legacy_module_package_paths": true
+  },
+  "page_counts_sample": {
+    "M00_LEARNER_BOOK.pdf": 25,
+    "M03_LEARNER_BOOK.pdf": 33,
+    "M10_LEARNER_BOOK.pdf": 39,
+    "M18_CAPSTONE_BUILD_BOOK.pdf": 16,
+    "M18_P1_PROJECT_BOOK.pdf": 14,
+    "M19_LEARNER_BOOK.pdf": 29
+  }
+}

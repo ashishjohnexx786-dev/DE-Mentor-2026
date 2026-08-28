@@ -1,28 +1,40 @@
-# DE Mentor — Zero to Job-Ready Data Engineer 2026
+# DE Mentor - Zero to Job-Ready Data Engineer 2026
 
-## Production RC3 — 264/7 parity rebuild
+## v2.2 RC6 - Teaching RC2 integration
 
-This package replaces the earlier non-deployable 230-lesson / 6-Gate candidate. The curriculum is rebuilt from the frozen production module RCs:
+This release synchronizes DE Mentor with the rebuilt **Teaching RC2** course material.
 
-- 20 stages (M00–M19)
-- **264 formal lessons**
-- **50 M18 project/capstone phases** tracked separately as project units
-- **314 controlled units total**
-- **7 protected Gates** with Gate A + different fresh Gate B assets
-- bundled local production Learner Books / review-check materials
-- beginner flow: Learn → Follow → Genuine Attempt → Review → Fresh Retry → Explain → Master
-- D+1 / D+4 / D+10 / D+30 revision scheduling
-- skip/repair, evidence log, job tracker, reports, timer, JSON/CSV export and PWA support
+- 20 stages: M00-M19
+- 264 formal lessons
+- 50 M18 project/capstone phases
+- 314 controlled learning/project units total
+- 7 protected Gates
+- Teaching RC2 learner books embedded locally
+- Teaching RC2 Review / Repair material locked until a genuine attempt is saved
+- M18 project phases open the matching P1/P2/P3/Capstone Build Book and matching rubric
+- all 20 Teaching RC2 full module ZIPs bundled under `course_packages/modules/`
+- manual START STUDY / END STUDY tracker: **no fixed 25-minute Pomodoro**
+- real-clock elapsed study time survives phone locking / tab backgrounding
+- Android single-column lesson hotfix retained
+- themes, repair log, revision scheduling, evidence vault, job tracker, reports and JSON/CSV backups retained
 
-### Important release status
-Automated/static curriculum parity is the goal of this RC. It is **not course-wide FINAL** and should not be called permanently deployed until the remaining real learner-PC runtime checks and real Android smoke test pass.
+### Existing progress
 
-### State migration
-This production rebuild uses a new local-storage key. Progress from the earlier 230-lesson candidate is deliberately not auto-promoted because Stage 10+ IDs changed meaning when the production architecture was frozen. This prevents false mastery.
+The local-storage key is intentionally unchanged from RC5:
+`deMentorProduction2026.v2`
 
-### Full practice packages
-All 20 production module ZIPs and all 7 protected Gate ZIPs are bundled under `course_packages/`. The Mentor shows a **Full module package** button in lessons and a **Full Gate package** button in Gate mode, so datasets, starter code, guided labs, independent practice and assessment assets are available rather than only the PDFs.
+RC6 increments the internal state version but hydrates the existing lesson/gate/study records. Updating the site should therefore not intentionally wipe RC5 progress on the same browser/profile. Export a JSON backup before replacing a live deployment anyway.
 
+### Teaching rule
 
-## RC5 correction
-The rejected 25-minute Pomodoro UI has been removed. Mentor now uses the agreed manual **START STUDY / END STUDY** session tracker; use the phone Clock/Timer separately for alarms. RC4 Android lesson-layout fixes remain in place.
+The Mentor now says **Teaching Book** rather than treating the PDF as a thin checklist. For every formal lesson:
+
+Teaching Book -> guided follow -> independent attempt -> locked Review/Repair -> fresh retry -> explain -> mastery.
+
+For M18:
+
+Project Build Book -> build/save evidence -> locked rubric/review -> repair -> defend.
+
+### Runtime status
+
+Static/package validation can prove that files, references, JSON, JavaScript and ZIP structures are coherent. Browser/PWA notification/background behavior and PC tool exercises still need their normal real-device check when used.

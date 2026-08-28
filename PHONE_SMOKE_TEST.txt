@@ -1,14 +1,41 @@
-DE MENTOR PRODUCTION RC5 — REAL ANDROID SMOKE TEST
+DE MENTOR RC6 - TEACHING RC2 - PHONE SMOKE TEST
 
-1. Hard-refresh/reopen the deployed Mentor after RC5 is pushed.
-2. First-use checks: Progress saving, Stage 00 book, Offline/PWA, Study-session tracking, Screen size, Connection should render without overlap.
-3. Open Stage 00 / lesson L01. Confirm lesson steps 1–8 are single-column and do not overlap at normal browser zoom.
-4. Tap START STUDY. Lock the phone for about 60 seconds. Reopen Mentor. Elapsed time should include the locked time.
-5. Tap END STUDY. Reports should record the real elapsed session. There should be no 25:00 Focus/Break timer and no Mentor notification-permission request.
-6. Start another session, close/reopen the browser/PWA, confirm the session is still active; then END STUDY.
-7. Test Cancel: start a session, Cancel, confirm it is not added to Reports.
-8. Change theme to Graphite and AMOLED; verify each is visibly distinct.
-9. Export Study sessions CSV and full JSON backup. Confirm downloads are created.
-10. Navigate Today → Learn → Course → Repair → Evidence → Jobs → Reports and verify no mobile overlap/clipping.
+Run after GitHub Pages publishes the RC6 files.
 
-If all ten pass, record Android smoke PASS for RC5.
+A. Refresh / cache
+[ ] Close old Mentor tabs.
+[ ] Open the Pages URL in Android Chrome.
+[ ] If an old footer/book appears, refresh once; RC6 service worker uses a new cache name.
+
+B. First-use + layout
+[ ] First-use modal fits the screen and scrolls normally.
+[ ] No teacher steps overlap each other.
+[ ] Buttons fit in one mobile column.
+[ ] Course tabs can scroll horizontally if needed.
+
+C. Study tracker
+[ ] Confirm there is NO 25-minute Pomodoro.
+[ ] Tap START STUDY.
+[ ] Lock phone / background Chrome for about 1 minute.
+[ ] Return; elapsed clock includes the locked/background time.
+[ ] Tap END STUDY manually.
+[ ] Reports show the recorded elapsed session.
+
+D. Teaching RC2 materials
+[ ] Stage 00 Teaching Book opens.
+[ ] Pick one formal lesson in M03/M08/M15: Teaching Book opens locally.
+[ ] Save a test attempt only if appropriate; Review stays locked before a genuine attempt.
+[ ] Full module package points to a Teaching RC2 ZIP.
+
+E. M18 project mode
+[ ] P01 phase opens P1 Reliable Batch Pipeline Project Build Book.
+[ ] P02 opens P2 Analytics Engineering Project Build Book.
+[ ] P03 opens P3 Scalable Lakehouse Project Build Book.
+[ ] CAP opens Production Capstone Build Book.
+[ ] Review button opens the matching rubric only after attempt is saved.
+
+F. Progress safety
+[ ] Existing RC5 progress is still present on the same browser/profile.
+[ ] Export JSON backup still works.
+
+Record device/browser + any failed item before calling the deployment final.

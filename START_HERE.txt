@@ -1,13 +1,18 @@
-DE MENTOR — PRODUCTION RC4 MOBILE HOTFIX
+DE MENTOR v2.2 RC6 - TEACHING RC2
 
-1. Open index.html through your hosted HTTPS site (GitHub Pages is fine).
-2. The First-use check opens for a fresh learner.
-3. Start at DE00-01.
-4. Reading/revision may be done on phone. Hands-on work, assessments and project evidence are PC REQUIRED.
-5. Review material remains locked in the Mentor workflow until you save a genuine attempt.
-6. M18 contains 50 project phases; they are tracked as project units and are not incorrectly added to the 264 formal-lesson count.
-7. Gate A is the first protected attempt. If remediation is needed, Mentor routes to the different Gate B brief/review.
+START HERE
 
-This RC has structural/parity QA only. Real runtime and Android behavior must still be observed before permanent FINAL/deployed labeling.
+1. Open the hosted DE Mentor site.
+2. Run First-use check.
+3. Open Stage 00 Teaching Book.
+4. Use the Mentor's recommended next step. You may browse ahead, but unfinished earlier work remains unfinished.
+5. Formal lesson loop:
+   Teaching Book -> guided follow -> genuine independent attempt -> Review/Repair -> fresh retry -> explain -> mastery.
+6. M18 project loop:
+   Project Build Book -> build -> save evidence -> rubric/review -> repair -> defend.
+7. Hands-on work remains PC REQUIRED where the lesson says so; phone is fine for reading/revision.
+8. Full module package downloads now point to Teaching RC2 module ZIPs.
+9. There is NO fixed 25-minute Pomodoro. START STUDY / END STUDY records real elapsed time. Use the phone Clock/Timer if you want an alarm.
+10. Before replacing an existing live Mentor, download a full JSON backup from Reports.
 
-8. Use “Full module package” whenever a lesson needs starter code/data/workspaces. Use “Full Gate package” to get the protected assessment datasets and files.
+Do not use the deployed DE-Mentor-2026 repository as a destructive Git practice repository. M06 explicitly uses a separate practice repository.

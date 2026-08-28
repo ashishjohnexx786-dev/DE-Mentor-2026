@@ -1,16 +1,16 @@
-DE MENTOR — ZERO TO JOB-READY DATA ENGINEER 2026
-PRODUCTION RC5 — MANUAL STUDY TRACKER + ANDROID LAYOUT HOTFIX
+DE MENTOR v2.2 RC6 - RELEASE STATUS
 
-STATUS: STATIC/LOCAL QA PASS; REAL ANDROID RETEST / REMAINING LIVE-RUNTIME QA PENDING.
+STATIC / PACKAGE QA: PASS
+- curriculum references: PASS
+- 20 Teaching RC2 module ZIPs: PASS
+- module ZIP integrity: PASS
+- local material PDF readability: PASS
+- JavaScript syntax: PASS
+- RC5 -> RC6 hydration preservation test: PASS
+- M18 project-book/rubric routing: PASS
+- service-worker asset references: PASS
+- no fixed 25-minute Pomodoro UI: PASS
+- Android mobile CSS hotfix retained: PASS (static inspection)
 
-- 20 stages
-- 264 formal lessons
-- 50 M18 project phases
-- 314 controlled units
-- 7 protected Gates
-- fixed 25-minute Pomodoro removed
-- manual Start Study / End Study session tracker restored
-- RC4 mobile lesson-layout fix retained
-- 7 themes including AMOLED + Graphite
-
-DO NOT label permanent FINAL / DEPLOYED until real learner-PC runtime checks and Android smoke pass.
+LIVE DEVICE QA: PENDING AFTER DEPLOYMENT
+Run PHONE_SMOKE_TEST.txt on the hosted GitHub Pages site. Real phone/background/PWA behavior cannot be declared verified by static package QA alone.

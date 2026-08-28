@@ -1,0 +1,17 @@
+RC6_TEACHING_RC2_INTEGRATION
+
+What changed from RC5:
+- kept manual real-clock study tracker; old 25-minute Pomodoro remains removed
+- retained Android teacher-step/mobile layout fixes
+- replaced M00-M17 and M19 local Learner Books with Teaching RC2 beginner-first books
+- replaced Review/Check PDFs with Teaching RC2 Review/Repair material
+- replaced all 20 module-package ZIPs with Teaching RC2 module packages
+- changed formal lesson UI wording to Teaching Book
+- special M18 mapping:
+  P01 -> Reliable Batch Pipeline Project Book + P1 rubric
+  P02 -> Analytics Engineering Project Book + P2 rubric
+  P03 -> Scalable Lakehouse Project Book + P3 rubric
+  CAP -> Production Capstone Build Book + capstone rubric
+- updated curriculum titles from Teaching RC2 lesson maps where available
+- updated service-worker cache so old RC5 PDFs are not intentionally reused
+- kept the existing local-storage key so normal RC5 progress can hydrate into RC6
