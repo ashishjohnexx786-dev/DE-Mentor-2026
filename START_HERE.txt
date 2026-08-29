@@ -1,18 +1,21 @@
-DE MENTOR v2.2 RC6 - TEACHING RC2
+DE DATA ENGINEER 2026 — COMPLETE MATERIALS WITH MENTOR
+FINAL MATERIALS CONTENT FREEZE 1 — 2026-08-29
 
-START HERE
+1. Start with Mentor: open index.html (or the deployed GitHub Pages Mentor).
+2. Follow Mentor's order. For each lesson: visual/main class when assigned -> Teaching Book -> guided follow -> do alone -> locked review -> fresh retry -> explain -> mastery.
+3. No handwritten notebook is required. Save engineering evidence: code, SQL, logs, tests, Git commits, READMEs and requested screenshots.
+4. Gates are real checkpoints. Do not open review/repair before a genuine attempt.
+5. M18 is portfolio/capstone build evidence. M19 runs with active job launch.
+6. Before replacing a deployed Mentor, export a JSON progress backup. The localStorage key remains deMentorProduction2026.v2.
 
-1. Open the hosted DE Mentor site.
-2. Run First-use check.
-3. Open Stage 00 Teaching Book.
-4. Use the Mentor's recommended next step. You may browse ahead, but unfinished earlier work remains unfinished.
-5. Formal lesson loop:
-   Teaching Book -> guided follow -> genuine independent attempt -> Review/Repair -> fresh retry -> explain -> mastery.
-6. M18 project loop:
-   Project Build Book -> build -> save evidence -> rubric/review -> repair -> defend.
-7. Hands-on work remains PC REQUIRED where the lesson says so; phone is fine for reading/revision.
-8. Full module package downloads now point to Teaching RC2 module ZIPs.
-9. There is NO fixed 25-minute Pomodoro. START STUDY / END STUDY records real elapsed time. Use the phone Clock/Timer if you want an alarm.
-10. Before replacing an existing live Mentor, download a full JSON backup from Reports.
+CONTENT STATUS
+- 20 stages
+- 264 formal lessons
+- 50 M18 project/capstone phases
+- 314 controlled units
+- 7 protected Gates
+- 104 protected Teaching RC2 assets preserved byte-for-byte
+- Video-first source layer retained; four lessons intentionally remain book-led rather than force a weak video
 
-Do not use the deployed DE-Mentor-2026 repository as a destructive Git practice repository. M06 explicitly uses a separate practice repository.
+IMPORTANT
+This repository serves the frozen final MATERIAL set through Mentor. Static/package/link/browser-emulation QA is complete. Physical certification on your own Android phone and learner PC cannot be fabricated by the build environment; use DEVICE_CERTIFICATION_CHECKLIST.txt after deployment.
