@@ -1,16 +1,19 @@
-DE MENTOR v2.2 RC6 - RELEASE STATUS
+DE MENTOR v2.7 — FINAL MATERIALS CONTENT FREEZE 1
+Date: 2026-08-29
 
-STATIC / PACKAGE QA: PASS
-- curriculum references: PASS
-- 20 Teaching RC2 module ZIPs: PASS
-- module ZIP integrity: PASS
-- local material PDF readability: PASS
+CONTENT / STATIC / PACKAGE QA: PASS
+- 20 stages / 264 formal lessons / 50 project phases / 314 controlled units / 7 Gates
+- Teaching RC2 protected assets: 104 checked, 0 missing, 0 changed
+- final 264-row video/source map parity: PASS
+- internal curriculum paths: PASS
 - JavaScript syntax: PASS
-- RC5 -> RC6 hydration preservation test: PASS
-- M18 project-book/rubric routing: PASS
-- service-worker asset references: PASS
-- no fixed 25-minute Pomodoro UI: PASS
-- Android mobile CSS hotfix retained: PASS (static inspection)
+- 27 module/Gate package ZIPs: PASS
+- service-worker current asset references: PASS
+- exact final materials ZIP integrity: PASS
+- final link inventory/audit: 174 unique URL strings, 0 finalization blockers
+- managed Chromium desktop + Android-size emulation smoke: PASS
+- true-black AMOLED: PASS
+- timer timestamp/background-return logic: PASS in managed browser tests
 
-LIVE DEVICE QA: PENDING AFTER DEPLOYMENT
-Run PHONE_SMOKE_TEST.txt on the hosted GitHub Pages site. Real phone/background/PWA behavior cannot be declared verified by static package QA alone.
+PHYSICAL DEVICE CERTIFICATION: PENDING USER DEVICES ONLY
+The material/content build is frozen. Real Android Chrome and the learner PC still need the short physical smoke in DEVICE_CERTIFICATION_CHECKLIST.txt. Do not interpret this pending device-only check as missing course content.
