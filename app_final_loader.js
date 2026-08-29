@@ -1,0 +1,1 @@
+window.loadFinalMentorApp=async function(){const bin=Uint8Array.from(atob(window.DE_APP_B64||""),c=>c.charCodeAt(0));const code=await new Response(new Blob([bin]).stream().pipeThrough(new DecompressionStream("gzip"))).text();delete window.DE_APP_B64;(0,eval)(code);};
