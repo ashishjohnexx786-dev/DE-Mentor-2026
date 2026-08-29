@@ -1,0 +1,6 @@
+DE Data Engineer 2026 Complete Materials with Mentor
+Release: v2.7 Final Materials 2026 - Content Freeze 1
+Date: 2026-08-29
+Core: Teaching RC2 preserved
+Curriculum: 20 stages / 264 formal lessons / 50 project phases / 314 controlled units / 7 Gates
+Status: FINAL MATERIALS CONTENT FREEZE. Physical Android + learner-PC certification pending user-device smoke only.
