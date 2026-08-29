@@ -1,0 +1,20 @@
+FINAL PHYSICAL DEVICE CERTIFICATION
+
+ANDROID PHONE (real device)
+[ ] Open deployed Mentor in Chrome.
+[ ] Refresh once; app loads with no blank page.
+[ ] Choose AMOLED; background/cards are true black.
+[ ] Open a lesson with video + Current official ref; both buttons open the right source.
+[ ] Start study, lock/background phone for ~60 seconds, return: elapsed time advanced.
+[ ] Export JSON backup, then confirm the downloaded file exists.
+[ ] Course tab scrolls with no horizontal overflow.
+
+LEARNER PC (real device)
+[ ] Open deployed Mentor in Chrome/Edge.
+[ ] Open Teaching Book and Full module from a lesson.
+[ ] Open one assigned video and one official reference.
+[ ] Start/end a study session; report records elapsed time.
+[ ] Export JSON backup; restore the same backup.
+[ ] Reload; progress/theme remain.
+
+If all checks pass, physical-device certification is PASS. If any check fails, keep the JSON backup and report the exact failing step.
