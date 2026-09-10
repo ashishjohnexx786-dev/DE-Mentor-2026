@@ -1,0 +1,79 @@
+name: Finalize DE Mentor brand
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply final brand integration
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, re
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+          text = text.replace('<div class="logo">DE</div>', '<img class="logo" src="icon.svg" alt="DE Mentor logo">', 1)
+          index.write_text(text, encoding='utf-8')
+
+          sw = Path('sw.js')
+          text = sw.read_text(encoding='utf-8')
+          text = re.sub(r'const CACHE="[^"]+";', 'const CACHE="de-mentor-canonical-rebuild-sync-rc2-brand-final";', text, count=1)
+          sw.write_text(text, encoding='utf-8')
+
+          icon = Path('icon.svg')
+          text = icon.read_text(encoding='utf-8').replace('Option B app icon with book and database monogram', 'Final DE Mentor app icon with learning book and database monogram')
+          icon.write_text(text, encoding='utf-8')
+
+          logo = Path('branding/de-mentor-logo.svg')
+          text = logo.read_text(encoding='utf-8').replace('Option B brand: learning book and database inside a D monogram', 'Final DE Mentor identity: learning book and database inside a D monogram')
+          logo.write_text(text, encoding='utf-8')
+
+          Path('OPTION_B_ICON_PREVIEW.svg').unlink(missing_ok=True)
+          Path('BRAND_OPTION_B.md').unlink(missing_ok=True)
+
+          rel = Path('CURRENT_RELEASE.txt')
+          text = rel.read_text(encoding='utf-8')
+          brand_line = 'Final brand identity locked: learning book + database engineering, Charcoal / Teal / Soft Blue; app header, PWA/browser icon and README use one visual system.'
+          if brand_line not in text:
+              anchor = 'Storage key preserved: deMentorProduction2026.v2. Schema: 7, with legacy G07 numeric-pass revalidation protection.\n'
+              text = text.replace(anchor, anchor + brand_line + '\n')
+              rel.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/finalize-brand.yml')
+          workflow.unlink(missing_ok=True)
+
+          rows = []
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts:
+                  continue
+              rp = p.as_posix()
+              if rp == 'MANIFEST_SHA256.txt' or rp.startswith('.github/workflows/'):
+                  continue
+              rows.append((rp, hashlib.sha256(p.read_bytes()).hexdigest()))
+          rows.sort()
+          Path('MANIFEST_SHA256.txt').write_text(''.join(f'{sha}  {rp}\n' for rp, sha in rows), encoding='utf-8')
+          print(f'Final manifest rows: {len(rows)}')
+          PY
+
+      - name: Commit final brand state
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Finalize DE Mentor brand identity" || exit 0
+          git push origin main
