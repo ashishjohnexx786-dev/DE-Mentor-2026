@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="DE Mentor RC6.2 integrated with the beginner-first Teaching RC2 course: 20 stages, 264 formal lessons + 50 project phases, review/repair, revision, evidence and job launch.">
+  <meta name="description" content="DE Mentor Canonical Rebuild Sync RC2: 20 stages, 264 formal lessons, 50 project phases, 7 competency-based protected Gate families, RC6 visual-source layer preserved, manual study tracker, live-device QA still pending.">
   <title>DE Mentor — Zero to Job-Ready 2026</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -85,6 +85,13 @@
             <p class="muted tiny" id="studyHint">START STUDY saves the exact start time. Locking the phone, closing the tab or reading a lesson does not end the session. Tap END STUDY yourself when you finish; Mentor then records the real elapsed time in Reports and your streak. Use your phone Clock/Timer separately if you want an alarm.</p>
           </section>
 
+
+          <section class="card">
+            <div class="sectionHead"><div><div class="eyebrow">6-HOUR MASTERY BLUEPRINT</div><h2>Fast, but not passive</h2></div></div>
+            <div class="miniPlan"><b>~2h</b> 🎥 Main class / theory<br><b>~2.5h</b> 💻 Build + break + fix<br><b>~1h</b> 🧠 Closed-source drills<br><b>~0.5h</b> 🔁 Recall + repair</div>
+            <p class="muted tiny">No handwritten notes required. Teaching Books are your ready-made notes. Pause videos to run code; save evidence instead of transcribing lectures.</p>
+          </section>
+
           <section class="card">
             <div class="sectionHead"><div><div class="eyebrow">IF YOU FEEL LOST</div><h2>Use Rescue Mode</h2></div></div>
             <p class="muted">Do not search randomly. Mentor will reduce the task until you can move again.</p>
@@ -92,8 +99,8 @@
           </section>
 
           <section class="card">
-            <div class="sectionHead"><div><div class="eyebrow">DAILY NOTE</div><h2>Leave tomorrow a clue</h2></div><span class="muted tiny" id="noteSaved"></span></div>
-            <textarea id="dailyNote" placeholder="What I learned, what failed, and the first thing I should do tomorrow..."></textarea>
+            <div class="sectionHead"><div><div class="eyebrow">OPTIONAL QUICK LOG</div><h2>Only if it saves time</h2></div><span class="muted tiny" id="noteSaved"></span></div>
+            <textarea id="dailyNote" placeholder="Optional: one error → cause → fix, or tomorrow's first action. No lecture notes."></textarea>
           </section>
         </aside>
       </section>
@@ -114,7 +121,7 @@
         <div>
           <section class="card teacherCard">
             <div class="teacherStep"><span>1</span><div><h2>Understand the point</h2><p id="whyText"></p></div></div>
-            <div class="teacherStep"><span>2</span><div><h2>Learn / watch / read</h2><p id="learnText"></p><div class="actionRow"><a class="btn" id="sourceBtn" target="_blank" rel="noopener">Open assigned source</a><button class="btn ghost" id="learnerPackBtn">📘 Teaching Book</button></div></div>
+            <div class="teacherStep"><span>2</span><div><h2>Learn / watch / read</h2><p id="learnText"></p><div class="actionRow"><a class="btn primary hidden" id="mainClassBtn" target="_blank" rel="noopener">🎬 Open main class</a><a class="btn" id="sourceBtn" target="_blank" rel="noopener">🎥 Watch assigned visual</a><button class="btn ghost" id="learnerPackBtn">📘 Teaching Book</button><a class="btn ghost" id="moduleBtn" target="_blank" rel="noopener">📦 Full module</a><a class="btn ghost hidden" id="supplementBtn" target="_blank" rel="noopener">🧰 Employer translation lab</a></div></div>
             <div class="teacherStep"><span>3</span><div><h2>Follow once</h2><p>Type/click along with the guided example. You are allowed to copy the guided example once. Your independent task comes after this.</p><button class="btn" id="guidedDoneBtn">I followed the guided example</button></div></div>
             <div class="teacherStep important"><span>4</span><div><h2>Do it alone</h2><p id="proofText"></p><p class="muted tiny">Save your real attempt before opening the review. Wrong attempts are useful evidence.</p><button class="btn primary" id="saveAttemptBtn">Save genuine attempt</button></div></div>
             <div class="teacherStep"><span>5</span><div><h2>Check only after attempt</h2><p>Compare your reasoning with the locked Review / Repair material. Fix the exact mistake—do not copy the answer and call it mastery.</p><button class="btn" id="reviewBtn">🔒 Review locked</button></div></div>
@@ -137,7 +144,7 @@
             <div id="revisionPreview"></div>
           </section>
           <section class="card">
-            <div class="eyebrow">SOURCE</div><h2 id="sourceName"></h2><p class="muted tiny" id="sourceRule"></p>
+            <div class="eyebrow">VISUAL TEACHER / SOURCE</div><h2 id="sourceName"></h2><p class="sourceSegment" id="sourceSegment"></p><p class="muted tiny" id="sourceRule"></p><p class="muted tiny" id="sourceStatus"></p>
           </section>
         </aside>
       </section>
@@ -190,6 +197,7 @@
       <section class="gridMain">
         <div>
           <section class="card"><div class="eyebrow">STUDY REPORT</div><h1>Progress that means something</h1><div class="stats4"><div class="stat"><b id="rToday">0m</b><span>Today</span></div><div class="stat"><b id="rWeek">0m</b><span>7 days</span></div><div class="stat"><b id="rStreak">0</b><span>Streak</span></div><div class="stat"><b id="rDue">0</b><span>Revision due</span></div></div><h2>Last 7 days</h2><div id="studyBars"></div></section>
+          <section class="card"><div class="eyebrow">TRAINING PROOF</div><h2>You are measuring work, not money spent</h2><div class="stats4"><div class="stat"><b id="rTotalStudy">0h</b><span>Total focused study</span></div><div class="stat"><b id="rFormalProof">0/264</b><span>Formal lessons mastered</span></div><div class="stat"><b id="rProjectProof">0/50</b><span>Project phases mastered</span></div><div class="stat"><b id="rGateProof">0/7</b><span>Protected Gates passed</span></div></div><div class="call info" id="trainingProofText">Completion is proved by independent performance: study time + mastery + projects + Gates + evidence. Paying for a course is not a completion metric.</div><div class="actionRow"><button class="btn" id="exportTrainingProofBtn">Export training-proof CSV</button><a class="btn ghost" href="supplements/EMPLOYER_TRANSLATION_LABS_RC1.html" target="_blank" rel="noopener">Employer translation labs</a></div></section>
           <section class="card"><div class="eyebrow">STAGE PROGRESS</div><h2>Where your mastery is</h2><div id="stageBars"></div></section>
         </div>
         <aside>
@@ -199,7 +207,7 @@
     </section>
   </main>
 
-  <footer>DE Mentor v2.2 RC6.3.2 • Teaching RC2 synced • Stage 00–19 • manual study sessions • attempt-locked review • targeted repair • offline-first</footer>
+  <footer>DE Mentor Canonical Rebuild Sync RC2 • 20 stages • 264 formal lessons • 50 project phases • 7 protected Gate families • manual study tracker • static QA candidate • live PC/Android QA pending</footer>
 </div>
 
 <!-- FIRST-USE CHECK -->
@@ -281,11 +289,12 @@
     <div class="sectionHead"><div><div class="eyebrow">PROTECTED GATE</div><h2 id="gateTitle"></h2></div><button class="btn ghost closeModal" data-close="gateModal">×</button></div>
     <div class="call warn" id="gateRule"></div>
     <div id="gateScores" class="formGrid"></div>
+    <label class="check hidden" id="gateReviewerConfirmWrap"><input id="gateReviewerConfirmed" type="checkbox"> Human/Mentor technical review of this evidence bundle is complete; every checked competency above was actually demonstrated, not merely self-declared.</label>
     <label class="check"><input id="gateCritical" type="checkbox"> I had an unresolved critical failure (unsafe/corrupt/fake-evidence type failure)</label>
     <label>Evidence / attempt note<textarea id="gateNote"></textarea></label>
     <div class="actionRow"><a class="btn" id="gatePackageBtn" target="_blank" rel="noopener">📦 Full Gate package</a><a class="btn" id="gateBriefBtn" target="_blank" rel="noopener">Open Gate brief</a><a class="btn ghost" id="gateReviewBtn" target="_blank" rel="noopener">Review locked</a></div>
     <div id="gateResult" class="call info"></div>
-    <button class="btn primary" id="saveGateBtn">Save Gate attempt</button>
+    <div class="actionRow"><button class="btn primary" id="saveGateBtn">Save Gate attempt</button><button class="btn ghost hidden" id="assignNextGateBtn">Assign fresh full Gate</button></div>
   </div>
 </div>
 

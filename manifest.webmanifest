@@ -1,11 +1,11 @@
 {
-  "name": "DE Mentor - Zero to Job-Ready Data Engineer 2026",
+  "name": "DE Mentor — Zero to Job-Ready 2026",
   "short_name": "DE Mentor",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#07111f",
   "theme_color": "#07111f",
-  "description": "Final Materials Content Freeze 1 - Teaching RC2 + video-first mentor.",
+  "description": "DE Mentor Canonical Rebuild Sync RC2 — exact current Library M00-M19 + G01-G07 frozen registry, G07 demonstrated-evidence review semantics, preserved visual learning layer; live device QA pending.",
   "icons": [
     {
       "src": "icon.svg",

@@ -1,0 +1,62 @@
+{
+  "release": "DE Mentor Canonical Rebuild Sync RC2",
+  "date": "2026-09-10",
+  "status": "STATIC_QA_CANDIDATE_NOT_FINAL",
+  "architecture": {
+    "stages": 20,
+    "formal_lessons": 264,
+    "project_phases": 50,
+    "controlled_units": 314,
+    "protected_gate_families": 7,
+    "gate_variants_per_family": [
+      "A",
+      "B",
+      "C"
+    ]
+  },
+  "state": {
+    "storage_key_preserved": "deMentorProduction2026.v2",
+    "schema_version": 7,
+    "manual_study_tracker": true,
+    "fixed_25_minute_pomodoro": false
+  },
+  "assessment": {
+    "percentage_shortcut": false,
+    "review_lock": "saved attempt required",
+    "full_retest": "Gate B/C explicit assignment only",
+    "history": "append-only",
+    "G01_G06_gate_pass": "every listed competency level 3 or 4 + zero unresolved critical failures",
+    "G07_gate_pass": "all K1-K8 technically demonstrated with evidence + human/Mentor technical review + zero unresolved critical failures; evidence checker completeness-only",
+    "G07_numeric_mastery_shortcut": false
+  },
+  "content_bytes": {
+    "modules": 20,
+    "gates": 7,
+    "byte_parity_rows": 27,
+    "byte_parity_pass": true,
+    "registry_pull": "fresh current Library 27-package pull",
+    "rc1_registry_comparison": "26 exact; G07 changed and fully resynchronized"
+  },
+  "visual_layer": {
+    "baseline": "RC6.9 Video-First RC6",
+    "source_map": "control/VIDEO_FIRST_SOURCE_MAP_RC6.csv",
+    "lesson_source_rows_expected": 264,
+    "preserved_not_replaced": true
+  },
+  "release_boundary": [
+    "No claim of learner-PC runtime pass in this build",
+    "No claim of real Android/PWA smoke pass in this build",
+    "Runtime-dependent Spark/Delta/Kafka/Fabric/Airflow evidence must be observed, never inferred",
+    "Do not label permanently FINAL/DEPLOYED until live/device/final-byte gates close"
+  ],
+  "external_sources": {
+    "audit_date": "2026-09-10",
+    "status": "PASS_WITH_PROVIDER_LIMITED_VERIFICATION",
+    "unique_normalized_sources": 80,
+    "non_youtube_reachable": "29/29",
+    "youtube_title_resolved_by_automation": "10/51",
+    "youtube_automation_unresolved_not_classified_dead": "41/51",
+    "supported_dead_links": 0,
+    "policy": "Do not remove a useful source merely because provider automation could not fetch it; internal teaching remains sufficient fallback."
+  }
+}

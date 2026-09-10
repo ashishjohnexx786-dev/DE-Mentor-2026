@@ -1,6 +1,11 @@
-DE Data Engineer 2026 Complete Materials with Mentor
-Release: v2.7 Final Materials 2026 - Content Freeze 1
-Date: 2026-08-29
-Core: Teaching RC2 preserved
-Curriculum: 20 stages / 264 formal lessons / 50 project phases / 314 controlled units / 7 Gates
-Status: FINAL MATERIALS CONTENT FREEZE. Physical Android + learner-PC certification pending user-device smoke only.
+DE MENTOR — CANONICAL REBUILD SYNC RC2
+Date: 2026-09-10
+Status: STATIC / PACKAGE QA CANDIDATE — NOT PERMANENTLY FINAL OR DEPLOYED
+
+20 stages • 264 formal lessons • 50 M18 project phases • 314 controlled units • 7 protected Gate families.
+Current Library M00-M19 and G01-G07 frozen packages are embedded byte-for-byte from a fresh 27-package registry pull.
+Registry comparison against RC1: 26/27 exact; G07 was newer and has been fully resynchronized.
+G01-G06: every required competency must reach level 3/4 or 4/4 with zero unresolved critical failures.
+G07: K1-K8 must each be technically demonstrated with inspectable evidence + human/Mentor technical review + zero unresolved critical failures; its evidence checker is structure-only and cannot award a technical pass.
+Storage key preserved: deMentorProduction2026.v2. Schema: 7, with legacy G07 numeric-pass revalidation protection.
+Live learner-PC and Android/PWA QA remains pending.
