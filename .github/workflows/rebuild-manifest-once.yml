@@ -1,0 +1,40 @@
+name: Rebuild manifest once
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/rebuild-manifest-once.yml
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Rebuild manifest and self-remove
+        shell: bash
+        run: |
+          rm -f .github/workflows/rebuild-manifest-once.yml
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          rows=[]
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts:
+                  continue
+              rp=p.as_posix()
+              if rp=='MANIFEST_SHA256.txt' or rp.startswith('.github/workflows/'):
+                  continue
+              rows.append((rp, hashlib.sha256(p.read_bytes()).hexdigest()))
+          rows.sort()
+          Path('MANIFEST_SHA256.txt').write_text(''.join(f'{h}  {rp}\n' for rp,h in rows), encoding='utf-8')
+          print(f'Manifest rows: {len(rows)}')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Rebuild final brand manifest"
+          git push origin main
