@@ -1,13 +1,65 @@
-# DE Mentor — Canonical Rebuild Sync RC2
+<p align="center">
+  <img src="branding/de-mentor-logo.svg" alt="DE Mentor" width="760">
+</p>
 
-This candidate is synchronized against a fresh pull of all 27 current frozen Library packages: M00-M19 plus G01-G07. Twenty-six packages were byte-identical to RC1; the current G07 was newer, so RC2 regenerates G07 materials, curriculum semantics, parity controls, app state handling and manifests from that authoritative package.
+<h1 align="center">DE Mentor — Zero to Job-Ready Data Engineer 2026</h1>
 
-The teaching source of truth is the embedded canonical module packages. The protected assessment source of truth is the embedded canonical Gate-family packages. External videos/official references remain support only; the useful visual-source layer is preserved.
+<p align="center"><strong>Learn → Build → Practice → Prove → Grow</strong></p>
 
-Mastery route: Learn → guided execution → genuine independent attempt → protected review → changed fresh retry → explain → Mastered.
+## Current release
 
-Gate route: Gate A → saved attempt → Review A/targeted repair. Gate B/C stay sealed unless a fresh full reassessment is explicitly assigned. G01-G06 use per-competency 0-4 review with every competency at 3/4 or 4/4 and zero critical failures. G07 uses the newer non-numeric completion rule: K1-K8 must each be technically demonstrated with inspectable evidence, a human/Mentor technical review must confirm the evidence, and zero critical failures may remain. The G07 evidence checker tests completeness only; it never decides technical correctness.
+**Canonical Rebuild Sync RC2 — 2026-09-10**
 
-Progress storage key remains `deMentorProduction2026.v2`. Schema 7 preserves append-only history and prevents an old numeric-only G07 pass from silently satisfying the newer final-Gate contract.
+This repository is the active DE Mentor application and the synchronized teaching system for the standalone Data Engineer 2026 course.
 
-Release boundary: static/package QA can be completed here; learner-PC runtime and real Android/PWA behavior must be observed before any permanent FINAL/DEPLOYED label.
+- **20 stages:** M00–M19
+- **264 formal lessons**
+- **50 M18 production-capstone phases**
+- **314 controlled learning units**
+- **7 protected Gate families:** G01–G07
+- **100 routed teaching/review PDFs — 755 pages**
+- **27 canonical module/Gate packages embedded from the authoritative registry**
+- **37/37 static + integration QA checks passed**
+
+## How the Mentor teaches
+
+The normal mastery route is:
+
+**Learn → guided execution → genuine independent attempt → protected review → changed fresh retry → explain → Mastered**
+
+The Mentor is designed to behave like a structured teacher rather than a checklist. Review material stays protected until a genuine saved attempt, failed attempts remain append-only, and fresh retests use changed tasks.
+
+## Gate rules
+
+**G01–G06:** every required competency must reach **3/4 or 4/4**, with **zero unresolved critical failures**. There is no percentage-average shortcut.
+
+**G07:** K1–K8 must each be technically demonstrated with inspectable evidence and technical review. The evidence checker can verify structure/completeness, but it cannot award technical correctness by itself.
+
+Gate A is the normal assessment. Gate B and C remain sealed unless a fresh full reassessment is explicitly assigned after failure, review and repair. A clean Gate A pass ends that Gate.
+
+## Study experience
+
+- Manual **START STUDY / END STUDY** tracker — no forced 25-minute Pomodoro.
+- AMOLED true-black theme plus additional themes.
+- External videos and official references remain visual/support resources; the internal Teaching Books remain sufficient if a link fails.
+- M18 contains the production portfolio/capstone workflow.
+- M19 covers interview preparation, technical English and job launch.
+- Progress storage key remains `deMentorProduction2026.v2`.
+- Current state schema: **7**.
+
+## Branding
+
+The final visual identity is **Option B**: book + database/data-grid symbolism, charcoal + teal + soft-blue palette.
+
+- App icon: `icon.svg`
+- Horizontal DE Mentor logo: `branding/de-mentor-logo.svg`
+
+## Release status
+
+**Content / package / static integration QA: PASS.**
+
+The remaining certification boundary is real-device execution: hosted GitHub Pages, Android/PWA behavior, backup restore and learner-PC tool-dependent runtime. Until those physical checks are observed, the release should not be described as permanently FINAL/DEPLOYED.
+
+---
+
+<p align="center"><strong>Clean ideas. Stronger data skills.</strong></p>
