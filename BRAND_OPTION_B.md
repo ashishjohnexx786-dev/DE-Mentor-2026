@@ -1,1 +1,0 @@
-Option B is the canonical DE Mentor identity from 2026-09-10: book + database, Charcoal / Teal / Soft Blue. Branding only; curriculum and Gate package bytes remain unchanged.
