@@ -3,9 +3,9 @@
   "short_name": "DE Mentor",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#07111f",
-  "theme_color": "#07111f",
-  "description": "DE Mentor Canonical Rebuild Sync RC2 — exact current Library M00-M19 + G01-G07 frozen registry, G07 demonstrated-evidence review semantics, preserved visual learning layer; live device QA pending.",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "description": "DE Mentor Canonical Rebuild Sync RC2 — final Option B branding, 20 stages, 264 formal lessons, 50 M18 project phases, 314 controlled units and 7 protected Gate families; live device QA pending.",
   "icons": [
     {
       "src": "icon.svg",
