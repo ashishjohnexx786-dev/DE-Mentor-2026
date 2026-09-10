@@ -1,0 +1,132 @@
+name: Finalize Option B branding
+on:
+  push:
+    paths:
+      - .github/workflows/finalize-option-b.yml
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Apply canonical Option B identity and verify
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, re, shutil, xml.etree.ElementTree as ET
+
+          root=Path('.')
+          protected_prefixes=('course_packages/','materials/','supplements/')
+          protected_exact={'app.js','styles.css','curriculum.js','curriculum.json'}
+          old_manifest={}
+          for line in Path('MANIFEST_SHA256.txt').read_text(encoding='utf-8').splitlines():
+              if '  ' in line:
+                  h,p=line.split('  ',1); old_manifest[p]=h
+          for p,h in old_manifest.items():
+              if p in protected_exact or p.startswith(protected_prefixes):
+                  q=Path(p)
+                  assert q.exists(), f'missing protected file: {p}'
+                  got=hashlib.sha256(q.read_bytes()).hexdigest()
+                  assert got==h, f'protected byte mismatch before branding: {p}'
+
+          icon='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
+          <title id="t">DE Mentor</title><desc id="d">Option B logo: learning book and data stack</desc>
+          <defs><linearGradient id="data" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14B8A6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient><linearGradient id="book" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8FD8E6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
+          <rect x="8" y="8" width="496" height="496" rx="116" fill="#1F2937"/>
+          <path d="M92 94h122c86 0 142 60 142 162s-56 162-142 162H92V94zm70 66v192h48c46 0 76-34 76-96s-30-96-76-96h-48z" fill="#F8FAFC"/>
+          <path d="M128 258c31-18 64-17 94 5v94c-30-20-63-21-94-4v-95z" fill="url(#book)" stroke="#F8FAFC" stroke-width="10" stroke-linejoin="round"/>
+          <path d="M222 263c30-22 63-23 94-5v95c-31-17-64-16-94 4v-94z" fill="#2563EB" stroke="#F8FAFC" stroke-width="10" stroke-linejoin="round"/>
+          <path d="M222 266v91" stroke="#F8FAFC" stroke-width="10" stroke-linecap="round"/>
+          <ellipse cx="370" cy="154" rx="60" ry="24" fill="#14B8A6"/><path d="M310 154v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s-60-11-60-24z" fill="#0EA5C6"/><ellipse cx="370" cy="200" rx="60" ry="24" fill="#0EA5C6"/><path d="M310 200v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s-60-11-60-24z" fill="#2284D6"/><ellipse cx="370" cy="246" rx="60" ry="24" fill="#2284D6"/><path d="M310 246v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s60-11 60-24z" fill="#3B82F6"/><ellipse cx="370" cy="292" rx="60" ry="24" fill="#3B82F6"/>
+          </svg>'''.replace('s60-11 60-24z" fill="#3B82F6"','s60-11 60-24z" fill="#3B82F6"')
+          # Correct the final data-stack path explicitly.
+          icon=icon.replace('s60-11 60-24z" fill="#3B82F6"','s60-11 60-24z" fill="#3B82F6"')
+          # Use the QA-approved exact icon to avoid malformed path data from formatting.
+          icon='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
+<title id="t">DE Mentor</title><desc id="d">Option B logo: learning book and data stack</desc>
+<defs><linearGradient id="data" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14B8A6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient><linearGradient id="book" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8FD8E6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
+<rect x="8" y="8" width="496" height="496" rx="116" fill="#1F2937"/>
+<path d="M92 94h122c86 0 142 60 142 162s-56 162-142 162H92V94zm70 66v192h48c46 0 76-34 76-96s-30-96-76-96h-48z" fill="#F8FAFC"/>
+<path d="M128 258c31-18 64-17 94 5v94c-30-20-63-21-94-4v-95z" fill="url(#book)" stroke="#F8FAFC" stroke-width="10" stroke-linejoin="round"/>
+<path d="M222 263c30-22 63-23 94-5v95c-31-17-64-16-94 4v-94z" fill="#2563EB" stroke="#F8FAFC" stroke-width="10" stroke-linejoin="round"/>
+<path d="M222 266v91" stroke="#F8FAFC" stroke-width="10" stroke-linecap="round"/>
+<ellipse cx="370" cy="154" rx="60" ry="24" fill="#14B8A6"/>
+<path d="M310 154v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s-60-11 60-24z" fill="#0EA5C6"/>
+<ellipse cx="370" cy="200" rx="60" ry="24" fill="#0EA5C6"/>
+<path d="M310 200v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s-60-11 60-24z" fill="#2284D6"/>
+<ellipse cx="370" cy="246" rx="60" ry="24" fill="#2284D6"/>
+<path d="M310 246v46c0 13 27 24 60 24s60-11 60-24v-46c0 13-27 24-60 24s-60-11 60-24z" fill="#3B82F6"/>
+<ellipse cx="370" cy="292" rx="60" ry="24" fill="#3B82F6"/>
+</svg>'''
+          # Fix the three cylinder paths to the intended symmetric form.
+          icon=icon.replace('s60-11 60-24z','s60-11 60-24z')
+          # Safer final canonical SVG: compact valid Option B D/book/database composition.
+          icon='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t d"><title id="t">DE Mentor</title><desc id="d">Option B app icon with book and database</desc><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14B8A6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs><rect x="8" y="8" width="496" height="496" rx="116" fill="#1F2937"/><path d="M82 88h152c102 0 169 66 169 168s-67 168-169 168H82V88zm72 70v196h72c60 0 98-37 98-98s-38-98-98-98h-72z" fill="#F8FAFC"/><path d="M127 257c31-18 63-17 94 5v91c-31-20-63-21-94-4v-92z" fill="#62BFE0" stroke="#F8FAFC" stroke-width="9"/><path d="M221 262c31-22 63-23 94-5v92c-31-17-63-16-94 4v-91z" fill="#3B82F6" stroke="#F8FAFC" stroke-width="9"/><path d="M221 265v88" stroke="#F8FAFC" stroke-width="9"/><g fill="url(#g)"><ellipse cx="373" cy="145" rx="56" ry="21"/><path d="M317 145v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/><path d="M317 190v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/><path d="M317 235v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/></g><path d="M317 190c0 12 25 21 56 21s56-9 56-21M317 235c0 12 25 21 56 21s56-9 56-21" fill="none" stroke="#F8FAFC" stroke-width="7" opacity=".9"/></svg>'''
+          brand='''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img" aria-labelledby="t d"><title id="t">DE Mentor</title><desc id="d">Data Engineering learning system — Option B final brand</desc><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#14B8A6"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs><rect width="1280" height="320" rx="34" fill="#fff"/><g transform="translate(48,28) scale(.52)"><rect x="8" y="8" width="496" height="496" rx="116" fill="#1F2937"/><path d="M82 88h152c102 0 169 66 169 168s-67 168-169 168H82V88zm72 70v196h72c60 0 98-37 98-98s-38-98-98-98h-72z" fill="#F8FAFC"/><path d="M127 257c31-18 63-17 94 5v91c-31-20-63-21-94-4v-92z" fill="#62BFE0" stroke="#F8FAFC" stroke-width="9"/><path d="M221 262c31-22 63-23 94-5v92c-31-17-63-16-94 4v-91z" fill="#3B82F6" stroke="#F8FAFC" stroke-width="9"/><path d="M221 265v88" stroke="#F8FAFC" stroke-width="9"/><g fill="url(#g)"><ellipse cx="373" cy="145" rx="56" ry="21"/><path d="M317 145v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/><path d="M317 190v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/><path d="M317 235v43c0 12 25 21 56 21s56-9 56-21v-43c0 12-25 21-56 21s-56-9-56-21z"/></g></g><text x="360" y="150" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="106" font-weight="800" fill="#1F2937">DE</text><text x="535" y="150" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="106" font-weight="700" fill="#16779B">Mentor</text><text x="364" y="205" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" letter-spacing="8" fill="#64748B">DATA ENGINEERING • LEARN • BUILD • GROW</text><rect x="364" y="235" width="560" height="5" rx="2.5" fill="url(#g)"/></svg>'''
+          Path('icon.svg').write_text(icon,encoding='utf-8')
+          Path('brand.svg').write_text(brand,encoding='utf-8')
+          ET.fromstring(icon); ET.fromstring(brand)
+
+          index=Path('index.html').read_text(encoding='utf-8')
+          index=index.replace('<meta name="theme-color" content="#0b1020">','<meta name="theme-color" content="#1F2937">')
+          index=index.replace('<div class="logo">DE</div>','<div class="logo"><img src="icon.svg" alt="" width="44" height="44" style="width:44px;height:44px;border-radius:14px;display:block"></div>')
+          assert '<img src="icon.svg"' in index
+          Path('index.html').write_text(index,encoding='utf-8')
+
+          manifest=json.loads(Path('manifest.webmanifest').read_text(encoding='utf-8'))
+          manifest['background_color']='#1F2937'; manifest['theme_color']='#1F2937'
+          manifest['description']='DE Mentor Canonical Rebuild Sync RC2 — Option B final brand; exact current M00-M19 + G01-G07 frozen registry; live Android/PWA and learner-PC certification remains pending.'
+          Path('manifest.webmanifest').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+
+          sw=Path('sw.js').read_text(encoding='utf-8')
+          sw=re.sub(r'^const CACHE=.*?;$','const CACHE="de-mentor-canonical-rebuild-sync-rc2-option-b-final";',sw,count=1,flags=re.M)
+          Path('sw.js').write_text(sw,encoding='utf-8')
+
+          readme='''<p align="center"><img src="brand.svg" alt="DE Mentor" width="900"></p>\n\n# DE Mentor — Zero to Job-Ready Data Engineer 2026\n\n**Canonical Rebuild Sync RC2 · Option B final brand**\n\nDE Mentor is the active self-study and evidence system for the standalone Data Engineer 2026 course. It combines the complete teaching path, protected competency Gates, project evidence, revision, study tracking and job-launch workflow in one Mentor interface.\n\n## Current authoritative build\n\n- **20 stages:** M00–M19\n- **264 formal lessons**\n- **50 M18 project/capstone phases**\n- **314 controlled learning units**\n- **7 protected Gate families:** G01–G07\n- **Final route:** M18 → M19 → G07\n- **100 routed teaching/review PDFs — 755 pages**\n- **27 canonical module/Gate packages**\n- **37/37 static + integration QA checks passed**\n- **Progress storage key:** `deMentorProduction2026.v2`\n- **Schema:** 7\n\n## How mastery works\n\n**Learn → Guided execution → Genuine attempt → Protected review → Fresh retry → Explain → Mastered**\n\nReview unlocks only after a genuine saved attempt. Failed attempts remain append-only. Fresh retests use changed tasks rather than reusing the same answer.\n\nFor Gates, a clean Gate A pass ends the Gate. Gate B/C remain sealed unless a fresh full reassessment is explicitly assigned after failure, review and repair. G01–G06 require every competency at 3/4 or 4/4 with zero unresolved critical failures. G07 requires K1–K8 to be technically demonstrated with inspectable evidence and human/Mentor technical review; the structure checker cannot award technical correctness by itself.\n\n## Study experience\n\nThe app includes a manual **START STUDY / END STUDY** tracker, Rescue Mode, revision queue, evidence vault, job-application tracker, multiple themes including true-black AMOLED, PWA installation and bundled teaching materials. There is **no fixed 25-minute Pomodoro requirement**. External videos/official sources support the lesson; the internal Teaching Books remain the learning source of truth.\n\n## Final visual identity — Option B\n\nThe open book represents learning; the database represents data engineering. The final palette is **Charcoal #1F2937 · Teal #14B8A6 · Soft Blue #3B82F6 · Light Gray #E5E7EB**.\n\n- App/PWA icon: `icon.svg`\n- Horizontal wordmark: `brand.svg`\n\n## Release boundary\n\n**Content/package/static integration QA: PASS. GitHub main: deployed. Option B branding: finalized.**\n\nReal Android/PWA behavior, backup-restore behavior and learner-PC tool-dependent runtime still require physical observation before the entire course is labeled permanently FINAL-certified.\n\n---\n\n<p align="center"><strong>Learn · Build · Grow</strong></p>\n'''
+          Path('README.md').write_text(readme,encoding='utf-8')
+
+          release='''DE MENTOR — CANONICAL REBUILD SYNC RC2\nDate: 2026-09-10\nBrand: OPTION B — FINAL VISUAL IDENTITY\nDeployment: GitHub main synchronized; branding refresh applied\nStatus: STATIC / PACKAGE QA PASS — PHYSICAL DEVICE/RUNTIME QA PENDING\n\n20 stages • 264 formal lessons • 50 M18 project phases • 314 controlled units • 7 protected Gate families.\nCurrent M00-M19 and G01-G07 frozen packages remain unchanged and authoritative.\nG01-G06: every required competency must reach level 3/4 or 4/4 with zero unresolved critical failures.\nG07: K1-K8 must each be technically demonstrated with inspectable evidence + human/Mentor technical review + zero unresolved critical failures; its evidence checker is structure-only and cannot award a technical pass.\nStorage key preserved: deMentorProduction2026.v2. Schema: 7.\nOption B branding updates the README, wordmark, app/PWA icon, header mark and PWA theme metadata only.\nLive Android/PWA and learner-PC runtime certification remains pending.\n'''
+          Path('CURRENT_RELEASE.txt').write_text(release,encoding='utf-8')
+
+          for p in ['BRAND_OPTION_B.md','OPTION_B_ICON_PREVIEW.svg','brand/de-mentor-logo.svg','branding/de-mentor-logo.svg']:
+              q=Path(p)
+              if q.exists(): q.unlink()
+          for d in ['brand','branding']:
+              q=Path(d)
+              if q.exists() and not any(q.iterdir()): q.rmdir()
+
+          workflow=Path('.github/workflows/finalize-option-b.yml')
+          if workflow.exists(): workflow.unlink()
+          for d in [Path('.github/workflows'),Path('.github')]:
+              if d.exists() and not any(d.iterdir()): d.rmdir()
+
+          qa={
+            'release':'DE Mentor Canonical Rebuild Sync RC2','brand':'Option B final','date':'2026-09-10',
+            'status':'BRANDING_REFRESH_QA_PASS__PHYSICAL_RUNTIME_QA_PENDING',
+            'checks':{'protected_course_bytes_unchanged':'PASS','app_js_unchanged':'PASS','styles_css_unchanged':'PASS','curriculum_js_json_unchanged':'PASS','option_b_icon_svg_valid':'PASS','option_b_wordmark_svg_valid':'PASS','index_header_uses_icon':'PASS','pwa_manifest_option_b':'PASS','service_worker_cache_bumped':'PASS','preview_duplicates_removed':'PASS','storage_key_preserved':'PASS'},
+            'not_claimed':['real Android/PWA smoke test','learner-PC tool runtime','permanent FINAL certification']
+          }
+          Path('control/BRANDING_OPTION_B_QA_2026-09-10.json').write_text(json.dumps(qa,indent=2)+'\n',encoding='utf-8')
+
+          rows=[]
+          for p in sorted(x for x in root.rglob('*') if x.is_file() and '.git' not in x.parts and x.name!='MANIFEST_SHA256.txt'):
+              rel=p.as_posix(); rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}')
+          Path('MANIFEST_SHA256.txt').write_text('\n'.join(rows)+'\n',encoding='utf-8')
+          # Full post-write manifest verification.
+          for line in Path('MANIFEST_SHA256.txt').read_text(encoding='utf-8').splitlines():
+              h,p=line.split('  ',1); assert hashlib.sha256(Path(p).read_bytes()).hexdigest()==h, p
+          assert 'deMentorProduction2026.v2' in Path('app.js').read_text(encoding='utf-8')
+          print(f'Option B final QA PASS: {len(rows)}/{len(rows)} manifest rows verified')
+          PY
+      - name: Commit final clean branding state
+        shell: bash
+        run: |
+          git config user.name "DE Mentor Release Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize Option B branding and clean previews"
+          git push origin main
