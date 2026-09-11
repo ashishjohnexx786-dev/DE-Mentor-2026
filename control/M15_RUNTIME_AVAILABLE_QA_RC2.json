@@ -1,0 +1,22 @@
+{
+  "module": "M15 - Azure + Microsoft Fabric Data Engineering",
+  "release": "BEGINNER_FIRST_RECOVERED_RC2",
+  "status": "STATIC_OFFLINE_PASS__LIVE_FABRIC_RUNTIME_PENDING",
+  "executed_locally": {
+    "retail_orders_simulator": "PASS: 7 raw -> 4 accepted + 3 quarantined; accepted total 3300; incremental update+insert -> 5 rows / 4250; exact rerun no-op",
+    "module_practical_evidence_state": "blank evidence rejected; complete QA fixture accepted",
+    "maintenance_changed_reassessment": "learner inputs/templates present; solved learner outputs intentionally absent",
+    "pdf_preflight": "10/10 PASS",
+    "render_visual": "153/153 pages at 200 DPI PASS"
+  },
+  "not_claimed": [
+    "authenticated Microsoft Fabric tenant/workspace execution",
+    "real OneLake/Lakehouse writes",
+    "real Fabric notebook/Spark run",
+    "real Fabric pipeline execution",
+    "real SQL analytics endpoint query",
+    "real IAM/least-privilege observation",
+    "real capacity/monitoring evidence"
+  ],
+  "rule": "SIMULATOR/OFFLINE PLAN evidence cannot be relabeled LIVE FABRIC. Missing live evidence remains pending for later runtime/G06 certification."
+}

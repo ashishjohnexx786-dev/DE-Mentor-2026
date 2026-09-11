@@ -1,12 +1,12 @@
-DE MENTOR — CANONICAL REBUILD SYNC RC2
-Date: 2026-09-10
-Status: STATIC / PACKAGE QA CANDIDATE — NOT PERMANENTLY FINAL OR DEPLOYED
+DE MENTOR - BEGINNER-FIRST MASTER AUDIT RC4 CANDIDATE
+Date: 2026-09-11
+Status: STATIC REPAIR CANDIDATE - NOT FINAL / PHYSICAL RUNTIME PENDING
 
-20 stages • 264 formal lessons • 50 M18 project phases • 314 controlled units • 7 protected Gate families.
-Current Library M00-M19 and G01-G07 frozen packages are embedded byte-for-byte from a fresh 27-package registry pull.
-Registry comparison against RC1: 26/27 exact; G07 was newer and has been fully resynchronized.
-G01-G06: every required competency must reach level 3/4 or 4/4 with zero unresolved critical failures.
-G07: K1-K8 must each be technically demonstrated with inspectable evidence + human/Mentor technical review + zero unresolved critical failures; its evidence checker is structure-only and cannot award a technical pass.
-Storage key preserved: deMentorProduction2026.v2. Schema: 7, with legacy G07 numeric-pass revalidation protection.
-Final brand identity locked: learning book + database engineering, Charcoal / Teal / Soft Blue; app header, PWA/browser icon and README use one visual system.
-Live learner-PC and Android/PWA QA remains pending.
+20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.
+M00-M14 learner books genuinely rebuilt to the locked beginner-first teaching contract.
+M15 Fabric Runtime 2.0 truth corrected to GA (opt-in during phased rollout at this checkpoint).
+Whole module and whole Gate-family ZIPs are admin-only and not learner-routed during study/assessment.
+Gate B/C assignment requires saved failed attempt + protected Review opened + recorded targeted repair + recorded changed micro-proof + explicit assignment.
+G01/G03 PDF clipping and M19 Start Here split repaired.
+Option-B charcoal/teal/soft-blue identity normalized; true-black AMOLED retained.
+Static QA does not equal learner Gate pass or live runtime proof. Learner-PC, physical Android/PWA, hosted-byte parity, and required live tool/cloud evidence remain pending.

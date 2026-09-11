@@ -1,0 +1,10 @@
+{
+  "module": "M15",
+  "release": "RECOVERED_SUCCESSOR_RC2",
+  "checks": 561,
+  "passed": 561,
+  "failed": [],
+  "status": "PASS",
+  "historical_lost_seal": "39613dc1021d45b8f2918c27dcf6357a7f04befd0ee8b20b483670fbbd087c88",
+  "claim": "new successor seal, not historical byte reproduction"
+}

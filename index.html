@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="DE Mentor Canonical Rebuild Sync RC2: 20 stages, 264 formal lessons, 50 project phases, 7 competency-based protected Gate families, RC6 visual-source layer preserved, manual study tracker, live-device QA still pending.">
+  <meta name="description" content="DE Mentor 2026 Beginner-First RC4: 20 stages, 264 formal lessons, 50 project phases, 7 protected competency Gates, Option-B institute family, runtime/device certification pending.">
   <title>DE Mentor — Zero to Job-Ready 2026</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -14,7 +14,7 @@
 <div class="appShell">
   <header class="topbar">
     <div class="brandWrap">
-      <img class="logo" src="icon.svg" alt="DE Mentor logo">
+      <div class="logo">DE</div>
       <div class="brandText"><strong>DE Mentor</strong><span>Zero → Job-Ready Data Engineer 2026</span></div>
     </div>
     <div class="topActions">
@@ -121,7 +121,7 @@
         <div>
           <section class="card teacherCard">
             <div class="teacherStep"><span>1</span><div><h2>Understand the point</h2><p id="whyText"></p></div></div>
-            <div class="teacherStep"><span>2</span><div><h2>Learn / watch / read</h2><p id="learnText"></p><div class="actionRow"><a class="btn primary hidden" id="mainClassBtn" target="_blank" rel="noopener">🎬 Open main class</a><a class="btn" id="sourceBtn" target="_blank" rel="noopener">🎥 Watch assigned visual</a><button class="btn ghost" id="learnerPackBtn">📘 Teaching Book</button><a class="btn ghost" id="moduleBtn" target="_blank" rel="noopener">📦 Full module</a><a class="btn ghost hidden" id="supplementBtn" target="_blank" rel="noopener">🧰 Employer translation lab</a></div></div>
+            <div class="teacherStep"><span>2</span><div><h2>Learn / watch / read</h2><p id="learnText"></p><div class="actionRow"><a class="btn primary hidden" id="mainClassBtn" target="_blank" rel="noopener">🎬 Open main class</a><a class="btn" id="sourceBtn" target="_blank" rel="noopener">🎥 Watch assigned visual</a><button class="btn ghost" id="learnerPackBtn">📘 Teaching Book</button><a class="btn ghost hidden" id="moduleBtn" target="_blank" rel="noopener" aria-hidden="true">Full module package - admin only</a><a class="btn ghost hidden" id="supplementBtn" target="_blank" rel="noopener">🧰 Employer translation lab</a></div></div>
             <div class="teacherStep"><span>3</span><div><h2>Follow once</h2><p>Type/click along with the guided example. You are allowed to copy the guided example once. Your independent task comes after this.</p><button class="btn" id="guidedDoneBtn">I followed the guided example</button></div></div>
             <div class="teacherStep important"><span>4</span><div><h2>Do it alone</h2><p id="proofText"></p><p class="muted tiny">Save your real attempt before opening the review. Wrong attempts are useful evidence.</p><button class="btn primary" id="saveAttemptBtn">Save genuine attempt</button></div></div>
             <div class="teacherStep"><span>5</span><div><h2>Check only after attempt</h2><p>Compare your reasoning with the locked Review / Repair material. Fix the exact mistake—do not copy the answer and call it mastery.</p><button class="btn" id="reviewBtn">🔒 Review locked</button></div></div>
@@ -207,7 +207,7 @@
     </section>
   </main>
 
-  <footer>DE Mentor Canonical Rebuild Sync RC2 • 20 stages • 264 formal lessons • 50 project phases • 7 protected Gate families • manual study tracker • static QA candidate • live PC/Android QA pending</footer>
+  <footer>DE Mentor 2026 • Beginner-First RC4 • 20 stages • 264 formal lessons • 50 project phases • 7 protected Gates • Option-B institute family • runtime/device certification pending</footer>
 </div>
 
 <!-- FIRST-USE CHECK -->
@@ -292,7 +292,15 @@
     <label class="check hidden" id="gateReviewerConfirmWrap"><input id="gateReviewerConfirmed" type="checkbox"> Human/Mentor technical review of this evidence bundle is complete; every checked competency above was actually demonstrated, not merely self-declared.</label>
     <label class="check"><input id="gateCritical" type="checkbox"> I had an unresolved critical failure (unsafe/corrupt/fake-evidence type failure)</label>
     <label>Evidence / attempt note<textarea id="gateNote"></textarea></label>
-    <div class="actionRow"><a class="btn" id="gatePackageBtn" target="_blank" rel="noopener">📦 Full Gate package</a><a class="btn" id="gateBriefBtn" target="_blank" rel="noopener">Open Gate brief</a><a class="btn ghost" id="gateReviewBtn" target="_blank" rel="noopener">Review locked</a></div>
+    <div class="actionRow"><a class="btn hidden" id="gatePackageBtn" target="_blank" rel="noopener" aria-hidden="true">Full Gate package - admin only</a><a class="btn" id="gateBriefBtn" target="_blank" rel="noopener">Open Gate brief</a><a class="btn ghost" id="gateReviewBtn" target="_blank" rel="noopener">Review locked</a></div>
+    <div class="call info hidden" id="gateRepairBlock">
+      <b>Targeted repair evidence</b>
+      <p class="tiny">Available only after the saved Gate attempt and protected Review are opened. Record what you repaired, then prove the competency on a changed micro-task with the Review closed.</p>
+      <label>What did you repair?<textarea id="gateRepairEvidence" placeholder="State the exact weak competency, what you changed, and where the evidence is saved."></textarea></label>
+      <label>Changed micro-proof<textarea id="gateChangedProof" placeholder="Describe the fresh changed task and the observed validation result."></textarea></label>
+      <div class="actionRow"><button class="btn primary" id="saveGateRepairBtn">Save repair + changed proof</button></div>
+      <div class="tiny" id="gateRepairStatus"></div>
+    </div>
     <div id="gateResult" class="call info"></div>
     <div class="actionRow"><button class="btn primary" id="saveGateBtn">Save Gate attempt</button><button class="btn ghost hidden" id="assignNextGateBtn">Assign fresh full Gate</button></div>
   </div>

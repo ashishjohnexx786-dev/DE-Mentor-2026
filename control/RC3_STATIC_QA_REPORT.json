@@ -1,0 +1,810 @@
+{
+  "candidate": "DE_MENTOR_BEGINNER_FIRST_SYNC_RC3_RECOVERY_COMPLETE_CANDIDATE",
+  "date": "2026-09-11",
+  "static_checks_total": 158,
+  "static_checks_passed": 158,
+  "static_checks_failed": 0,
+  "errors": [],
+  "warnings": [],
+  "material_pdfs": 108,
+  "material_pdf_pages": 1140,
+  "recovered_sealed_modules": [
+    "M15_SUCCESSOR",
+    "M16"
+  ],
+  "provenance_blockers": [],
+  "release_status": "STATIC_SYNC_RECOVERY_COMPLETE_TECHNICAL_QA_PASS__NOT_FINAL__PHYSICAL_RUNTIME_PENDING",
+  "physical_runtime_status": "PENDING_LEARNER_PC_AND_ANDROID_PWA_CERTIFICATION",
+  "checks": [
+    {
+      "check": "curriculum.js wrapper",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "curriculum json/js semantic equality",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "stage count preserved",
+      "pass": true,
+      "detail": "20"
+    },
+    {
+      "check": "gate count preserved",
+      "pass": true,
+      "detail": "7"
+    },
+    {
+      "check": "formal lesson count preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 phase count preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "all curriculum direct/package paths resolve",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "sealed package hash M15_AZURE_MICROSOFT_FABRIC_DATA_ENGINEERING_BEGINNER_FIRST_RECOVERED_STATIC_SEAL_RC2_2026-09-11.zip",
+      "pass": true,
+      "detail": "04517f01dd8031150eac9d6531f6f53ecfd78cf31b21f85399f19d3a3ee9d4ac"
+    },
+    {
+      "check": "sealed package hash M16_DATAOPS_CICD_SECURITY_OBSERVABILITY_BEGINNER_FIRST_STATIC_CONTENT_FREEZE_RC1.zip",
+      "pass": true,
+      "detail": "479661dfea54edc934cf3eb0c80870ebf10d06edcf82f87c1b323425033ad06f"
+    },
+    {
+      "check": "sealed package hash M17_DATA_ENGINEERING_ARCHITECTURE_SYSTEM_DESIGN_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "pass": true,
+      "detail": "c9c9404f925e7f97ebbb71a23ce59e14be67f8a16fac407df37ba1c2e85518b6"
+    },
+    {
+      "check": "sealed package hash M18_PORTFOLIO_PROJECTS_PRODUCTION_CAPSTONE_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "pass": true,
+      "detail": "e3cce8fc0ad358fbd1846cb453e6865fbe63330df6acbbefa132030fd4fde983"
+    },
+    {
+      "check": "sealed package hash M19_INTERVIEW_TECHNICAL_ENGLISH_JOB_LAUNCH_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "pass": true,
+      "detail": "95063bd62682626136dedb777580ea9fda14328d84c7c3baa89dd38758784ad3"
+    },
+    {
+      "check": "sealed package hash G07_FINAL_JOB_READY_PRACTICAL_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "pass": true,
+      "detail": "0e9918cf3a3060e703dd540356ba0de26cae2dc1fadffc1190d8b48ace4ed734"
+    },
+    {
+      "check": "superseded package absent M15_AZURE_MICROSOFT_FABRIC_DATA_ENGINEERING_CANONICAL_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "superseded package absent M16_DATAOPS_CICD_SECURITY_OBSERVABILITY_CANONICAL_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "superseded package absent M17_DATA_ENGINEERING_ARCHITECTURE_SYSTEM_DESIGN_CANONICAL_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "superseded package absent M18_PORTFOLIO_PROJECTS_PRODUCTION_CAPSTONE_CANONICAL_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "superseded package absent M19_INTERVIEW_TECHNICAL_ENGLISH_JOB_LAUNCH_CANONICAL_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "superseded package absent G07_FINAL_JOB_READY_PRACTICAL_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-13",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-14",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-15",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 route DE15-16",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-13",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 route DE16-14",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M17 book page DE17-01",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "check": "M17 review page DE17-01",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "check": "M17 book page DE17-02",
+      "pass": true,
+      "detail": "11"
+    },
+    {
+      "check": "M17 review page DE17-02",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "check": "M17 book page DE17-03",
+      "pass": true,
+      "detail": "16"
+    },
+    {
+      "check": "M17 review page DE17-03",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "check": "M17 book page DE17-04",
+      "pass": true,
+      "detail": "21"
+    },
+    {
+      "check": "M17 review page DE17-04",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "check": "M17 book page DE17-05",
+      "pass": true,
+      "detail": "26"
+    },
+    {
+      "check": "M17 review page DE17-05",
+      "pass": true,
+      "detail": "7"
+    },
+    {
+      "check": "M17 book page DE17-06",
+      "pass": true,
+      "detail": "31"
+    },
+    {
+      "check": "M17 review page DE17-06",
+      "pass": true,
+      "detail": "8"
+    },
+    {
+      "check": "M17 book page DE17-07",
+      "pass": true,
+      "detail": "36"
+    },
+    {
+      "check": "M17 review page DE17-07",
+      "pass": true,
+      "detail": "9"
+    },
+    {
+      "check": "M17 book page DE17-08",
+      "pass": true,
+      "detail": "41"
+    },
+    {
+      "check": "M17 review page DE17-08",
+      "pass": true,
+      "detail": "10"
+    },
+    {
+      "check": "M17 book page DE17-09",
+      "pass": true,
+      "detail": "46"
+    },
+    {
+      "check": "M17 review page DE17-09",
+      "pass": true,
+      "detail": "11"
+    },
+    {
+      "check": "M17 book page DE17-10",
+      "pass": true,
+      "detail": "51"
+    },
+    {
+      "check": "M17 review page DE17-10",
+      "pass": true,
+      "detail": "12"
+    },
+    {
+      "check": "M18 route P01-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P01-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P02-13",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route P03-13",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M18 route CAP-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-01",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-02",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-03",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-04",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-05",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-06",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-07",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-08",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-09",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-10",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-11",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-13",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M19 route DE19-14",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "protected review lock preserved",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "book/review exact page selection",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 A normal",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 B/C sealed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 append-only",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 explicit full retest only",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 human review required",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 no numeric shortcut",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "G07 checker cannot award pass",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "all material PDFs parse",
+      "pass": true,
+      "detail": "108 PDFs / 1140 pages"
+    },
+    {
+      "check": "all lesson page anchors within PDF bounds",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "service worker assets resolve",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "service worker cache bumped",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "provenance control cached",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M16 recovered exact and no longer blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 successor integrated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "M15 historical lost seal retained",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "no static-content provenance blockers remain",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file index.html",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file styles.css",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file app.js",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file manifest.webmanifest",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file icon.svg",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file CURRENT_RELEASE.txt",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "app file README.md",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "candidate": "DE_MENTOR_BEGINNER_FIRST_SYNC_RC3_RECOVERY_COMPLETE_CANDIDATE",
+  "date": "2026-09-11",
+  "integrity_scope": "All candidate files except MANIFEST_SHA256.txt itself are hashed below; archive integrity is recorded externally after ZIP creation.",
+  "release_status": "STATIC_RECOVERY_COMPLETE_NOT_FINAL_RUNTIME_AND_PRODUCTION_CERTIFICATION_PENDING",
+  "recovered_and_integrated_exact_seal": {
+    "M16": "479661dfea54edc934cf3eb0c80870ebf10d06edcf82f87c1b323425033ad06f",
+    "M15_SUCCESSOR": "04517f01dd8031150eac9d6531f6f53ecfd78cf31b21f85399f19d3a3ee9d4ac"
+  },
+  "blockers": [],
+  "historical_lost_seals": {
+    "M15": "39613dc1021d45b8f2918c27dcf6357a7f04befd0ee8b20b483670fbbd087c88"
+  },
+  "remaining_certification": [
+    "production GitHub binary synchronization",
+    "hosted GitHub Pages smoke",
+    "learner-PC runtime certification",
+    "physical Android/PWA certification",
+    "required live/runtime evidence reconciliation",
+    "final whole-course QA"
+  ]
+}

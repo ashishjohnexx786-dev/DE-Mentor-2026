@@ -3,7 +3,7 @@
 const DATA=window.DE_MENTOR_DATA;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const KEY='deMentorProduction2026.v2';
-const VERSION=7;
+const VERSION=8;
 const LESSONS=DATA.stages.flatMap(s=>s.lessons.map(l=>({...l,stageId:s.id,stageName:s.name})));
 const FORMAL_LESSONS=LESSONS.filter(l=>l.formal!==false);
 const LESSON_BY=Object.fromEntries(LESSONS.map(l=>[l.id,l]));
@@ -34,14 +34,14 @@ function stageForLesson(id){return STAGE_BY[LESSON_BY[id]?.stageId]}
 function freshLesson(){return {started:false,guidedDone:false,attemptSaved:false,reviewViewed:false,retestPassed:false,explained:false,mastered:false,skipped:false,skipReason:'',startedAt:null,attemptAt:null,reviewAt:null,retestAt:null,masteredAt:null,confidence:0}}
 function fresh(){
   const lesson={};LESSONS.forEach(l=>lesson[l.id]=freshLesson());
-  const gates={};DATA.gates.forEach(g=>gates[g.id]={status:'Locked',attempts:[],assignedVariant:'A'});
+  const gates={};DATA.gates.forEach(g=>gates[g.id]={status:'Locked',attempts:[],assignedVariant:'A',reviewViewedByVariant:{},reviewAtByVariant:{},repairEvidenceByVariant:{},repairEvidenceAtByVariant:{},changedMicroProofByVariant:{},changedMicroProofAtByVariant:{}});
   return {app:'DE Mentor — Zero to Job-Ready 2026',version:VERSION,name:'',theme:'midnight',beginnerMode:true,setupSeen:false,currentLessonId:LESSONS[0].id,lesson,gates,errors:[],revisions:[],evidence:[],applications:[],notes:{},studyLog:[],streak:{lastDate:'',count:0},studySettings:{dailyTarget:6},studySession:{running:false,startedAt:null,lessonId:null,stageId:null}};
 }
 function hydrate(raw){
   const f=fresh(),s=raw&&typeof raw==='object'?raw:{};
   const out={...f,...s};out.version=VERSION;
   out.lesson={};LESSONS.forEach(l=>out.lesson[l.id]={...freshLesson(),...((s.lesson||{})[l.id]||{})});
-  out.gates={};DATA.gates.forEach(g=>{const old=((s.gates||{})[g.id]||{}),hadAssigned=Object.prototype.hasOwnProperty.call(old,'assignedVariant');out.gates[g.id]={status:'Locked',attempts:[],assignedVariant:'A',...old};if(!['A','B','C'].includes(out.gates[g.id].assignedVariant))out.gates[g.id].assignedVariant='A';if(!hadAssigned&&out.gates[g.id].attempts.length){const v=out.gates[g.id].attempts.at(-1)?.variant;if(['A','B','C'].includes(v))out.gates[g.id].assignedVariant=v}});
+  out.gates={};DATA.gates.forEach(g=>{const old=((s.gates||{})[g.id]||{}),hadAssigned=Object.prototype.hasOwnProperty.call(old,'assignedVariant');out.gates[g.id]={status:'Locked',attempts:[],assignedVariant:'A',reviewViewedByVariant:{},reviewAtByVariant:{},repairEvidenceByVariant:{},repairEvidenceAtByVariant:{},changedMicroProofByVariant:{},changedMicroProofAtByVariant:{},...old};['reviewViewedByVariant','reviewAtByVariant','repairEvidenceByVariant','repairEvidenceAtByVariant','changedMicroProofByVariant','changedMicroProofAtByVariant'].forEach(k=>{if(!out.gates[g.id][k]||typeof out.gates[g.id][k]!=='object')out.gates[g.id][k]={}});if(!['A','B','C'].includes(out.gates[g.id].assignedVariant))out.gates[g.id].assignedVariant='A';if(!hadAssigned&&out.gates[g.id].attempts.length){const v=out.gates[g.id].attempts.at(-1)?.variant;if(['A','B','C'].includes(v))out.gates[g.id].assignedVariant=v}});
   const g7=out.gates.G07;if(g7){const validPass=(g7.attempts||[]).some(a=>a.result==='Pass'&&a.passMode==='DEMONSTRATED_EVIDENCE_REVIEW'&&a.reviewerConfirmed===true&&Array.isArray(a.demonstrated)&&a.demonstrated.length===8&&a.demonstrated.every(Boolean)&&!a.critical);if(g7.status==='Pass'&&!validPass){g7.legacyPassNeedsRevalidation=true;g7.status='Remediation';const v=(g7.attempts||[]).at(-1)?.variant;if(['A','B','C'].includes(v))g7.assignedVariant=v;}}
   ['errors','revisions','evidence','applications'].forEach(k=>out[k]=Array.isArray(s[k])?s[k]:[]);
   const legacyFocus=Array.isArray(s.focusLog)?s.focusLog:[];
@@ -167,7 +167,7 @@ function renderLesson(forceId){
   $('#sourceStatus').textContent=l.visualKind?`${l.visualKind.replaceAll('_',' ')} • ${l.visualStatus||''}`:'';
   const main=$('#mainClassBtn');if(stage.mainClass?.url){main.href=stage.mainClass.url;main.title=stage.mainClass.rule||'';main.classList.remove('hidden');main.textContent='🎬 Open main class'}else{main.removeAttribute('href');main.removeAttribute('title');main.classList.add('hidden')}
   const src=$('#sourceBtn');if(l.visualSourceUrl){src.href=l.visualSourceUrl;src.classList.remove('hidden');src.textContent=l.visualKind==='OFFICIAL_VIDEO_COURSE'?'🎓 Open video course':l.visualKind==='OFFICIAL_GUIDED'?'🧭 Open official guided source':l.visualKind==='LONG_CLASS'?'🎬 Open long-form class':'🎥 Watch assigned visual'}else{src.removeAttribute('href');src.classList.add('hidden')}
-  const mod=$('#moduleBtn');if(stage.modulePackage){mod.href=stage.modulePackage;mod.classList.remove('hidden')}else{mod.removeAttribute('href');mod.classList.add('hidden')}
+  const mod=$('#moduleBtn');mod.removeAttribute('href');mod.classList.add('hidden');mod.setAttribute('aria-hidden','true')
   const sup=$('#supplementBtn');if(l.supplementUrl){sup.href=l.supplementUrl;sup.textContent=l.supplementLabel||'🧰 Employer translation lab';sup.title=l.supplementNote||'';sup.classList.remove('hidden')}else{sup.removeAttribute('href');sup.removeAttribute('title');sup.classList.add('hidden')}
   $('#learnerPackBtn').onclick=()=>openPack(stage,'learner');
   $('#guidedDoneBtn').disabled=!s.started||s.mastered;$('#guidedDoneBtn').textContent=s.guidedDone?'✓ Guided example followed':'I followed the guided example';
@@ -184,7 +184,7 @@ function renderLesson(forceId){
 }
 function statusHelp(st){return {'Not Started':'Open the Teaching Book and start only this lesson.','Learning':'Learn the concept, then follow the guided example.','Guided follow done':'Now close guidance and attempt the independent task.','Attempt saved':'Good. The Review Pack is unlocked because a real attempt exists.','Review opened':'Close the review and solve a fresh variation.','Fresh retry passed':'Explain it aloud; then mastery can be recorded.','Skipped for now':'You may continue, but Mentor will bring this back. A skipped lesson cannot count as mastery.','Mastered':'Independent attempt + review + fresh retry + explanation are recorded.'}[st]||''}
 function renderRevisionPreview(id){const rs=state.revisions.filter(r=>r.lessonId===id);$('#revisionPreview').innerHTML=rs.length?rs.map(r=>`<div class="revisionRow"><div class="grow"><b>${esc(r.type)}</b><div class="rowSub">${r.done?'Done '+esc(r.doneAt?.slice(0,10)||''):('Due '+esc(r.due))}</div></div><span class="pill ${r.done?'ok':r.due<=todayKey()?'warn':''}">${r.done?'DONE':r.due<=todayKey()?'DUE':'UPCOMING'}</span></div>`).join(''):'<p class="muted tiny">Revision dates appear automatically after mastery.</p>'}
-function openPack(stage,type){const l=displayLesson();let path=type==='learner'?(l.learnerPack||stage.learnerPack):(l.reviewPack||stage.reviewPack);if(type==='review'&&!ls(l.id).attemptSaved){toast('Save a genuine attempt first. Review stays locked.');return}if(type==='learner'&&l.formal===false&&l.bookPage&&!String(path).includes('#page='))path=`${path}#page=${l.bookPage}`;window.open(path,'_blank','noopener')}
+function openPack(stage,type){const l=displayLesson();let path=type==='learner'?(l.learnerPack||stage.learnerPack):(l.reviewPack||stage.reviewPack);if(type==='review'&&!ls(l.id).attemptSaved){toast('Save a genuine attempt first. Review stays locked.');return}const page=type==='learner'?l.bookPage:l.reviewPage;if(page&&!String(path).includes('#page='))path=`${path}#page=${page}`;window.open(path,'_blank','noopener')}
 function openReview(id){const l=LESSON_BY[id];if(!l)return;const s=ls(id);if(!s.attemptSaved){toast('Review is locked until a genuine attempt is saved.');return}s.reviewViewed=true;s.reviewAt=nowISO();state.currentLessonId=id;save();window.open(l.reviewPack||STAGE_BY[l.stageId].reviewPack,'_blank','noopener')}
 
 function renderMap(){
@@ -237,24 +237,40 @@ function gateAttemptForVariant(gid,variant){const a=state.gates[gid]?.attempts||
 function nextGateVariant(v){return v==='A'?'B':v==='B'?'C':null}
 function openGate(id){
   const g=GATE_BY[id];if(!g)return;const gs=state.gates[id],variant=gateVariantState(id),attempt=gateAttemptForVariant(id,variant),passed=gatePassed(g),ready=gateReady(g);
+  const reviewViewed=!!gs.reviewViewedByVariant?.[variant],repairEvidence=(gs.repairEvidenceByVariant?.[variant]||'').trim(),changedProof=(gs.changedMicroProofByVariant?.[variant]||'').trim();
   $('#gateTitle').textContent=`${g.Gate} • Gate ${variant}`;
-  $('#gateRule').innerHTML=`<b>Must prove:</b> ${esc(g['Must prove'])}<br><b>Pass standard:</b> ${esc(g['Pass standard'])}<br><b>Critical fail:</b> ${esc(g['Critical fail'])}<br><b>Retest rule:</b> Gate B/C stays sealed until explicitly assigned after review + targeted repair.`;
+  $('#gateRule').innerHTML=`<b>Must prove:</b> ${esc(g['Must prove'])}<br><b>Pass standard:</b> ${esc(g['Pass standard'])}<br><b>Critical fail:</b> ${esc(g['Critical fail'])}<br><b>Retest rule:</b> Gate B/C stays sealed until the prior failed attempt is saved, its protected Review is opened, targeted repair evidence is recorded, a changed micro-proof is recorded, and the next full Gate is explicitly assigned.`;
   const demonstratedMode=g.passMode==='DEMONSTRATED_EVIDENCE_REVIEW';
   $('#gateScores').innerHTML=demonstratedMode?g.dimensions.map((d,i)=>`<label class="check"><input type="checkbox" data-gate-demonstrated="${i}"> K${i+1} — Reviewer confirms this competency is technically demonstrated with inspectable evidence: ${esc(d)}</label>`).join(''):g.dimensions.map((d,i)=>`<label>K${i+1} — ${esc(d)} (0–4)<input type="number" min="0" max="4" step="1" value="0" data-gate-score="${i}"></label>`).join('');
   $('#gateReviewerConfirmWrap').classList.toggle('hidden',!demonstratedMode);$('#gateReviewerConfirmed').checked=false;
   $('#gateCritical').checked=false;$('#gateNote').value='';
-  const pack=$('#gatePackageBtn'),brief=$('#gateBriefBtn'),review=$('#gateReviewBtn'),assign=$('#assignNextGateBtn');
-  pack.href=g.gatePackage;brief.href=g['gate'+variant];brief.textContent=`Open Gate ${variant} brief`;
+  const pack=$('#gatePackageBtn'),brief=$('#gateBriefBtn'),review=$('#gateReviewBtn'),assign=$('#assignNextGateBtn'),repairBlock=$('#gateRepairBlock');
+  pack.removeAttribute('href');pack.classList.add('hidden');pack.setAttribute('aria-hidden','true');
+  brief.href=g['gate'+variant];brief.textContent=`Open Gate ${variant} brief`;
   review.href=g['review'+variant];review.textContent=attempt?`Open Review ${variant}`:'Review locked until this Gate attempt';review.classList.toggle('disabled',!attempt);
-  review.onclick=e=>{if(!attempt){e.preventDefault();toast(`Save Gate ${variant} attempt first. Review stays locked.`)}};
-  const next=nextGateVariant(variant),canAssign=!passed&&gs.status==='Remediation'&&!!attempt&&!!next;
-  assign.classList.toggle('hidden',!canAssign);assign.disabled=!canAssign;assign.textContent=next?`Assign fresh Gate ${next} after review + repair`:'No further full Gate variant';
-  assign.onclick=()=>{if(!canAssign)return;if(!confirm(`Assign sealed Gate ${next} as a fresh full reassessment? Do this only after Review ${variant} and targeted repair.`))return;gs.assignedVariant=next;gs.status='Assigned';save();closeModal('gateModal');toast(`Gate ${next} assigned. Review/answers stay closed during the attempt.`)};
+  review.onclick=e=>{if(!attempt){e.preventDefault();toast(`Save Gate ${variant} attempt first. Review stays locked.`);return}gs.reviewViewedByVariant[variant]=true;gs.reviewAtByVariant[variant]=nowISO();persist();setTimeout(()=>{if(document.querySelector('#gateModal.show'))openGate(id)},120)};
+  const repairEligible=!passed&&gs.status==='Remediation'&&!!attempt&&reviewViewed;
+  repairBlock.classList.toggle('hidden',!repairEligible);
+  $('#gateRepairEvidence').value=repairEvidence;$('#gateChangedProof').value=changedProof;
+  $('#gateRepairStatus').textContent=repairEvidence&&changedProof?'Repair + changed micro-proof recorded. Fresh full reassessment may now be explicitly assigned if genuinely required.':reviewViewed?'Record both targeted repair evidence and a changed micro-proof before Gate B/C can be assigned.':'Open the protected Review after the saved attempt first.';
+  const next=nextGateVariant(variant),canAssign=!passed&&gs.status==='Remediation'&&!!attempt&&reviewViewed&&!!repairEvidence&&!!changedProof&&!!next;
+  assign.classList.toggle('hidden',!canAssign);assign.disabled=!canAssign;assign.textContent=next?`Assign fresh Gate ${next} after recorded repair`:'No further full Gate variant';
+  assign.onclick=()=>{if(!canAssign)return;if(!confirm(`Assign sealed Gate ${next} as a fresh full reassessment? The prior attempt, Review, targeted repair evidence and changed micro-proof will remain in append-only history.`))return;gs.assignedVariant=next;gs.status='Assigned';save();closeModal('gateModal');toast(`Gate ${next} assigned. Review/answers stay closed during the attempt.`)};
   if(passed)$('#gateResult').textContent=`PASSED on Gate ${attempt?.variant||variant}. ${gs.attempts.length} attempt(s) remain in append-only history.`;
   else if(!ready)$('#gateResult').textContent='Gate is locked because prerequisite units or an earlier Gate are incomplete.';
-  else if(gs.status==='Remediation'&&attempt)$('#gateResult').textContent=`Gate ${variant} needs targeted repair. Open Review ${variant}, repair only the weak competency, prove a changed micro-task, then explicitly assign a fresh full Gate only if required.`;
+  else if(gs.status==='Remediation'&&attempt&&!reviewViewed)$('#gateResult').textContent=`Gate ${variant} needs targeted repair. Review ${variant} is now unlocked because the attempt is saved. Open it before recording repair evidence.`;
+  else if(gs.status==='Remediation'&&attempt&&reviewViewed&&(!repairEvidence||!changedProof))$('#gateResult').textContent=`Gate ${variant} needs targeted repair. Record the exact repair and a changed micro-proof with Review closed. Gate ${next||'B/C'} remains sealed.`;
+  else if(gs.status==='Remediation'&&attempt)$('#gateResult').textContent=`Repair evidence and changed micro-proof are recorded. Explicitly assign ${next?`Gate ${next}`:'no further Gate'} only if a fresh full reassessment is genuinely required.`;
   else $('#gateResult').textContent=`Gate ${variant} is ready. Keep reviews, solution material and AI solving closed during the independent attempt.`;
   $('#saveGateBtn').disabled=!ready||passed||(gs.status==='Remediation'&&!!attempt);state._gateId=id;openModal('gateModal')
+}
+function saveGateRepair(){
+  const g=GATE_BY[state._gateId];if(!g)return;const gs=state.gates[g.id],variant=gateVariantState(g.id),attempt=gateAttemptForVariant(g.id,variant);
+  if(!attempt){toast('Save the Gate attempt before repair.');return}
+  if(!gs.reviewViewedByVariant?.[variant]){toast(`Open protected Review ${variant} after the saved attempt first.`);return}
+  const repair=$('#gateRepairEvidence').value.trim(),proof=$('#gateChangedProof').value.trim();
+  if(repair.length<12||proof.length<12){toast('Record meaningful repair evidence and a changed micro-proof before assignment.');return}
+  gs.repairEvidenceByVariant[variant]=repair;gs.repairEvidenceAtByVariant[variant]=nowISO();gs.changedMicroProofByVariant[variant]=proof;gs.changedMicroProofAtByVariant[variant]=nowISO();persist();openGate(g.id);toast('Repair evidence + changed micro-proof saved.')
 }
 function saveGate(){
   const g=GATE_BY[state._gateId];if(!g)return;const gs=state.gates[g.id],variant=gateVariantState(g.id);if(gateAttemptForVariant(g.id,variant)){toast(`Gate ${variant} already has a saved attempt. Review/repair it before any explicitly assigned full retest.`);return}
@@ -342,7 +358,7 @@ function bind(){
   $$('.closeModal').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
   $('#studyStartEnd').onclick=startEndStudy;$('#studyCancel').onclick=cancelStudy;
   $('#exportJsonBtn').onclick=exportBackup;$('#exportLessonsBtn').onclick=exportLessons;$('#exportStudyBtn').onclick=exportStudy;$('#exportTrainingProofBtn').onclick=exportTrainingProof;$('#exportEvidenceBtn').onclick=exportEvidence;$('#exportJobsBtn').onclick=exportJobs;$('#restoreBtn').onclick=()=>$('#restoreFile').click();$('#restoreFile').onchange=restoreBackup;
-  $('#saveGateBtn').onclick=saveGate;
+  $('#saveGateBtn').onclick=saveGate;$('#saveGateRepairBtn').onclick=saveGateRepair;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('#installBtn').hidden=false});$('#installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('#installBtn').hidden=true};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderStudySession()});
 }

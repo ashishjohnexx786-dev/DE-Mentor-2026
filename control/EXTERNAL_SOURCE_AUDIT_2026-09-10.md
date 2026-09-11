@@ -1,4 +1,4 @@
-# DE Mentor Canonical Rebuild Sync RC2 — External Source Audit
+# DE Mentor archived pre-RC4 external source audit — External Source Audit
 
 **Audit date:** 2026-09-10  
 **Verdict:** PASS WITH PROVIDER-LIMITED VERIFICATION — no source removal required.

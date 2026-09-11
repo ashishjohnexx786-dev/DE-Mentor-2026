@@ -1,5 +1,5 @@
 {
-  "artifact": "DE Mentor Canonical Rebuild Sync RC2 - External Source Audit",
+  "artifact": "DE Mentor archived pre-RC4 external source audit - External Source Audit",
   "date": "2026-09-10",
   "scope": {
     "source_inventory": "Normalized external URLs present in the frozen Mentor source/control inventory",

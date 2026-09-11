@@ -1,0 +1,13 @@
+{
+  "module": "M15",
+  "audit_date": "2026-09-11",
+  "fabric_runtime": {
+    "current_default_during_rollout": "1.3",
+    "runtime_1_3_stack": "Spark 3.5.5 / Python 3.11 / Java 11 / Delta 3.2",
+    "latest_ga_runtime": "2.0",
+    "runtime_2_0_status": "GA; opt-in until planned default transition in late September 2026",
+    "runtime_2_0_stack": "Spark 4.1 / Python 3.13 / Java 21 / Delta 4.2"
+  },
+  "correction_applied": "Corrected stale pre-GA-era wording: Runtime 2.0 is GA; rollout/default status is tracked separately.",
+  "live_cloud_boundary": "Static/simulator QA cannot certify live tenant/workspace/runtime behavior."
+}

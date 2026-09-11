@@ -1,66 +1,15 @@
-<p align="center">
-  <img src="branding/de-mentor-logo.svg" alt="DE Mentor" width="760">
-</p>
+# DE Mentor — Beginner-First Sync RC4 Master-Audit Candidate
 
-<h1 align="center">DE Mentor — Zero to Job-Ready Data Engineer 2026</h1>
+Static-content/package synchronization now covers the recovered M15 successor seal plus exact M16, M17, M18, M19 and G07 rebuilt packages. The curriculum count and protected Gate state model are preserved.
 
-<p align="center"><strong>Learn → Build → Practice → Prove → Grow</strong></p>
+## M15 provenance
+The historical locked M15 archive SHA `39613dc1021d45b8f2918c27dcf6357a7f04befd0ee8b20b483670fbbd087c88` was not recoverable byte-for-byte. It has not been relabeled. A new verified successor seal was produced from the authoritative surviving curriculum, current route/source controls and recovered production fixtures. Successor SHA: `04517f01dd8031150eac9d6531f6f53ecfd78cf31b21f85399f19d3a3ee9d4ac`.
 
-## Current release
+M15 explicitly distinguishes LIVE FABRIC, OFFLINE PLAN and SIMULATOR evidence. Runtime 2.0 is GA and the current Microsoft-recommended GA runtime for production. Runtime 1.3 remains the default during the phased rollout at this 2026-09-11 rebuild checkpoint, so Runtime 2.0 must still be selected explicitly until the default transition. Offline/static success cannot award live-cloud mastery.
 
-**Canonical Rebuild Sync RC2 — 2026-09-10**
+The learning route remains: why -> mental model/glossary -> assigned/current source -> follow once -> genuine independent attempt -> validation -> explain/defend -> protected review after saved attempt -> targeted repair -> changed retry -> evidence/mastery. Attempts are append-only.
 
-This repository is the active DE Mentor application and synchronized teaching system for the standalone Data Engineer 2026 course.
+## Not FINAL yet
+Remaining release work is runtime/device certification: required live execution evidence where applicable, learner-PC smoke, physical Android/PWA install/offline/storage/update behavior, and final whole-course QA. Binary GitHub deployment must preserve exact sealed artifact bytes.
 
-- **20 stages:** M00–M19
-- **264 formal lessons**
-- **50 M18 production-capstone phases**
-- **314 controlled learning units**
-- **7 protected Gate families:** G01–G07
-- **100 routed teaching/review PDFs — 755 pages**
-- **27 canonical module/Gate packages embedded from the authoritative registry**
-- **37/37 static + integration QA checks passed**
-
-## How the Mentor teaches
-
-**Learn → guided execution → genuine independent attempt → protected review → changed fresh retry → explain → Mastered**
-
-Review material stays protected until a genuine saved attempt. Failed attempts remain append-only and fresh retests use changed tasks.
-
-## Gate rules
-
-**G01–G06:** every required competency must reach **3/4 or 4/4**, with **zero unresolved critical failures**. There is no percentage-average shortcut.
-
-**G07:** K1–K8 must each be technically demonstrated with inspectable evidence and technical review. The evidence checker verifies structure/completeness only; it does not award technical correctness.
-
-Gate A is the normal assessment. Gate B/C remain sealed unless a fresh full reassessment is explicitly assigned after failure, review and repair. A clean Gate A pass ends that Gate.
-
-## Study experience
-
-- Manual **START STUDY / END STUDY** tracker — no forced 25-minute Pomodoro.
-- AMOLED true-black theme plus additional themes.
-- External videos and official references remain support resources; the internal Teaching Books remain sufficient if a link fails.
-- M18 contains the production portfolio/capstone workflow.
-- M19 covers interview preparation, technical English and job launch.
-- Progress storage key: `deMentorProduction2026.v2`.
-- State schema: **7**.
-
-## Final brand identity
-
-The visual identity is now locked: **learning book + database engineering**, using **Charcoal `#1F2937`**, **Teal `#14B8A6`**, and **Soft Blue `#3B82F6`**.
-
-- App / PWA / browser icon: `icon.svg`
-- Horizontal logo: `branding/de-mentor-logo.svg`
-- Brand specification: `BRAND_IDENTITY.md`
-
-The app header uses the same final icon so the repository, browser/PWA icon and Mentor UI are one visual system.
-
-## Release status
-
-**Content / package / static integration QA: PASS.**
-
-Real-device certification remains separate: hosted GitHub Pages, Android/PWA behavior, backup restore and learner-PC tool-dependent runtime must still be observed before the release is described as permanently FINAL/DEPLOYED.
-
----
-
-<p align="center"><strong>Clean ideas. Stronger data skills.</strong></p>
+Progress storage key remains `deMentorProduction2026.v2`, schema 8.

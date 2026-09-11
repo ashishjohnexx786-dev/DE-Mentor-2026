@@ -1,0 +1,43 @@
+{
+  "candidate": "DE_MENTOR_BEGINNER_FIRST_SYNC_RC3_RECOVERY_COMPLETE_CANDIDATE",
+  "date": "2026-09-11",
+  "status": "STATIC_SYNC_RECOVERY_COMPLETE_CANDIDATE__NOT_FINAL__PHYSICAL_RUNTIME_PENDING",
+  "newly_synchronized_static_seals": {
+    "M17": {
+      "sha256": "c9c9404f925e7f97ebbb71a23ce59e14be67f8a16fac407df37ba1c2e85518b6",
+      "status": "VERIFIED_SEALED"
+    },
+    "M18": {
+      "sha256": "e3cce8fc0ad358fbd1846cb453e6865fbe63330df6acbbefa132030fd4fde983",
+      "status": "VERIFIED_SEALED"
+    },
+    "M19": {
+      "sha256": "95063bd62682626136dedb777580ea9fda14328d84c7c3baa89dd38758784ad3",
+      "status": "VERIFIED_SEALED"
+    },
+    "G07": {
+      "sha256": "0e9918cf3a3060e703dd540356ba0de26cae2dc1fadffc1190d8b48ace4ed734",
+      "status": "VERIFIED_SEALED"
+    },
+    "M16": {
+      "sha256": "479661dfea54edc934cf3eb0c80870ebf10d06edcf82f87c1b323425033ad06f",
+      "status": "RECOVERED_FROM_LIBRARY_AND_VERIFIED_SEALED"
+    },
+    "M15": {
+      "sha256": "04517f01dd8031150eac9d6531f6f53ecfd78cf31b21f85399f19d3a3ee9d4ac",
+      "status": "RECOVERED_SUCCESSOR_STATIC_SEAL_VERIFIED",
+      "historical_predecessor_sha256": "39613dc1021d45b8f2918c27dcf6357a7f04befd0ee8b20b483670fbbd087c88",
+      "runtime_status": "STATIC_OFFLINE_PASS__LIVE_FABRIC_RUNTIME_PENDING"
+    }
+  },
+  "blocking_provenance": {},
+  "release_rule": "Static-content/package provenance is now synchronized through G07. Do not label FINAL until learner-PC and physical Android/PWA certification plus required live/runtime evidence and final whole-course QA are complete.",
+  "github_rule": "Binary production synchronization must use a channel capable of publishing the exact sealed PDF/ZIP bytes; do not claim full GitHub deployment if only text files can be updated.",
+  "historical_lost_seals": {
+    "M15": {
+      "sha256": "39613dc1021d45b8f2918c27dcf6357a7f04befd0ee8b20b483670fbbd087c88",
+      "exact_bytes_recovered": false,
+      "disposition": "Preserved as historical provenance only; not impersonated or overwritten."
+    }
+  }
+}

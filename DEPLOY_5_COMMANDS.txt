@@ -1,5 +1,6 @@
-Export your current Mentor JSON backup first. Then deploy this complete RC2 tree to the existing DE-Mentor-2026 main branch as one mirror update.
+Export your current Mentor JSON backup first. Then deploy this complete RC3 recovery-complete tree to the existing DE-Mentor-2026 main branch as one mirror update.
 
-Do not mix RC2 HTML/JS with older PDFs or Gate/module ZIPs.
+Do not mix RC3 HTML/JS with older PDFs or Gate/module ZIPs.
+Before push, verify MANIFEST_SHA256.txt and confirm main still points to the expected pre-deploy head recorded in the deployment record.
 After GitHub Pages publishes, require hosted SHA-256 parity and then run real Android/PWA + learner-PC certification.
-Do not call the Mentor permanently FINAL until those checks pass.
+Do not call the Mentor permanently FINAL until those checks and required live/runtime evidence pass.

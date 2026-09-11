@@ -1,0 +1,372 @@
+[
+  {
+    "lesson_id": "DE15-01",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "03:07 onward \u2014 analytics-solution responsibilities and Fabric architecture context",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-01",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "DP-700T00-A course",
+    "url": "https://learn.microsoft.com/en-us/training/courses/dp-700t00",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-02",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "Use the Implement/manage security/permissions portion; exact current security rules come from the linked OneLake docs",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-02",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "OneLake security access-control model",
+    "url": "https://learn.microsoft.com/en-us/fabric/onelake/security/data-access-control-model",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-03",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "03:46 onward \u2014 workspace/storage context; then current OneLake reference",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-03",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "OneLake documentation",
+    "url": "https://learn.microsoft.com/en-us/fabric/onelake/",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-04",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "03:46 onward \u2014 workspace configuration and item context",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-04",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric workspace roles",
+    "url": "https://learn.microsoft.com/en-us/fabric/fundamentals/roles-workspaces",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-05",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 ingest/storage choices; then exact shortcut reference",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-05",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "OneLake shortcuts",
+    "url": "https://learn.microsoft.com/en-us/fabric/onelake/onelake-shortcuts",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-06",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 batch transform/storage and lakehouse context",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-06",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric lakehouse overview",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-overview",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-07",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 transformation choices; then notebook UI/reference",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-07",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "How to use Fabric notebooks",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/how-to-use-notebook",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-08",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 Spark transform context; current Fabric Runtime doc controls versions",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-08",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Apache Spark runtime in Fabric",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/runtime",
+    "scope": "Transition status: Runtime 1.3 remains GA/default during rollout; Runtime 2.0 is GA (opt-in and Microsoft-recommended current GA for production).",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11__RUNTIME_1_3_LATEST_GA",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-09",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "17:00 onward \u2014 orchestration processes",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-09",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric Data Factory \u2014 Copy job",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-factory/what-is-copy-job",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-10",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 storage/serving choices; then exact SQL endpoint reference",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-10",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Lakehouse SQL analytics endpoint",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-sql-analytics-endpoint",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-11",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "01:49 onward \u2014 batch architecture context; then medallion tutorial",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-11",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Lakehouse end-to-end medallion scenario",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-lakehouse-introduction",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-12",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Ingest/transform (Part 2)",
+    "url": "https://www.youtube.com/watch?v=ubw4PH9-hXM",
+    "scope": "00:47 onward \u2014 loading patterns; then current incremental-copy reference",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-12",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric Copy job incremental copy",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-factory/what-is-copy-job",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-13",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "Use the Implement/manage security/connection portion; current OneLake security docs control permissions",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-13",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "OneLake data security overview",
+    "url": "https://learn.microsoft.com/en-us/fabric/onelake/security/get-started-security",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-14",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Monitor/optimize (Part 3)",
+    "url": "https://www.youtube.com/watch?v=X4IQKsP50ck",
+    "scope": "00:49 monitoring \u2022 02:03 alerts \u2022 10:01 optimization",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-14",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric monitoring hub",
+    "url": "https://learn.microsoft.com/en-us/fabric/admin/monitoring-hub",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-15",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn DP-700 \u2014 Implement/manage (Part 1)",
+    "url": "https://www.youtube.com/watch?v=X8ChDW58wzI",
+    "scope": "06:22 onward \u2014 lifecycle management in Fabric",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-15",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric CI/CD overview",
+    "url": "https://learn.microsoft.com/en-us/fabric/cicd/cicd-overview",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-16",
+    "kind": "VIDEO_FIRST",
+    "title": "Microsoft Learn official DP-700 video playlist",
+    "url": "https://aka.ms/DP-700onYouTube",
+    "scope": "Use the full official DP-700 playlist as stage review; execute the course case rather than only watching",
+    "verified": "PRESERVED_VISUAL_ROUTE_WITH_MICROSOFT_LEARN_FALLBACK_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-16",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "DP-700T00-A end-to-end course",
+    "url": "https://learn.microsoft.com/en-us/training/courses/dp-700t00",
+    "scope": "Current product behavior and exact lesson reference",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-08",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric Runtime 2.0",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-engineering/runtime-2-0",
+    "scope": "GA opt-in: Spark 4.1 / Python 3.13 / Java 21 / Delta 4.2. It is GA but not yet the rollout default as of 2026-09-11.",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11__RUNTIME_2_0_GA_OPT_IN",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-14",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric pipeline pricing",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-factory/pricing-pipelines",
+    "scope": "CU-based pipeline consumption and Capacity Metrics cost estimation",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-15",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Get started with Fabric Git integration",
+    "url": "https://learn.microsoft.com/en-us/fabric/cicd/git-integration/git-get-started",
+    "scope": "Connect workspace to Git and sync lifecycle",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-15",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric lifecycle best practices",
+    "url": "https://learn.microsoft.com/en-us/fabric/cicd/best-practices-cicd",
+    "scope": "Dev/Test/Prod lifecycle guidance",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  },
+  {
+    "lesson_id": "DE15-09",
+    "kind": "CURRENT_OFFICIAL_REFERENCE",
+    "title": "Fabric Data Factory pipeline overview",
+    "url": "https://learn.microsoft.com/en-us/fabric/data-factory/pipeline-overview",
+    "scope": "Current orchestration model; Copy job remains a distinct simplified data-movement item",
+    "verified": "CURRENT_MICROSOFT_LEARN_2026-09-11",
+    "watch_action": "Watch/read only the named concept. Sketch object -> durable state -> identity/permission -> validation signal. Then close the source before independent work.",
+    "fallback": "If the visual/UI differs or the route is unavailable, use the current Microsoft Learn reference assigned to this lesson plus this learner book. Never guess portal state."
+  }
+]
