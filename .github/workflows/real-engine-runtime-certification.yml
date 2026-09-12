@@ -1,0 +1,247 @@
+name: M09-M14 Real Engine Runtime Certification 2026
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+
+jobs:
+  m09-dbt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M09
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M09' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m09')
+          PY
+      - name: Install dbt DuckDB adapter
+        run: python -m pip install -q 'dbt-duckdb>=1.9,<2' duckdb
+      - name: Build source relation and run canonical dbt-style project
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT=$(dirname "$(find /tmp/m09 -name dbt_project.yml -print -quit)")
+          RAW=$(find /tmp/m09 -path '*/normal/input/retail_orders_raw.csv' -print -quit)
+          test -n "$PROJECT" && test -n "$RAW"
+          python - "$RAW" <<'PY'
+          import sys,duckdb
+          raw=sys.argv[1]
+          con=duckdb.connect('/tmp/m09.duckdb')
+          con.execute('create schema if not exists main')
+          con.execute("create or replace table main.raw_orders as select * from read_csv_auto(?, header=true, all_varchar=true)",[raw])
+          print('RAW_ROWS',con.execute('select count(*) from main.raw_orders').fetchone()[0])
+          con.close()
+          PY
+          mkdir -p /tmp/dbt_profiles
+          cat >/tmp/dbt_profiles/profiles.yml <<'YML'
+          m09_local:
+            target: ci
+            outputs:
+              ci:
+                type: duckdb
+                path: /tmp/m09.duckdb
+                schema: main
+                threads: 2
+          YML
+          dbt --version
+          dbt debug --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          dbt parse --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          dbt run --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          dbt test --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          dbt run --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          dbt test --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
+          python - <<'PY'
+          import duckdb
+          con=duckdb.connect('/tmp/m09.duckdb')
+          rows=con.execute('select count(*) from main.fct_sales').fetchone()[0]
+          uniq=con.execute('select count(distinct order_id) from main.fct_sales').fetchone()[0]
+          nulls=con.execute('select count(*) from main.fct_sales where order_id is null or customer_id is null').fetchone()[0]
+          print('FCT_ROWS',rows,'UNIQUE_IDS',uniq,'NULL_KEY_ROWS',nulls)
+          assert rows>0 and rows==uniq and nulls==0
+          PY
+          echo 'M09 DBT REAL ENGINE PASS'
+
+  m10-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M10
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M10' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m10')
+          PY
+      - name: Build and run canonical Docker Compose lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=$(dirname "$(find /tmp/m10 -path '*/docker/compose.yaml' -print -quit)")
+          test -n "$D"
+          cd "$D"
+          docker compose config >/tmp/m10-compose-rendered.yml
+          docker compose build
+          docker compose up -d
+          trap 'docker compose logs --no-color || true; docker compose down -v || true' EXIT
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/ >/tmp/m10-response.json; then break; fi
+            sleep 2
+          done
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/m10-response.json'))
+          print(x)
+          assert x=={'service':'m10-lab','status':'ok','db_host':'db'},x
+          PY
+          docker compose ps
+          test "$(docker inspect -f '{{.State.Running}}' m10-kafka 2>/dev/null || true)" != true || true
+          echo 'M10 DOCKER COMPOSE REAL ENGINE PASS'
+
+  m10-airflow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AIRFLOW_HOME: /tmp/airflow
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M10 DAG
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M10' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m10')
+          PY
+      - name: Install Airflow 3 runtime and parse canonical DAG
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q 'apache-airflow>=3.0,<4'
+          DAG=$(find /tmp/m10 -name m10_daily_orders.py -print -quit)
+          test -n "$DAG"
+          mkdir -p "$AIRFLOW_HOME/dags"
+          cp "$DAG" "$AIRFLOW_HOME/dags/"
+          airflow version
+          airflow db migrate
+          airflow dags list | tee /tmp/dags.txt
+          grep -q 'm10_daily_orders' /tmp/dags.txt
+          airflow dags list-import-errors | tee /tmp/import-errors.txt
+          python - <<'PY'
+          from airflow.models.dagbag import DagBag
+          bag=DagBag(dag_folder='/tmp/airflow/dags',include_examples=False)
+          print('IMPORT_ERRORS',bag.import_errors)
+          assert not bag.import_errors,bag.import_errors
+          dag=bag.get_dag('m10_daily_orders'); assert dag is not None
+          ids=set(dag.task_ids); print('TASKS',sorted(ids)); assert ids=={'extract','validate','transform','load','reconcile'}
+          assert set(dag.task_dict['extract'].downstream_task_ids)=={'validate'}
+          assert set(dag.task_dict['validate'].downstream_task_ids)=={'transform'}
+          assert set(dag.task_dict['transform'].downstream_task_ids)=={'load'}
+          assert set(dag.task_dict['load'].downstream_task_ids)=={'reconcile'}
+          assert dag.task_dict['extract'].retries==2
+          PY
+          echo 'M10 AIRFLOW REAL ENGINE DAG PARSE PASS'
+
+  m12-spark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M12
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M12' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m12')
+          PY
+      - name: Run canonical PySpark 4.2 pipeline and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF=$(find /tmp/m12 -name m12_reference_pipeline.py -print -quit)
+          TEST=$(find /tmp/m12 -name test_transformations.py -print -quit)
+          REQ=$(find /tmp/m12 -path '*/pyspark_reference/requirements.txt' -print -quit)
+          test -n "$REF" && test -n "$TEST" && test -n "$REQ"
+          python -m pip install -q -r "$REQ"
+          java -version
+          python "$REF" | tee /tmp/m12-reference.log
+          python "$TEST"
+          grep -q 'orders 16 joined 16' /tmp/m12-reference.log
+          echo 'M12 PYSPARK REAL ENGINE PASS'
+
+  m13-delta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M13
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M13' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m13')
+          PY
+      - name: Run canonical Delta Lake reference lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF=$(find /tmp/m13 -name delta_reference_lab.py -print -quit)
+          REQ=$(find /tmp/m13 -path '*/delta_reference/requirements.txt' -print -quit)
+          test -n "$REF" && test -n "$REQ"
+          python -m pip install -q -r "$REQ"
+          java -version
+          python "$REF" | tee /tmp/m13-delta.log
+          grep -q 'CURRENT' /tmp/m13-delta.log
+          grep -q 'HISTORY' /tmp/m13-delta.log
+          grep -q 'VERSION0' /tmp/m13-delta.log
+          echo 'M13 DELTA REAL ENGINE PASS'
+
+  m14-kafka:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract M14
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M14' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m14')
+          PY
+      - name: Start real Kafka broker and run canonical producer consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=$(dirname "$(find /tmp/m14 -path '*/kafka_reference/compose.yaml' -print -quit)")
+          test -n "$D"
+          cd "$D"
+          python -m pip install -q -r requirements.txt
+          docker compose config >/tmp/m14-compose-rendered.yml
+          docker compose up -d
+          trap 'docker compose logs --no-color || true; docker compose down -v || true' EXIT
+          for i in $(seq 1 60); do
+            if docker exec m14-kafka /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+          docker exec m14-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists --topic m14-events --partitions 2 --replication-factor 1
+          python producer.py
+          timeout 45s python consumer.py | tee /tmp/m14-consumer.log
+          test "$(grep -c 'm14-events' /tmp/m14-consumer.log)" -eq 5
+          docker exec m14-kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group m14-lab --describe | tee /tmp/m14-group.txt
+          grep -q 'm14-events' /tmp/m14-group.txt
+          echo 'M14 KAFKA REAL ENGINE PASS'
