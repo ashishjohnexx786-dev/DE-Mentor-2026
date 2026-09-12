@@ -1,0 +1,43 @@
+name: Runtime Artifact Inventory 2026
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inventory executable learner artifacts inside module and Gate archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/runtime-inventory && mkdir -p /tmp/runtime-inventory
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile, collections, json, py_compile, tempfile, os
+          zips=sorted(Path('course_packages').rglob('*.zip'))
+          print('ARCHIVES',len(zips))
+          interesting={'.py','.sql','.ipynb','.sh','.ps1','.yml','.yaml','.json','.csv','.xlsx','.xlsm','.parquet','.db','.sqlite'}
+          total=collections.Counter(); executable=[]; errors=[]
+          for zp in zips:
+              try:
+                  with zipfile.ZipFile(zp) as z:
+                      bad=z.testzip()
+                      if bad: errors.append(f'{zp}: CRC {bad}')
+                      names=[n for n in z.namelist() if not n.endswith('/')]
+                      c=collections.Counter(Path(n).suffix.lower() for n in names)
+                      total.update(c)
+                      hits=[n for n in names if Path(n).suffix.lower() in interesting or Path(n).name.lower() in {'dockerfile','requirements.txt','pyproject.toml','dbt_project.yml','docker-compose.yml','compose.yml'}]
+                      if hits:
+                          print('\nARCHIVE',zp,'FILES',len(names),'RUNTIME_CANDIDATES',len(hits))
+                          for n in hits: print('  ',n)
+              except Exception as e: errors.append(f'{zp}: {e!r}')
+          print('\nEXTENSION_COUNTS')
+          for k,v in total.most_common(): print(k or '<none>',v)
+          print('\nZIP_ERRORS',len(errors))
+          for e in errors: print(e)
+          assert not errors, errors
+          PY
