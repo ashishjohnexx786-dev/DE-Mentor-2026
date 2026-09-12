@@ -7,7 +7,6 @@ permissions:
   contents: write
 jobs:
   repair:
-    if: github.event.head_commit.message == 'Stage SDE RC5 runtime repair 1 driver'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,54 +25,55 @@ jobs:
           new_footer = 'DE Mentor 2026 • Beginner-First RC5 STRICT-B01 • 20 stages • 264 formal lessons • 50 project phases • 7 protected Gates • Option-B institute family • runtime/device certification pending'
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          assert s.count(old_footer) == 1, s.count(old_footer)
-          assert new_footer not in s
-          p.write_text(s.replace(old_footer, new_footer), encoding='utf-8', newline='\n')
+          if old_footer in s:
+              assert s.count(old_footer) == 1
+              s = s.replace(old_footer, new_footer)
+              p.write_text(s, encoding='utf-8', newline='\n')
+          else:
+              assert new_footer in s
 
           p = Path('sw.js')
           s = p.read_text(encoding='utf-8')
           old_cache = 'de-mentor-2026-rc5-strict-b01-verified-v2'
           new_cache = 'de-mentor-2026-rc5-strict-b01-runtime-repair1-v3'
-          assert s.count(old_cache) == 1, s.count(old_cache)
-          p.write_text(s.replace(old_cache, new_cache), encoding='utf-8', newline='\n')
+          if old_cache in s:
+              assert s.count(old_cache) == 1
+              p.write_text(s.replace(old_cache, new_cache), encoding='utf-8', newline='\n')
+          else:
+              assert new_cache in s
 
-          current_release = '''DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 1 VERIFIED CANDIDATE
-Date: 2026-09-12
-Status: PRIOR STATIC/HOSTED PARITY PRESERVED; RUNTIME REPAIR 1 AWAITS HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION - NOT FINAL
+          release_lines = [
+              'DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 1 VERIFIED CANDIDATE',
+              'Date: 2026-09-12',
+              'Status: PRIOR STATIC/HOSTED PARITY PRESERVED; RUNTIME REPAIR 1 AWAITS HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION - NOT FINAL',
+              '',
+              '20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.',
+              'M00-M14: 210 lessons rebuilt to the explicit B01-style 16-stage beginner-first teaching contract. Strict semantic pass: 0 missing stages, 0 Picture-it/Vocabulary high-similarity lessons at >=0.55, 0 Expected/Validate recovery contamination, and 210/210 unique Why-it-worked texts.',
+              'External-source lessons show a visible click action plus printed URL; book-led/internal lessons do not receive filler links.',
+              'Root learner-book aliases are byte-identical to the matching module-package learner books; all dependent internal checksum manifests validate.',
+              'M15-M19 and G01-G07 remain preserved from the accepted predecessor except previously recorded fixes.',
+              'Service-worker cache identity is bumped for the strict B01 bytes.',
+              '',
+              'NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.',
+              'Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed a stale learner-facing RC4 footer in index.html. Footer identity is corrected to RC5 STRICT-B01 and the service-worker cache key is bumped so installed PWAs cannot retain the stale shell. No curriculum, learner-book, Gate, source-map, progress-state, or tool-route bytes were changed by this repair.',
+          ]
+          Path('CURRENT_RELEASE.txt').write_text('\n'.join(release_lines) + '\n', encoding='utf-8', newline='\n')
 
-20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.
-M00-M14: 210 lessons rebuilt to the explicit B01-style 16-stage beginner-first teaching contract. Strict semantic pass: 0 missing stages, 0 Picture-it/Vocabulary high-similarity lessons at >=0.55, 0 Expected/Validate recovery contamination, and 210/210 unique Why-it-worked texts.
-External-source lessons show a visible click action plus printed URL; book-led/internal lessons do not receive filler links.
-Root learner-book aliases are byte-identical to the matching module-package learner books; all dependent internal checksum manifests validate.
-M15-M19 and G01-G07 remain preserved from the accepted predecessor except previously recorded fixes.
-Service-worker cache identity is bumped for the strict B01 bytes.
-
-NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.
-Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed a stale learner-facing RC4 footer in index.html. Footer identity is corrected to RC5 STRICT-B01 and the service-worker cache key is bumped so installed PWAs cannot retain the stale shell. No curriculum, learner-book, Gate, source-map, progress-state, or tool-route bytes were changed by this repair.
-'''
-          Path('CURRENT_RELEASE.txt').write_text(current_release, encoding='utf-8', newline='\n')
-
-          control_text = '''{
-  "repair": "SDE_RC5_STRICT_B01_RUNTIME_REPAIR1",
-  "trigger": "physical Android Evidence-tab screenshot showed stale learner-facing RC4 footer",
-  "changed_files": [
-    "index.html",
-    "sw.js",
-    "CURRENT_RELEASE.txt",
-    "MANIFEST_SHA256.txt"
-  ],
-  "curriculum_changed": false,
-  "learner_books_changed": false,
-  "gate_state_machine_changed": false,
-  "footer_rc4_remaining_in_index": false,
-  "footer_rc5_strict_present": true,
-  "service_worker_cache": "de-mentor-2026-rc5-strict-b01-runtime-repair1-v3",
-  "manifest_entries": 181,
-  "manifest_all_match": true
-}
-'''
+          control = {
+              'repair': 'SDE_RC5_STRICT_B01_RUNTIME_REPAIR1',
+              'trigger': 'physical Android Evidence-tab screenshot showed stale learner-facing RC4 footer',
+              'changed_files': ['index.html', 'sw.js', 'CURRENT_RELEASE.txt', 'MANIFEST_SHA256.txt'],
+              'curriculum_changed': False,
+              'learner_books_changed': False,
+              'gate_state_machine_changed': False,
+              'footer_rc4_remaining_in_index': False,
+              'footer_rc5_strict_present': True,
+              'service_worker_cache': 'de-mentor-2026-rc5-strict-b01-runtime-repair1-v3',
+              'manifest_entries': 181,
+              'manifest_all_match': True,
+          }
           control_path = 'control/SDE_RC5_RUNTIME_REPAIR1_ANDROID_DISCOVERY_2026-09-12.json'
-          Path(control_path).write_text(control_text, encoding='utf-8', newline='\n')
+          Path(control_path).write_text(json.dumps(control, indent=2, ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
 
           expected = {
               'CURRENT_RELEASE.txt': '4dd3742163bbc2b7ca03ab3ff6286c076aa44cabc4e4344b68a9cf24c05bc5e1',
@@ -87,33 +87,38 @@ Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed 
 
           mp = Path('MANIFEST_SHA256.txt')
           lines = mp.read_text(encoding='utf-8').splitlines()
-          assert len(lines) == 181, len(lines)
+          if any(line.endswith('  ' + control_path) for line in lines):
+              assert len(lines) == 182
+          else:
+              assert len(lines) == 181
           replacements = {k: v for k, v in expected.items() if k != control_path}
-          out = []
-          seen = set()
+          out, seen = [], set()
           for line in lines:
               h, rel = line.split('  ', 1)
+              if rel == control_path:
+                  continue
               if rel in replacements:
                   h = replacements[rel]
                   seen.add(rel)
               out.append(f'{h}  {rel}')
-          assert seen == set(replacements), (seen, set(replacements))
+          assert seen == set(replacements)
           out.append(f"{expected[control_path]}  {control_path}")
           mp.write_text('\n'.join(out) + '\n', encoding='utf-8', newline='\n')
           manifest_sha = hashlib.sha256(mp.read_bytes()).hexdigest()
           assert manifest_sha == '90891aed075e2a286b1cfc547e38cb5742827ce99f21efad0eacc06b5109737a', manifest_sha
-
           for line in out:
               h, rel = line.split('  ', 1)
               got = hashlib.sha256(Path(rel).read_bytes()).hexdigest()
               assert got == h, (rel, got, h)
-          assert old_footer not in Path('index.html').read_text(encoding='utf-8')
-          assert new_footer in Path('index.html').read_text(encoding='utf-8')
           print('PASS exact Runtime Repair 1 candidate bytes')
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html sw.js CURRENT_RELEASE.txt MANIFEST_SHA256.txt control/SDE_RC5_RUNTIME_REPAIR1_ANDROID_DISCOVERY_2026-09-12.json
           git diff --cached --check
-          git commit -m 'Apply SDE RC5 runtime repair 1 from Android evidence'
-          git push origin HEAD:runtime-candidate/semantic-rc3-rc5-2026-09-12
+          if git diff --cached --quiet; then
+            echo 'Runtime Repair 1 already applied; no commit needed.'
+          else
+            git commit -m 'Apply SDE RC5 runtime repair 1 from Android evidence'
+            git push origin HEAD:runtime-candidate/semantic-rc3-rc5-2026-09-12
+          fi
