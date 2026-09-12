@@ -16,76 +16,77 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Patch shell references without touching learner data
+      - name: Restore Option-B logo and harden shell freshness
         run: |
           python - <<'PY'
           from pathlib import Path
-          import json
+          import json,re
 
           V='20260912-r7'
 
           p=Path('index.html')
           s=p.read_text()
-          repl={
+          replacements={
             'href="manifest.webmanifest"':f'href="manifest.webmanifest?v={V}"',
             'href="icon.svg"':f'href="icon.svg?v={V}"',
             'href="styles.css"':f'href="styles.css?v={V}"',
             'src="curriculum.js"':f'src="curriculum.js?v={V}"',
             'src="app.js"':f'src="app.js?v={V}"',
+            '<div class="logo">DE</div>':f'<img class="logo" src="icon.svg?v={V}" alt="DE Mentor logo">',
           }
-          for old,new in repl.items():
-            if old not in s:
-              raise SystemExit(f'missing expected index token: {old}')
-            s=s.replace(old,new,1)
+          for old,new in replacements.items():
+            if old in s:
+              s=s.replace(old,new,1)
+          required=[f'manifest.webmanifest?v={V}',f'icon.svg?v={V}',f'styles.css?v={V}',f'curriculum.js?v={V}',f'app.js?v={V}',f'<img class="logo" src="icon.svg?v={V}" alt="DE Mentor logo">']
+          for token in required:
+            if token not in s:
+              raise SystemExit(f'index repair token missing: {token}')
           p.write_text(s)
 
           p=Path('styles.css')
           s=p.read_text()
-          old='background:url("icon.svg") center/cover no-repeat'
-          new=f'background:url("icon.svg?v={V}") center/cover no-repeat'
-          if old not in s:
-            raise SystemExit('missing expected current Option-B logo CSS')
-          p.write_text(s.replace(old,new,1))
+          old='.brandWrap{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:950;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:var(--shadow)}'
+          new=f'.brandWrap{{display:flex;align-items:center;gap:10px;min-width:0}}.logo{{width:44px;height:44px;border-radius:14px;display:block;flex:0 0 44px;font-size:0;color:transparent;background:url("icon.svg?v={V}") center/cover no-repeat;box-shadow:var(--shadow)}}'
+          if old in s:
+            s=s.replace(old,new,1)
+          if f'background:url("icon.svg?v={V}")' not in s:
+            raise SystemExit('Option-B logo CSS was not restored')
+          p.write_text(s)
 
           p=Path('app.js')
           s=p.read_text()
           old="navigator.serviceWorker.register('sw.js').catch(()=>{})"
           new=f"navigator.serviceWorker.register('sw.js?v={V}',{{updateViaCache:'none'}}).catch(()=>{{}})"
-          if old not in s:
-            raise SystemExit('missing expected service-worker registration')
-          p.write_text(s.replace(old,new,1))
+          if old in s:
+            s=s.replace(old,new,1)
+          if f"sw.js?v={V}" not in s or "updateViaCache:'none'" not in s:
+            raise SystemExit('service-worker freshness registration missing')
+          p.write_text(s)
 
           p=Path('manifest.webmanifest')
           m=json.loads(p.read_text())
           m['start_url']=f'./index.html?v={V}'
           for icon in m.get('icons',[]):
-            if icon.get('src')=='icon.svg':
+            src=str(icon.get('src',''))
+            if src.split('?',1)[0]=='icon.svg':
               icon['src']=f'icon.svg?v={V}'
           p.write_text(json.dumps(m,indent=2)+"\n")
 
           p=Path('sw.js')
           s=p.read_text()
-          old="const CACHE='de-mentor-2026-rc5-strict-b01-runtime-repair3-cachefix-v1';"
-          new="const CACHE='de-mentor-2026-rc5-strict-b01-shell-freshness-r7';"
-          if old not in s:
-            raise SystemExit('missing expected current cache constant')
-          s=s.replace(old,new,1)
-          for old_asset in ['styles.css','app.js','curriculum.js','curriculum.json','manifest.webmanifest','icon.svg']:
-            quoted='"'+old_asset+'"'
-            versioned='"'+old_asset+'?v='+V+'"'
-            if quoted not in s:
-              raise SystemExit(f'missing expected sw asset: {old_asset}')
-            s=s.replace(quoted,versioned,1)
+          s,n=re.subn(r"const CACHE=['\"][^'\"]+['\"];", "const CACHE='de-mentor-2026-rc5-strict-b01-shell-freshness-r7';", s, count=1)
+          if n!=1:
+            raise SystemExit('service-worker cache constant not found')
           p.write_text(s)
 
           Path('.github/workflows/one-time-de-shell-freshness-r7.yml').unlink()
           PY
 
-      - name: Commit deterministic shell freshness repair
+      - name: Commit deterministic shell repair
         run: |
           git config user.name "Ashish Kumar"
           git config user.email "ashishjohnexx786@gmail.com"
           git add index.html styles.css app.js manifest.webmanifest sw.js .github/workflows/one-time-de-shell-freshness-r7.yml
           git diff --cached --check
-          git commit -m "Harden DE Mentor app-shell freshness R7"
+          git commit -m "Restore Option B logo and harden DE Mentor shell R7"
           git push origin HEAD:main
