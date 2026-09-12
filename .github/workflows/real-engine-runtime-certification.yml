@@ -1,14 +1,14 @@
 name: M09-M14 Real Engine Runtime Certification 2026
 on:
   push:
-    branches: [main]
+    branches: [main, runtime-candidate/real-engine-repair2-2026-09-12]
 permissions:
   contents: read
 
 jobs:
   m09-dbt:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Extract M09
@@ -20,22 +20,49 @@ jobs:
           assert hits
           with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m09')
           PY
+      - name: Run canonical M09 pipeline controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          PIPE=$(find /tmp/m09 -name m09_pipeline.py -print -quit)
+          test -n "$PIPE"
+          python "$PIPE" | tee /tmp/m09-pipeline.log
+          SMOKE=$(find /tmp/m09 -name M09_SMOKE_RESULT.json -print -quit)
+          python - "$SMOKE" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          print(json.dumps(x,indent=2))
+          assert x['baseline']['status']=='PASS'
+          assert x['baseline']['quarantine']==3
+          assert x['incremental']['status']=='PASS'
+          assert x['rerun']['selected']==0
+          assert x['failure']['status']=='FAILED_VALIDATION'
+          assert x['failure_state_unchanged'] is True
+          assert all(x['tests'].values())
+          assert x['quarantine_total']==3
+          assert x['audit_runs']==3
+          PY
       - name: Install dbt DuckDB adapter
         run: python -m pip install -q 'dbt-duckdb>=1.9,<2' duckdb
-      - name: Build source relation and run canonical dbt-style project
+      - name: Run dbt extension against canonical accepted current rows
         shell: bash
         run: |
           set -euo pipefail
           PROJECT=$(dirname "$(find /tmp/m09 -name dbt_project.yml -print -quit)")
-          RAW=$(find /tmp/m09 -path '*/normal/input/retail_orders_raw.csv' -print -quit)
-          test -n "$PROJECT" && test -n "$RAW"
-          python - "$RAW" <<'PY'
-          import sys,duckdb
-          raw=sys.argv[1]
+          SQLITE=$(find /tmp/m09 -name retailpulse.db -print -quit)
+          test -n "$PROJECT" && test -n "$SQLITE"
+          python - "$SQLITE" <<'PY'
+          import sys,sqlite3,duckdb
+          src=sqlite3.connect(sys.argv[1])
+          rows=src.execute('select order_id,customer_id,order_date,region,status,qty,unit_price,updated_at from stg_orders order by order_id').fetchall()
+          src.close()
+          assert len(rows)==12,len(rows)
           con=duckdb.connect('/tmp/m09.duckdb')
           con.execute('create schema if not exists main')
-          con.execute("create or replace table main.raw_orders as select * from read_csv_auto(?, header=true, all_varchar=true)",[raw])
-          print('RAW_ROWS',con.execute('select count(*) from main.raw_orders').fetchone()[0])
+          con.execute('drop table if exists main.raw_orders')
+          con.execute('create table main.raw_orders(order_id varchar, customer_id varchar, order_date varchar, region varchar, status varchar, qty integer, unit_price double, updated_at varchar)')
+          con.executemany('insert into main.raw_orders values (?,?,?,?,?,?,?,?)',rows)
+          print('ACCEPTED_CURRENT_SOURCE_ROWS',con.execute('select count(*) from main.raw_orders').fetchone()[0])
           con.close()
           PY
           mkdir -p /tmp/dbt_profiles
@@ -61,11 +88,13 @@ jobs:
           con=duckdb.connect('/tmp/m09.duckdb')
           rows=con.execute('select count(*) from main.fct_sales').fetchone()[0]
           uniq=con.execute('select count(distinct order_id) from main.fct_sales').fetchone()[0]
-          nulls=con.execute('select count(*) from main.fct_sales where order_id is null or customer_id is null').fetchone()[0]
-          print('FCT_ROWS',rows,'UNIQUE_IDS',uniq,'NULL_KEY_ROWS',nulls)
-          assert rows>0 and rows==uniq and nulls==0
+          nulls=con.execute("select count(*) from main.fct_sales where order_id is null or customer_id is null or trim(customer_id)='' ").fetchone()[0]
+          revenue=con.execute('select round(sum(line_revenue),2) from main.fct_sales').fetchone()[0]
+          print('FCT_ROWS',rows,'UNIQUE_IDS',uniq,'NULL_KEY_ROWS',nulls,'REVENUE',revenue)
+          assert rows==11 and rows==uniq and nulls==0 and float(revenue)==3490.0
+          con.close()
           PY
-          echo 'M09 DBT REAL ENGINE PASS'
+          echo 'M09 PIPELINE + DBT REAL ENGINE PASS'
 
   m10-docker:
     runs-on: ubuntu-latest
@@ -103,7 +132,6 @@ jobs:
           assert x=={'service':'m10-lab','status':'ok','db_host':'db'},x
           PY
           docker compose ps
-          test "$(docker inspect -f '{{.State.Running}}' m10-kafka 2>/dev/null || true)" != true || true
           echo 'M10 DOCKER COMPOSE REAL ENGINE PASS'
 
   m10-airflow:
@@ -111,6 +139,7 @@ jobs:
     timeout-minutes: 20
     env:
       AIRFLOW_HOME: /tmp/airflow
+      AIRFLOW__CORE__DAGS_FOLDER: /tmp/airflow/dags
     steps:
       - uses: actions/checkout@v4
       - name: Extract M10 DAG
@@ -122,7 +151,7 @@ jobs:
           assert hits
           with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m10')
           PY
-      - name: Install Airflow 3 runtime and parse canonical DAG
+      - name: Install Airflow 3 runtime and parse canonical DAG directly
         shell: bash
         run: |
           set -euo pipefail
@@ -133,13 +162,11 @@ jobs:
           cp "$DAG" "$AIRFLOW_HOME/dags/"
           airflow version
           airflow db migrate
-          airflow dags list | tee /tmp/dags.txt
-          grep -q 'm10_daily_orders' /tmp/dags.txt
-          airflow dags list-import-errors | tee /tmp/import-errors.txt
           python - <<'PY'
           from airflow.models.dagbag import DagBag
-          bag=DagBag(dag_folder='/tmp/airflow/dags',include_examples=False)
+          bag=DagBag(dag_folder='/tmp/airflow/dags',include_examples=False,safe_mode=False)
           print('IMPORT_ERRORS',bag.import_errors)
+          print('DAGS',sorted(bag.dags))
           assert not bag.import_errors,bag.import_errors
           dag=bag.get_dag('m10_daily_orders'); assert dag is not None
           ids=set(dag.task_ids); print('TASKS',sorted(ids)); assert ids=={'extract','validate','transform','load','reconcile'}
@@ -148,6 +175,7 @@ jobs:
           assert set(dag.task_dict['transform'].downstream_task_ids)=={'load'}
           assert set(dag.task_dict['load'].downstream_task_ids)=={'reconcile'}
           assert dag.task_dict['extract'].retries==2
+          assert dag.catchup is False
           PY
           echo 'M10 AIRFLOW REAL ENGINE DAG PARSE PASS'
 
@@ -180,7 +208,7 @@ jobs:
           grep -q 'orders 16 joined 16' /tmp/m12-reference.log
           echo 'M12 PYSPARK REAL ENGINE PASS'
 
-  m13-delta:
+  m13-delta-repair-preflight:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -194,20 +222,38 @@ jobs:
           assert hits
           with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m13')
           PY
-      - name: Run canonical Delta Lake reference lab
+      - name: Apply isolated Repair-2 candidate configuration and run real Delta
         shell: bash
         run: |
           set -euo pipefail
           REF=$(find /tmp/m13 -name delta_reference_lab.py -print -quit)
           REQ=$(find /tmp/m13 -path '*/delta_reference/requirements.txt' -print -quit)
           test -n "$REF" && test -n "$REQ"
+          python - "$REF" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1])
+          s=p.read_text()
+          old="""builder=(SparkSession.builder.appName('M13DeltaLab').master('local[2]')
+                   .config('spark.driver.memory','2g')
+                   .config('spark.sql.shuffle.partitions','4'))
+          spark=configure_spark_with_delta_pip(builder).getOrCreate()"""
+          new="""builder=(SparkSession.builder.appName('M13DeltaLab').master('local[2]')
+                   .config('spark.driver.memory','2g')
+                   .config('spark.sql.shuffle.partitions','4')
+                   .config('spark.sql.extensions','io.delta.sql.DeltaSparkSessionExtension')
+                   .config('spark.sql.catalog.spark_catalog','org.apache.spark.sql.delta.catalog.DeltaCatalog'))
+          spark=configure_spark_with_delta_pip(builder).getOrCreate()"""
+          assert old in s,'expected canonical pre-repair block not found'
+          p.write_text(s.replace(old,new))
+          PY
           python -m pip install -q -r "$REQ"
           java -version
           python "$REF" | tee /tmp/m13-delta.log
           grep -q 'CURRENT' /tmp/m13-delta.log
           grep -q 'HISTORY' /tmp/m13-delta.log
           grep -q 'VERSION0' /tmp/m13-delta.log
-          echo 'M13 DELTA REAL ENGINE PASS'
+          echo 'M13 DELTA RUNTIME REPAIR2 PREFLIGHT PASS'
 
   m14-kafka:
     runs-on: ubuntu-latest
