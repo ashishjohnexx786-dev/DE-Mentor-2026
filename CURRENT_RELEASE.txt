@@ -1,6 +1,6 @@
-DE MENTOR - RC5 STRICT B01 POST-DEPLOY SEMANTIC REPAIR VERIFIED CANDIDATE
+DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 1 VERIFIED CANDIDATE
 Date: 2026-09-12
-Status: STATIC ACCEPTED - RUNTIME/DEVICE/HOSTED-BYTE CERTIFICATION PENDING - NOT FINAL
+Status: PRIOR STATIC/HOSTED PARITY PRESERVED; RUNTIME REPAIR 1 AWAITS HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION - NOT FINAL
 
 20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.
 M00-M14: 210 lessons rebuilt to the explicit B01-style 16-stage beginner-first teaching contract. Strict semantic pass: 0 missing stages, 0 Picture-it/Vocabulary high-similarity lessons at >=0.55, 0 Expected/Validate recovery contamination, and 210/210 unique Why-it-worked texts.
@@ -10,3 +10,5 @@ M15-M19 and G01-G07 remain preserved from the accepted predecessor except previo
 Service-worker cache identity is bumped for the strict B01 bytes.
 
 NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.
+Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed a stale learner-facing RC4 footer in index.html. Footer identity is corrected to RC5 STRICT-B01 and the service-worker cache key is bumped so installed PWAs cannot retain the stale shell. No curriculum, learner-book, Gate, source-map, progress-state, or tool-route bytes were changed by this repair.
+
