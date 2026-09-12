@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-12",
+  "status": "PASS",
+  "files": [
+    {
+      "path": "course_packages/gates/G01_DATA_EXCEL_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "85acb50e0bac5df4384b87316d7d446cce9a6a7d77fa0b1bdc565ac1a880cb8d"
+    },
+    {
+      "path": "course_packages/gates/G02_SQL_POSTGRESQL_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "00a405ac1aafc5d01903200fea0edb8b5cd1d5bd8ac2617d1802ea52a9904bd3"
+    },
+    {
+      "path": "course_packages/gates/G03_PYTHON_LINUX_GIT_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "850c01a7028ee5f0fea251f77fec865fa502c528b634e11ec18c1d813960e1b3"
+    },
+    {
+      "path": "course_packages/gates/G04_PIPELINE_ENGINEERING_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "f9c25aa8d64160ae111b33b55940b4d637cf2ad1b9df456ef2dd30480d1d9600"
+    },
+    {
+      "path": "course_packages/gates/G05_DISTRIBUTED_LAKEHOUSE_STREAMING_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "752a078bd42b0f755db498b01b903d2c2a7303a7966f787d25bedd36b733571b"
+    },
+    {
+      "path": "course_packages/gates/G06_CLOUD_PRODUCTION_ENGINEERING_CANONICAL_GATE_FAMILY_MODULE_FREEZE_QA_PASS.zip",
+      "status": "PASS",
+      "sha256": "ebd8be58108cce20681daa880fcfd940b3c7bbee0d3bf177748a02218c2035e1"
+    },
+    {
+      "path": "course_packages/gates/G07_FINAL_JOB_READY_PRACTICAL_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "status": "PASS",
+      "sha256": "a7bd8240a9b97dfd036eff32989279a30b0888add2c1c45d6229598c773a75ff"
+    },
+    {
+      "path": "course_packages/modules/M15_AZURE_MICROSOFT_FABRIC_DATA_ENGINEERING_BEGINNER_FIRST_RECOVERED_STATIC_SEAL_RC2_2026-09-11.zip",
+      "status": "PASS",
+      "sha256": "1af8a715e9a1dda10e47d445a9758cfbe5aabbc69c0452997ff63de8e6187a8f"
+    },
+    {
+      "path": "course_packages/modules/M16_DATAOPS_CICD_SECURITY_OBSERVABILITY_BEGINNER_FIRST_STATIC_CONTENT_FREEZE_RC1.zip",
+      "status": "PASS",
+      "sha256": "1e0a6fe23025b028a6c3232c0a4cc23f94941917251e1a32af7668e13ee65a8b"
+    },
+    {
+      "path": "course_packages/modules/M17_DATA_ENGINEERING_ARCHITECTURE_SYSTEM_DESIGN_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "status": "PASS",
+      "sha256": "81498075e6a6cd0ab421bed205132ce55cd46b8c246133a873f9b385958b8c67"
+    },
+    {
+      "path": "course_packages/modules/M18_PORTFOLIO_PROJECTS_PRODUCTION_CAPSTONE_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "status": "PASS",
+      "sha256": "7a990a9e92d02c5877015552caa739bb0ca3d6f6de56748210a35a7dbc555c8d"
+    },
+    {
+      "path": "course_packages/modules/M19_INTERVIEW_TECHNICAL_ENGLISH_JOB_LAUNCH_BEGINNER_FIRST_STATIC_SEAL_2026-09-11.zip",
+      "status": "PASS",
+      "sha256": "af7ed37380aad670cb087b640591a91dc8cf2197567235fde79f35f4ce1f4826"
+    }
+  ]
+}

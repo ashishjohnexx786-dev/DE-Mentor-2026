@@ -1,12 +1,12 @@
-DE MENTOR - BEGINNER-FIRST MASTER AUDIT RC4 CANDIDATE
-Date: 2026-09-11
-Status: STATIC REPAIR CANDIDATE - NOT FINAL / PHYSICAL RUNTIME PENDING
+DE MENTOR - RC5 STRICT B01 POST-DEPLOY SEMANTIC REPAIR VERIFIED CANDIDATE
+Date: 2026-09-12
+Status: STATIC ACCEPTED - RUNTIME/DEVICE/HOSTED-BYTE CERTIFICATION PENDING - NOT FINAL
 
 20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.
-M00-M14 learner books genuinely rebuilt to the locked beginner-first teaching contract.
-M15 Fabric Runtime 2.0 truth corrected to GA (opt-in during phased rollout at this checkpoint).
-Whole module and whole Gate-family ZIPs are admin-only and not learner-routed during study/assessment.
-Gate B/C assignment requires saved failed attempt + protected Review opened + recorded targeted repair + recorded changed micro-proof + explicit assignment.
-G01/G03 PDF clipping and M19 Start Here split repaired.
-Option-B charcoal/teal/soft-blue identity normalized; true-black AMOLED retained.
-Static QA does not equal learner Gate pass or live runtime proof. Learner-PC, physical Android/PWA, hosted-byte parity, and required live tool/cloud evidence remain pending.
+M00-M14: 210 lessons rebuilt to the explicit B01-style 16-stage beginner-first teaching contract. Strict semantic pass: 0 missing stages, 0 Picture-it/Vocabulary high-similarity lessons at >=0.55, 0 Expected/Validate recovery contamination, and 210/210 unique Why-it-worked texts.
+External-source lessons show a visible click action plus printed URL; book-led/internal lessons do not receive filler links.
+Root learner-book aliases are byte-identical to the matching module-package learner books; all dependent internal checksum manifests validate.
+M15-M19 and G01-G07 remain preserved from the accepted predecessor except previously recorded fixes.
+Service-worker cache identity is bumped for the strict B01 bytes.
+
+NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.

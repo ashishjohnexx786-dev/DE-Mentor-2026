@@ -1,7 +1,7 @@
 name: Master Runtime Smoke 2026
 on:
   push:
-    branches: [main, runtime-candidate/five-course-2026-09-11]
+    branches: [main, runtime-candidate/semantic-rc3-rc5-2026-09-12]
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,14 +18,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for f in index.html app.js styles.css manifest.webmanifest sw.js; do test -s "$f"; done
+          for f in index.html app.js styles.css manifest.webmanifest sw.js materials/M01_LEARNER_BOOK.pdf; do test -s "$f"; done
           find . -maxdepth 1 -type f -name '*.js' -print0 | xargs -0 -r -n1 node --check
           python - <<'PY'
           from pathlib import Path
           h=Path('index.html').read_text()
           for v in ['home','learn','map','repair','evidence','jobs','reports']:
               assert f'data-view="{v}"' in h,v
-          print('PASS standalone DE shell')
+          assert Path('materials/M01_LEARNER_BOOK.pdf').stat().st_size>100000
+          print('PASS standalone DE shell + RC5 M01 present')
           PY
       - name: Install Selenium
         run: python -m pip install -q selenium
@@ -67,7 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
-          files=(index.html manifest.webmanifest sw.js app.js)
+          files=(index.html manifest.webmanifest sw.js app.js materials/M01_LEARNER_BOOK.pdf)
           pass=0
           for attempt in $(seq 1 40); do
             ok=1
@@ -78,4 +79,4 @@ jobs:
             [[ "$ok" == 1 ]] && { pass=1; break; }; sleep 15
           done
           test "$pass" == 1
-          echo 'PASS standalone DE live Pages parity'
+          echo 'PASS Standalone DE live Pages parity including RC5 M01 book'
