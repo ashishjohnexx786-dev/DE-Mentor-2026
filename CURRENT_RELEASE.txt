@@ -1,6 +1,6 @@
-DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 1 VERIFIED CANDIDATE
+DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 2 VERIFIED CANDIDATE
 Date: 2026-09-12
-Status: PRIOR STATIC/HOSTED PARITY PRESERVED; RUNTIME REPAIR 1 AWAITS HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION - NOT FINAL
+Status: RUNTIME REPAIR 2 ISOLATED SUCCESSOR CANDIDATE; REAL-ENGINE PREFLIGHT PASS; STAGED RE-RUNTIME/HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION PENDING - NOT FINAL
 
 20 stages - 264 formal lessons - 50 M18 project phases - 314 controlled units - 7 protected Gate families.
 M00-M14: 210 lessons rebuilt to the explicit B01-style 16-stage beginner-first teaching contract. Strict semantic pass: 0 missing stages, 0 Picture-it/Vocabulary high-similarity lessons at >=0.55, 0 Expected/Validate recovery contamination, and 210/210 unique Why-it-worked texts.
@@ -12,3 +12,5 @@ Service-worker cache identity is bumped for the strict B01 bytes.
 NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.
 Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed a stale learner-facing RC4 footer in index.html. Footer identity is corrected to RC5 STRICT-B01 and the service-worker cache key is bumped so installed PWAs cannot retain the stale shell. No curriculum, learner-book, Gate, source-map, progress-state, or tool-route bytes were changed by this repair.
 
+
+Runtime Repair 2 (2026-09-12): real Delta execution exposed missing DeltaSparkSessionExtension/DeltaCatalog configuration in the packaged M13 reference script. The isolated successor repairs only that M13 runtime setup, its first-use instruction/checksum controls, and bumps the root service-worker cache. M13 is repacked with canonical uncompressed ZIP entries to make the successor byte hash platform-stable. Real-engine preflight passed on Spark 4.2.0 + delta-spark 4.4.0. M09 dbt, M10 Docker, M10 Airflow 3.3 DAG parse, M12 PySpark, and M14 Kafka also have observed PASS evidence. No learner PDF, curriculum, Gate, source map, Mentor route, or progress-state logic changed.
