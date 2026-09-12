@@ -1,0 +1,38 @@
+name: One-time Runtime Repair 3 manifest-only reconciliation
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/reconcile-runtime3-manifest-only.yml'
+permissions:
+  contents: write
+jobs:
+  reconcile:
+    if: contains(github.event.head_commit.message, 'Add one-time Runtime Repair 3 manifest-only reconciliation')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconcile sw.js checksum in root manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          sw_hash=hashlib.sha256(Path('sw.js').read_bytes()).hexdigest()
+          p=Path('MANIFEST_SHA256.txt')
+          raw=p.read_text()
+          lines=raw.splitlines()
+          hits=[i for i,line in enumerate(lines) if line.endswith('  sw.js')]
+          assert len(hits)==1,hits
+          lines[hits[0]]=f'{sw_hash}  sw.js'
+          p.write_text('\n'.join(lines)+('\n' if raw.endswith('\n') else ''))
+          print('SW_SHA256',sw_hash)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add MANIFEST_SHA256.txt
+          git diff --cached --check
+          git commit -m "Reconcile Runtime Repair 3 cachefix checksum manifest"
+          git push
