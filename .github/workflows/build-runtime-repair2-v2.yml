@@ -1,0 +1,103 @@
+name: Build Standalone Runtime Repair 2 Candidate v2
+on:
+  push:
+    branches: [runtime-candidate/real-engine-repair2-2026-09-12]
+    paths: [control/RUNTIME_REPAIR2_BUILD_TRIGGER_V2.txt]
+permissions:
+  contents: write
+jobs:
+  build-repair2-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Build and verify exact successor bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile,tempfile,hashlib,json
+          repo=Path('.')
+          module=repo/'course_packages/modules/M13_DELTA_LAKEHOUSE_CANONICAL_MODULE_FREEZE_QA_PASS.zip'
+          sha=lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          predecessor='1c269bedaab3707979b4ed7625000e515aa14e8933daca9898521145eceba7f6'
+          successor_expected='46f9a4bddc2ccaa26abb1a3f4077813485f83968ea7b7fb4beb3085c80dc4f73'
+          assert sha(module)==predecessor,(sha(module),predecessor)
+          with tempfile.TemporaryDirectory() as td0:
+              td=Path(td0)
+              with zipfile.ZipFile(module) as zin:
+                  infos=zin.infolist(); assert zin.testzip() is None; zin.extractall(td)
+              m13=td/'M13'
+              script=m13/'04_LAB_ASSETS/delta_reference/delta_reference_lab.py'
+              s=script.read_text()
+              needle="         .config('spark.sql.shuffle.partitions','4'))\nspark=configure_spark_with_delta_pip(builder).getOrCreate()"
+              repl="         .config('spark.sql.shuffle.partitions','4')\n         .config('spark.sql.extensions','io.delta.sql.DeltaSparkSessionExtension')\n         .config('spark.sql.catalog.spark_catalog','org.apache.spark.sql.delta.catalog.DeltaCatalog'))\nspark=configure_spark_with_delta_pip(builder).getOrCreate()"
+              assert needle in s,'canonical pre-repair Delta builder suffix not found'
+              script.write_text(s.replace(needle,repl,1))
+              (m13/'04_LAB_ASSETS/delta_reference/RUN_ME_FIRST.txt').write_text(
+                  'M13 first-use runtime: Java 17+; Python 3.10+; pip install -r requirements.txt. Then run: python delta_reference_lab.py\n'
+                  'The reference script configures the Delta Spark SQL extension/catalog and Maven package automatically. If install/network/runtime fails, do not mark real Delta runtime complete.\n')
+              def rels(exclude):
+                  return sorted(p.relative_to(m13).as_posix() for p in m13.rglob('*') if p.is_file() and p.relative_to(m13).as_posix() not in exclude)
+              idxp='CONTROL/M13_FILE_INDEX_SHA256.json'; sump='CONTROL/SHA256SUMS.txt'; manp='CONTROL/MANIFEST_SHA256.txt'
+              idx=[{'path':r,'bytes':(m13/r).stat().st_size,'sha256':sha(m13/r)} for r in rels({idxp,sump})]
+              (m13/idxp).write_text(json.dumps(idx,indent=2)+'\n')
+              mex={idxp,'CONTROL/M13_MASTER_AUDIT_RC4_REPAIR_RECORD_2026-09-11.json','CONTROL/M13_POST_DEPLOY_SEMANTIC_REPAIR_RC5_2026-09-11.json',manp,sump}
+              (m13/manp).write_text('\n'.join(f'{sha(m13/r)}  {r}' for r in rels(mex))+'\n')
+              (m13/sump).write_text('\n'.join(f'{sha(m13/r)}  {r}' for r in rels({sump}))+'\n')
+              tmp=module.with_suffix('.zip.new')
+              with zipfile.ZipFile(tmp,'w') as zout:
+                  for info in infos:
+                      data=b'' if info.is_dir() else (td/info.filename).read_bytes()
+                      zout.writestr(info,data,compress_type=info.compress_type)
+              with zipfile.ZipFile(tmp) as z: assert z.testzip() is None
+              assert sha(tmp)==successor_expected,(sha(tmp),successor_expected)
+              tmp.replace(module)
+          # Root successor identity/cache.
+          release=repo/'CURRENT_RELEASE.txt'
+          r=release.read_text()
+          r=r.replace('DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 1 VERIFIED CANDIDATE','DE MENTOR - RC5 STRICT B01 RUNTIME REPAIR 2 VERIFIED CANDIDATE',1)
+          old_status='Status: PRIOR STATIC/HOSTED PARITY PRESERVED; RUNTIME REPAIR 1 AWAITS HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION - NOT FINAL'
+          new_status='Status: RUNTIME REPAIR 2 ISOLATED SUCCESSOR CANDIDATE; REAL-ENGINE PREFLIGHT PASS; STAGED RE-RUNTIME/HOSTED RE-PARITY + PHYSICAL DEVICE CONTINUATION PENDING - NOT FINAL'
+          assert old_status in r
+          r=r.replace(old_status,new_status,1)
+          r += '\nRuntime Repair 2 (2026-09-12): real Delta execution exposed missing DeltaSparkSessionExtension/DeltaCatalog configuration in the packaged M13 reference script. The isolated successor repairs only that M13 runtime setup, its first-use instruction/checksum controls, and bumps the root service-worker cache. Real-engine preflight passed on Spark 4.2.0 + delta-spark 4.4.0. M09 dbt, M10 Docker, M10 Airflow 3.3 DAG parse, M12 PySpark, and M14 Kafka also have observed PASS evidence. No learner PDF, curriculum, Gate, source map, Mentor route, or progress-state logic changed.\n'
+          release.write_text(r)
+          sw=repo/'sw.js'; w=sw.read_text(); old="const CACHE='de-mentor-2026-rc5-strict-b01-runtime-repair1-v3';"; assert old in w
+          sw.write_text(w.replace(old,"const CACHE='de-mentor-2026-rc5-strict-b01-runtime-repair2-v4';",1))
+          receipt=repo/'control/SDE_RC5_RUNTIME_REPAIR2_REAL_ENGINE_DISCOVERY_2026-09-12.json'
+          receipt.write_text(json.dumps({
+            'artifact':'SDE_RC5_RUNTIME_REPAIR2_REAL_ENGINE_DISCOVERY_2026-09-12','date':'2026-09-12','status':'STAGED_SUCCESSOR_CANDIDATE__NOT_FINAL',
+            'trigger':{'run_id':34675961189,'m13_job_id':103505753198,'classification':'GENUINE_CANONICAL_M13_RUNTIME_DEFECT','failure':'DELTA_CONFIGURE_SPARK_SESSION_WITH_EXTENSION_AND_CATALOG'},
+            'repair':{'module_path':module.as_posix(),'predecessor_sha256':predecessor,'successor_sha256':sha(module),'delta_script_sha256':'9236c784a9b4c472758a9c9cd363c6520fef5772349de5f3541510c9280d143e','run_me_first_sha256':'ef7f5c9b280dad4da71e5b8c097f3ed95d4034385c46598fcd154de7dcdb587c','cache':'de-mentor-2026-rc5-strict-b01-runtime-repair2-v4'},
+            'observed_engine_pass':{'m09_dbt_job':103508789008,'m10_docker_job':103508789026,'m10_airflow_run':34677188025,'m12_spark_job':103508788875,'m13_delta_preflight_job':103508789003,'m14_kafka_job':103508789018},
+            'preserved':['learner PDFs','curriculum registries','Gates','source/video maps','Mentor routes','progress-state logic','M00-M12 and M14-M19 module ZIP bytes'],
+            'next':['staged exact-byte verification','M13 no-patch real Delta rerun','regression','promotion only after PASS','Pages/hosted parity','physical Android continuation'],
+            'final':False},indent=2)+'\n')
+          # Root manifest: keep predecessor product scope and add this receipt; GitHub-only workflows/triggers remain outside it.
+          mf=repo/'MANIFEST_SHA256.txt'
+          tracked=[x.split('  ',1)[1] for x in mf.read_text().splitlines() if x.strip()]
+          tracked.append(receipt.relative_to(repo).as_posix())
+          lines=[]
+          for rel in sorted(set(tracked)):
+              p=repo/rel; assert p.is_file(),rel; lines.append(f'{sha(p)}  {rel}')
+          mf.write_text('\n'.join(lines)+'\n')
+          for line in mf.read_text().splitlines():
+              h,rel=line.split('  ',1); assert sha(repo/rel)==h,rel
+          assert sha(module)==successor_expected
+          assert 'runtime-repair2-v4' in sw.read_text()
+          assert 'Beginner-First RC5 STRICT-B01' in (repo/'index.html').read_text()
+          print('RUNTIME REPAIR2 PRODUCT BUILD PASS',sha(module),'manifest',len(lines))
+          PY
+      - name: Commit exact product successor
+        run: |
+          set -euo pipefail
+          git config user.name 'Runtime Certification Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add course_packages/modules/M13_DELTA_LAKEHOUSE_CANONICAL_MODULE_FREEZE_QA_PASS.zip CURRENT_RELEASE.txt sw.js MANIFEST_SHA256.txt control/SDE_RC5_RUNTIME_REPAIR2_REAL_ENGINE_DISCOVERY_2026-09-12.json
+          git diff --cached --stat
+          git commit -m 'Stage Standalone Runtime Repair 2 exact candidate [skip ci]'
+          git push origin HEAD:runtime-candidate/real-engine-repair2-2026-09-12
