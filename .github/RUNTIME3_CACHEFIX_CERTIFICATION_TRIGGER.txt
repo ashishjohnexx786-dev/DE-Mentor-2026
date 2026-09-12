@@ -1,0 +1,3 @@
+Runtime Repair 3 cache-freshness certification trigger.
+Product change under test: network-first same-origin service-worker strategy with offline cache fallback.
+Learner curriculum and PDF bytes are unchanged.
