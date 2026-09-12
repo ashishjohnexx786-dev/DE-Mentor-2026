@@ -115,7 +115,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html sw.js CURRENT_RELEASE.txt MANIFEST_SHA256.txt control/SDE_RC5_RUNTIME_REPAIR1_ANDROID_DISCOVERY_2026-09-12.json
-          git diff --cached --check
           if git diff --cached --quiet; then
             echo 'Runtime Repair 1 already applied; no commit needed.'
           else
