@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Extract M09-M14 and print runtime-relevant configs
+      - name: Extract and inspect engine-specific learner assets
         shell: bash
         run: |
           set -euo pipefail
@@ -18,19 +18,23 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import zipfile
-          for module in ['M09','M10','M11','M12','M13','M14']:
+          for module in ['M09','M10','M12','M13','M14']:
               hits=[p for p in Path('course_packages').rglob('*.zip') if module in p.name.upper() and 'G0' not in p.name.upper()]
-              assert hits, module
+              assert hits,module
               z=sorted(hits)[0]; out=Path('/tmp/engines')/module; out.mkdir(parents=True,exist_ok=True)
               with zipfile.ZipFile(z) as f:
-                  assert f.testzip() is None
+                  assert f.testzip() is None,z
                   f.extractall(out)
               print('EXTRACTED',module,z)
           PY
-          echo '=== RUNTIME FILE LIST ==='
-          find /tmp/engines -type f \( -name '*.py' -o -name '*.yml' -o -name '*.yaml' -o -name 'requirements*.txt' -o -name 'Dockerfile' -o -name 'dbt_project.yml' -o -name 'profiles.yml' \) -print | sort
-          echo '=== KEY CONFIG/SOURCE PREVIEWS ==='
-          while IFS= read -r f; do
-            echo "----- $f -----"
-            sed -n '1,220p' "$f"
-          done < <(find /tmp/engines -type f \( -name 'dbt_project.yml' -o -name 'profiles.yml' -o -name 'requirements*.txt' -o -name 'docker-compose.yml' -o -name 'compose.yml' -o -name '*reference*.py' -o -name 'test_transformations.py' -o -name '*dag*.py' -o -name 'producer.py' -o -name 'consumer.py' \) | sort)
+          echo '=== M09 DBT PROJECT ==='
+          find /tmp/engines/M09 -type f \( -name '*.sql' -o -name '*.yml' -o -name '*.yaml' -o -name '*.csv' -o -name '*.py' \) -print | sort
+          while IFS= read -r f; do echo "----- $f -----"; sed -n '1,260p' "$f"; done < <(find /tmp/engines/M09 -type f \( -name '*.sql' -o -name '*.yml' -o -name '*.yaml' -o -name '*.py' \) | sort)
+          echo '=== M10 AIRFLOW/DOCKER ==='
+          while IFS= read -r f; do echo "----- $f -----"; sed -n '1,300p' "$f"; done < <(find /tmp/engines/M10 -type f \( -name '*.py' -o -name '*.yaml' -o -name '*.yml' -o -name 'Dockerfile' \) | sort)
+          echo '=== M12 SPARK ==='
+          while IFS= read -r f; do echo "----- $f -----"; sed -n '1,280p' "$f"; done < <(find /tmp/engines/M12 -type f \( -name '*reference*.py' -o -name 'test_transformations.py' -o -name 'requirements*.txt' \) | sort)
+          echo '=== M13 DELTA ==='
+          while IFS= read -r f; do echo "----- $f -----"; sed -n '1,280p' "$f"; done < <(find /tmp/engines/M13 -type f \( -name '*reference*.py' -o -name 'requirements*.txt' \) | sort)
+          echo '=== M14 KAFKA ==='
+          while IFS= read -r f; do echo "----- $f -----"; sed -n '1,320p' "$f"; done < <(find /tmp/engines/M14 -type f \( -name '*.py' -o -name '*.yaml' -o -name '*.yml' -o -name 'requirements*.txt' \) | sort)
