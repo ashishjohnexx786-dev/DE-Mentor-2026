@@ -1,0 +1,56 @@
+name: M10 Airflow Runtime Recheck 2026
+on:
+  push:
+    branches: [runtime-candidate/real-engine-repair2-2026-09-12]
+permissions:
+  contents: read
+jobs:
+  airflow-recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AIRFLOW_HOME: /tmp/airflow
+      AIRFLOW__CORE__DAGS_FOLDER: /tmp/airflow/dags
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract canonical M10 DAG
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M10' in p.name.upper() and 'G0' not in p.name.upper()]
+          assert hits
+          with zipfile.ZipFile(sorted(hits)[0]) as z:
+              assert z.testzip() is None
+              z.extractall('/tmp/m10')
+          PY
+      - name: Parse canonical DAG with Airflow 3.3 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q 'apache-airflow>=3.3,<3.4'
+          DAG=$(find /tmp/m10 -name m10_daily_orders.py -print -quit)
+          test -n "$DAG"
+          mkdir -p "$AIRFLOW_HOME/dags"
+          cp "$DAG" "$AIRFLOW_HOME/dags/"
+          airflow version
+          airflow db migrate
+          python - <<'PY'
+          from airflow.dag_processing.dagbag import DagBag
+          bag=DagBag(dag_folder='/tmp/airflow/dags')
+          print('IMPORT_ERRORS',bag.import_errors)
+          print('DAGS',sorted(bag.dags))
+          assert not bag.import_errors,bag.import_errors
+          dag=bag.get_dag('m10_daily_orders')
+          assert dag is not None
+          ids=set(dag.task_ids)
+          print('TASKS',sorted(ids))
+          assert ids=={'extract','validate','transform','load','reconcile'}
+          assert set(dag.task_dict['extract'].downstream_task_ids)=={'validate'}
+          assert set(dag.task_dict['validate'].downstream_task_ids)=={'transform'}
+          assert set(dag.task_dict['transform'].downstream_task_ids)=={'load'}
+          assert set(dag.task_dict['load'].downstream_task_ids)=={'reconcile'}
+          assert dag.task_dict['extract'].retries==2
+          assert dag.catchup is False
+          print('M10 AIRFLOW REAL ENGINE DAG PARSE PASS')
+          PY
