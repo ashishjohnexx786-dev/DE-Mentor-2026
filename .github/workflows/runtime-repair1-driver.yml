@@ -57,7 +57,7 @@ jobs:
               'NOT FINAL: physical Android/PWA, learner-PC, hosted-byte parity after deployment, and required live tool/cloud evidence remain pending.',
               'Runtime Repair 1 (2026-09-12): physical Android Evidence-tab inspection exposed a stale learner-facing RC4 footer in index.html. Footer identity is corrected to RC5 STRICT-B01 and the service-worker cache key is bumped so installed PWAs cannot retain the stale shell. No curriculum, learner-book, Gate, source-map, progress-state, or tool-route bytes were changed by this repair.',
           ]
-          Path('CURRENT_RELEASE.txt').write_text('\n'.join(release_lines) + '\n', encoding='utf-8', newline='\n')
+          Path('CURRENT_RELEASE.txt').write_text('\n'.join(release_lines) + '\n\n', encoding='utf-8', newline='\n')
 
           control = {
               'repair': 'SDE_RC5_STRICT_B01_RUNTIME_REPAIR1',
