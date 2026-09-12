@@ -1,0 +1,113 @@
+name: Standalone Python Local Runtime Certification 2026
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  python-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install runtime dependencies
+        run: python -m pip install -q pytest pandas pyarrow
+      - name: Extract accepted module and Gate archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/sde-runtime && mkdir -p /tmp/sde-runtime
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          out=Path('/tmp/sde-runtime')
+          zips=sorted(Path('course_packages').rglob('*.zip'))
+          for z in zips:
+              target=out/z.stem
+              target.mkdir(parents=True,exist_ok=True)
+              with zipfile.ZipFile(z) as f:
+                  assert f.testzip() is None, z
+                  f.extractall(target)
+          print('EXTRACTED_ARCHIVES',len(zips))
+          PY
+      - name: Compile all learner Python source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import py_compile
+          root=Path('/tmp/sde-runtime')
+          files=sorted(root.rglob('*.py'))
+          bad=[]
+          for p in files:
+              try: py_compile.compile(str(p),doraise=True)
+              except Exception as e: bad.append((str(p),repr(e)))
+          print('PYTHON_COMPILE_TOTAL',len(files))
+          print('PYTHON_COMPILE_FAILURES',len(bad))
+          for x in bad: print(*x)
+          assert not bad,bad
+          PY
+      - name: Execute deterministic local simulators and smoke runners
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess,sys,os
+          root=Path('/tmp/sde-runtime')
+          targets=[
+            'm08_smoke_runner.py',
+            'orchestration_simulator.py',
+            'delta_foundation_simulator.py',
+            'layout_lab.py',
+            'join_fanout_simulator.py',
+            'partition_skew_simulator.py',
+            'table_semantics_simulator.py',
+            'streaming_semantics_simulator.py',
+          ]
+          selected=[]
+          for name in targets:
+              hits=sorted(root.rglob(name))
+              if name in {'table_semantics_simulator.py','streaming_semantics_simulator.py'}:
+                  # Execute the normal teaching variant; practical/retest variants are assessment material.
+                  hits=[p for p in hits if '/normal/' in p.as_posix()]
+              if hits: selected.append(hits[0])
+          print('RUNTIME_TARGETS',len(selected))
+          failures=[]
+          for p in selected:
+              print('\nRUN',p)
+              r=subprocess.run([sys.executable,p.name],cwd=p.parent,text=True,capture_output=True,timeout=120)
+              print(r.stdout[-4000:])
+              if r.stderr: print('STDERR',r.stderr[-4000:])
+              if r.returncode!=0: failures.append((str(p),r.returncode))
+          print('RUNTIME_FAILURES',failures)
+          assert len(selected)>=6,selected
+          assert not failures,failures
+          PY
+      - name: Run focused packaged unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess,sys
+          root=Path('/tmp/sde-runtime')
+          tests=[]
+          for name in ['test_order_utils.py','test_m16.py']:
+              tests += sorted(root.rglob(name))
+          print('FOCUSED_TEST_FILES',len(tests))
+          failures=[]
+          for t in tests:
+              # Project root is normally one level above tests/.
+              cwd=t.parent.parent if t.parent.name=='tests' else t.parent
+              print('\nPYTEST',t,'CWD',cwd)
+              r=subprocess.run([sys.executable,'-m','pytest','-q',str(t)],cwd=cwd,text=True,capture_output=True,timeout=120)
+              print(r.stdout[-4000:]);
+              if r.stderr: print('STDERR',r.stderr[-4000:])
+              if r.returncode!=0: failures.append((str(t),r.returncode))
+          assert len(tests)>=2,tests
+          assert not failures,failures
+          PY
+      - name: Runtime certificate summary
+        run: echo 'STANDALONE PYTHON LOCAL CI RUNTIME PASS'
