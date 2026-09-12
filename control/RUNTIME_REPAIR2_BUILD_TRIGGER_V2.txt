@@ -1,3 +1,0 @@
-Trigger corrected deterministic Runtime Repair 2 staging build.
-Date: 2026-09-12
-GitHub-only orchestration file; excluded from course MANIFEST_SHA256 product scope.
