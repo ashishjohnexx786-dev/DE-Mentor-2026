@@ -6,9 +6,43 @@ permissions:
   contents: read
 
 jobs:
-  m09-dbt:
+  product-integrity:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Runtime Repair 2 bytes and root manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,zipfile,json
+          sha=lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          m=Path('course_packages/modules/M13_DELTA_LAKEHOUSE_CANONICAL_MODULE_FREEZE_QA_PASS.zip')
+          expected='e878b22a5182b28406de4aa89320551ff0512ff9f140d90f9b088bc30296f2ad'
+          assert sha(m)==expected,(sha(m),expected)
+          with zipfile.ZipFile(m) as z:
+              assert z.testzip() is None
+              script=z.read('M13/04_LAB_ASSETS/delta_reference/delta_reference_lab.py').decode()
+              assert "spark.sql.extensions','io.delta.sql.DeltaSparkSessionExtension" in script
+              assert "spark.sql.catalog.spark_catalog','org.apache.spark.sql.delta.catalog.DeltaCatalog" in script
+          for line in Path('MANIFEST_SHA256.txt').read_text().splitlines():
+              if not line.strip(): continue
+              h,rel=line.split('  ',1)
+              assert Path(rel).is_file(),rel
+              assert sha(rel)==h,(rel,sha(rel),h)
+          receipt=json.loads(Path('control/SDE_RC5_RUNTIME_REPAIR2_REAL_ENGINE_DISCOVERY_2026-09-12.json').read_text())
+          assert receipt['repair']['successor_sha256']==expected
+          assert receipt['final'] is False
+          assert "runtime-repair2-v4" in Path('sw.js').read_text()
+          print('RUNTIME REPAIR2 PRODUCT INTEGRITY PASS',expected)
+          PY
+
+  m09-dbt:
+    needs: product-integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Extract M09
@@ -20,22 +54,45 @@ jobs:
           assert hits
           with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m09')
           PY
-      - name: Install dbt DuckDB adapter
-        run: python -m pip install -q 'dbt-duckdb>=1.9,<2' duckdb
-      - name: Build source relation and run canonical dbt-style project
+      - name: Run canonical M09 pipeline controls
         shell: bash
         run: |
           set -euo pipefail
+          PIPE=$(find /tmp/m09 -name m09_pipeline.py -print -quit)
+          test -n "$PIPE"
+          python "$PIPE" | tee /tmp/m09-pipeline.log
+          SMOKE=$(find /tmp/m09 -name M09_SMOKE_RESULT.json -print -quit)
+          python - "$SMOKE" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x['baseline']['status']=='PASS'
+          assert x['baseline']['quarantine']==3
+          assert x['incremental']['status']=='PASS'
+          assert x['rerun']['selected']==0
+          assert x['failure']['status']=='FAILED_VALIDATION'
+          assert x['failure_state_unchanged'] is True
+          assert all(x['tests'].values())
+          assert x['quarantine_total']==3
+          assert x['audit_runs']==3
+          print('M09 CANONICAL PIPELINE CONTROLS PASS')
+          PY
+      - name: Run dbt extension against canonical accepted current rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q 'dbt-duckdb>=1.9,<2' duckdb
           PROJECT=$(dirname "$(find /tmp/m09 -name dbt_project.yml -print -quit)")
-          RAW=$(find /tmp/m09 -path '*/normal/input/retail_orders_raw.csv' -print -quit)
-          test -n "$PROJECT" && test -n "$RAW"
-          python - "$RAW" <<'PY'
-          import sys,duckdb
-          raw=sys.argv[1]
+          SQLITE=$(find /tmp/m09 -name retailpulse.db -print -quit)
+          test -n "$PROJECT" && test -n "$SQLITE"
+          python - "$SQLITE" <<'PY'
+          import sys,sqlite3,duckdb
+          src=sqlite3.connect(sys.argv[1])
+          rows=src.execute('select order_id,customer_id,order_date,region,status,qty,unit_price,updated_at from stg_orders order by order_id').fetchall()
+          src.close(); assert len(rows)==12,len(rows)
           con=duckdb.connect('/tmp/m09.duckdb')
           con.execute('create schema if not exists main')
-          con.execute("create or replace table main.raw_orders as select * from read_csv_auto(?, header=true, all_varchar=true)",[raw])
-          print('RAW_ROWS',con.execute('select count(*) from main.raw_orders').fetchone()[0])
+          con.execute('create or replace table main.raw_orders(order_id varchar, customer_id varchar, order_date varchar, region varchar, status varchar, qty integer, unit_price double, updated_at varchar)')
+          con.executemany('insert into main.raw_orders values (?,?,?,?,?,?,?,?)',rows)
           con.close()
           PY
           mkdir -p /tmp/dbt_profiles
@@ -49,7 +106,6 @@ jobs:
                 schema: main
                 threads: 2
           YML
-          dbt --version
           dbt debug --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
           dbt parse --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
           dbt run --project-dir "$PROJECT" --profiles-dir /tmp/dbt_profiles
@@ -61,13 +117,15 @@ jobs:
           con=duckdb.connect('/tmp/m09.duckdb')
           rows=con.execute('select count(*) from main.fct_sales').fetchone()[0]
           uniq=con.execute('select count(distinct order_id) from main.fct_sales').fetchone()[0]
-          nulls=con.execute('select count(*) from main.fct_sales where order_id is null or customer_id is null').fetchone()[0]
-          print('FCT_ROWS',rows,'UNIQUE_IDS',uniq,'NULL_KEY_ROWS',nulls)
-          assert rows>0 and rows==uniq and nulls==0
+          nulls=con.execute("select count(*) from main.fct_sales where order_id is null or customer_id is null or trim(customer_id)='' ").fetchone()[0]
+          revenue=con.execute('select round(sum(line_revenue),2) from main.fct_sales').fetchone()[0]
+          print('FCT_ROWS',rows,'UNIQUE_IDS',uniq,'NULL_KEY_ROWS',nulls,'REVENUE',revenue)
+          assert rows==11 and rows==uniq and nulls==0 and float(revenue)==3490.0
           PY
-          echo 'M09 DBT REAL ENGINE PASS'
+          echo 'M09 PIPELINE + DBT REAL ENGINE PASS'
 
   m10-docker:
+    needs: product-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -86,31 +144,26 @@ jobs:
         run: |
           set -euo pipefail
           D=$(dirname "$(find /tmp/m10 -path '*/docker/compose.yaml' -print -quit)")
-          test -n "$D"
-          cd "$D"
+          test -n "$D"; cd "$D"
           docker compose config >/tmp/m10-compose-rendered.yml
           docker compose build
           docker compose up -d
           trap 'docker compose logs --no-color || true; docker compose down -v || true' EXIT
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:8080/ >/tmp/m10-response.json; then break; fi
-            sleep 2
-          done
+          for i in $(seq 1 60); do if curl -fsS http://127.0.0.1:8080/ >/tmp/m10-response.json; then break; fi; sleep 2; done
           python - <<'PY'
           import json
-          x=json.load(open('/tmp/m10-response.json'))
-          print(x)
+          x=json.load(open('/tmp/m10-response.json')); print(x)
           assert x=={'service':'m10-lab','status':'ok','db_host':'db'},x
           PY
-          docker compose ps
-          test "$(docker inspect -f '{{.State.Running}}' m10-kafka 2>/dev/null || true)" != true || true
           echo 'M10 DOCKER COMPOSE REAL ENGINE PASS'
 
   m10-airflow:
+    needs: product-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       AIRFLOW_HOME: /tmp/airflow
+      AIRFLOW__CORE__DAGS_FOLDER: /tmp/airflow/dags
     steps:
       - uses: actions/checkout@v4
       - name: Extract M10 DAG
@@ -122,24 +175,19 @@ jobs:
           assert hits
           with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m10')
           PY
-      - name: Install Airflow 3 runtime and parse canonical DAG
+      - name: Parse canonical DAG in exact Airflow 3.3.1 runtime
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install -q 'apache-airflow>=3.0,<4'
+          python -m pip install -q 'apache-airflow==3.3.1'
           DAG=$(find /tmp/m10 -name m10_daily_orders.py -print -quit)
-          test -n "$DAG"
-          mkdir -p "$AIRFLOW_HOME/dags"
-          cp "$DAG" "$AIRFLOW_HOME/dags/"
+          test -n "$DAG"; mkdir -p "$AIRFLOW_HOME/dags"; cp "$DAG" "$AIRFLOW_HOME/dags/"
           airflow version
           airflow db migrate
-          airflow dags list | tee /tmp/dags.txt
-          grep -q 'm10_daily_orders' /tmp/dags.txt
-          airflow dags list-import-errors | tee /tmp/import-errors.txt
           python - <<'PY'
-          from airflow.models.dagbag import DagBag
-          bag=DagBag(dag_folder='/tmp/airflow/dags',include_examples=False)
-          print('IMPORT_ERRORS',bag.import_errors)
+          from airflow.dag_processing.dagbag import DagBag
+          bag=DagBag(dag_folder='/tmp/airflow/dags')
+          print('IMPORT_ERRORS',bag.import_errors,'DAGS',sorted(bag.dags))
           assert not bag.import_errors,bag.import_errors
           dag=bag.get_dag('m10_daily_orders'); assert dag is not None
           ids=set(dag.task_ids); print('TASKS',sorted(ids)); assert ids=={'extract','validate','transform','load','reconcile'}
@@ -148,10 +196,12 @@ jobs:
           assert set(dag.task_dict['transform'].downstream_task_ids)=={'load'}
           assert set(dag.task_dict['load'].downstream_task_ids)=={'reconcile'}
           assert dag.task_dict['extract'].retries==2
+          assert dag.catchup is False
           PY
-          echo 'M10 AIRFLOW REAL ENGINE DAG PARSE PASS'
+          echo 'M10 AIRFLOW 3.3.1 REAL ENGINE DAG PARSE PASS'
 
   m12-spark:
+    needs: product-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -181,35 +231,40 @@ jobs:
           echo 'M12 PYSPARK REAL ENGINE PASS'
 
   m13-delta:
+    needs: product-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Extract M13
+      - name: Extract exact packaged Runtime Repair 2 M13
         run: |
           python - <<'PY'
           from pathlib import Path
-          import zipfile
-          hits=[p for p in Path('course_packages').rglob('*.zip') if 'M13' in p.name.upper() and 'G0' not in p.name.upper()]
-          assert hits
-          with zipfile.ZipFile(sorted(hits)[0]) as z: assert z.testzip() is None; z.extractall('/tmp/m13')
+          import zipfile,hashlib
+          p=Path('course_packages/modules/M13_DELTA_LAKEHOUSE_CANONICAL_MODULE_FREEZE_QA_PASS.zip')
+          h=hashlib.sha256(p.read_bytes()).hexdigest()
+          assert h=='e878b22a5182b28406de4aa89320551ff0512ff9f140d90f9b088bc30296f2ad',h
+          with zipfile.ZipFile(p) as z: assert z.testzip() is None; z.extractall('/tmp/m13')
           PY
-      - name: Run canonical Delta Lake reference lab
+      - name: Run packaged Delta reference directly with no patching
         shell: bash
         run: |
           set -euo pipefail
           REF=$(find /tmp/m13 -name delta_reference_lab.py -print -quit)
           REQ=$(find /tmp/m13 -path '*/delta_reference/requirements.txt' -print -quit)
           test -n "$REF" && test -n "$REQ"
+          grep -q "DeltaSparkSessionExtension" "$REF"
+          grep -q "DeltaCatalog" "$REF"
           python -m pip install -q -r "$REQ"
           java -version
           python "$REF" | tee /tmp/m13-delta.log
           grep -q 'CURRENT' /tmp/m13-delta.log
           grep -q 'HISTORY' /tmp/m13-delta.log
           grep -q 'VERSION0' /tmp/m13-delta.log
-          echo 'M13 DELTA REAL ENGINE PASS'
+          echo 'M13 PACKAGED RUNTIME REPAIR2 DELTA REAL ENGINE PASS'
 
   m14-kafka:
+    needs: product-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -228,16 +283,12 @@ jobs:
         run: |
           set -euo pipefail
           D=$(dirname "$(find /tmp/m14 -path '*/kafka_reference/compose.yaml' -print -quit)")
-          test -n "$D"
-          cd "$D"
+          test -n "$D"; cd "$D"
           python -m pip install -q -r requirements.txt
           docker compose config >/tmp/m14-compose-rendered.yml
           docker compose up -d
           trap 'docker compose logs --no-color || true; docker compose down -v || true' EXIT
-          for i in $(seq 1 60); do
-            if docker exec m14-kafka /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1; then break; fi
-            sleep 2
-          done
+          for i in $(seq 1 60); do if docker exec m14-kafka /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1; then break; fi; sleep 2; done
           docker exec m14-kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --if-not-exists --topic m14-events --partitions 2 --replication-factor 1
           python producer.py
           timeout 45s python consumer.py | tee /tmp/m14-consumer.log
