@@ -1,9 +1,0 @@
-{
-  "date": "2026-09-11",
-  "candidate": "DE_MENTOR_BEGINNER_FIRST_SYNC_RC3_RECOVERY_COMPLETE_CANDIDATE",
-  "automated_container_browser_smoke": "NOT_CERTIFIED",
-  "reason": "Container Chromium failed to terminate/render even for about:blank under headless invocation; this is an environment/tool limitation, not evidence of app success or app failure.",
-  "static_app_checks": "PASS_158_OF_158",
-  "physical_runtime": "PENDING",
-  "release_effect": "Static synchronization is recovery-complete; no learner-PC, physical Android/PWA, hosted-production, or live-runtime claims are made until those checks execute."
-}
