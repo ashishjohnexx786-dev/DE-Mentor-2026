@@ -1,17 +1,1 @@
-{
-  "name": "DE Mentor \u2014 Zero to Job-Ready 2026",
-  "short_name": "DE Mentor",
-  "start_url": "./index.html?v=20260912-r7",
-  "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#14B8A6",
-  "description": "DE Mentor 2026 RC5 post-deploy semantic-repair candidate - M00-M14 lesson-specific beginner-first teaching restored; exact learner-book/module parity; runtime/device certification pending.",
-  "icons": [
-    {
-      "src": "icon.svg?v=20260912-r7",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
-}
+{"id":"./","name":"DE Mentor · Standalone 2026","short_name":"DE Mentor","start_url":"./#study","scope":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}

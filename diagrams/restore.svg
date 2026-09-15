@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="503.27599999999995" height="172" preserveAspectRatio="xMinYMin meet" viewBox="0 0 503 172" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="503.27599999999995" height="172"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-172)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="105" width="140" height="50" rx="5" ry="5" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(91%,96%,96%); fill-rule: evenodd;"/>
+			<text x="26.580761718750004" y="135" style="font-family: Bold; font-size: 9.2px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,270) scale(1,-1)">Source database</text>
+			<text x="40.81640625" y="119" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,238) scale(1,-1)">standalone_de</text>
+			<rect x="183" y="105" width="137" height="50" rx="5" ry="5" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(91%,96%,96%); fill-rule: evenodd;"/>
+			<text x="212.46064453125" y="135" style="font-family: Bold; font-size: 9.2px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,270) scale(1,-1)">Logical archive</text>
+			<text x="229.732421875" y="119" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,238) scale(1,-1)">m07.dump</text>
+			<rect x="363" y="105" width="140" height="50" rx="5" ry="5" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(91%,96%,96%); fill-rule: evenodd;"/>
+			<text x="392.90048828125" y="135" style="font-family: Bold; font-size: 9.2px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,270) scale(1,-1)">Fresh database</text>
+			<text x="396.232421875" y="119" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,238) scale(1,-1)">restore test target</text>
+			<path d="M 140,130 L 183,130 Z" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1.2;"/>
+			<polygon points="183 130, 178.6121 132.3971, 178.6121 127.6029" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(3%,49%,54%); fill-rule: evenodd;"/>
+			<path d="M 320,130 L 363,130 Z" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1.2;"/>
+			<polygon points="363 130, 358.6121 132.3971, 358.6121 127.6029" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(3%,49%,54%); fill-rule: evenodd;"/>
+			<text x="147.490234375" y="146" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,292) scale(1,-1)">dump</text>
+			<text x="326.689453125" y="146" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,292) scale(1,-1)">restore</text>
+			<rect x="120" y="10" width="260" height="50" rx="5" ry="5" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(91%,96%,96%); fill-rule: evenodd;"/>
+			<text x="169.74033203125" y="40" style="font-family: Bold; font-size: 9.2px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,80) scale(1,-1)">Compare independent controls</text>
+			<text x="181.19140625" y="24" style="font-family: Body; font-size: 8px;fill: rgb(7%,17%,23%); stroke:none;" transform="translate(0,48) scale(1,-1)">Counts, totals, constraints, history</text>
+			<path d="M 70,105 L 175,60 Z" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1.2;"/>
+			<polygon points="175 60, 171.9111 63.93179, 170.0226 59.52518" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(3%,49%,54%); fill-rule: evenodd;"/>
+			<path d="M 433,105 L 325,60 Z" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1.2;"/>
+			<polygon points="325 60, 329.9724 59.47493, 328.1284 63.90039" style="stroke: rgb(3%,49%,54%); stroke-linecap: butt; stroke-width: 1; fill: rgb(3%,49%,54%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>
